@@ -1,29 +1,58 @@
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import {
+	selectCurrentUser,
+	selectIsAuthenticated,
+	selectIsAdmin,
+	selectRefreshToken,
+} from '@/store/features/auth/selector'
+import { logout } from '@/store/features/auth/authSlice'
+import { authService } from '@/services'
 
 export const Header: React.FC = () => {
-	const location = useLocation()
+	const dispatch = useAppDispatch()
+	const navigate = useNavigate()
+	const isAuthenticated = useAppSelector(selectIsAuthenticated)
+	const user = useAppSelector(selectCurrentUser)
+	const isAdmin = useAppSelector(selectIsAdmin)
+	const refreshToken = useAppSelector(selectRefreshToken)
+
+	const handleLogout = async () => {
+		if (refreshToken) await authService.logout(refreshToken)
+		dispatch(logout())
+		navigate('/login')
+	}
 
 	return (
 		<header className='app-header'>
 			<div className='header-content'>
-				<Link to='/' className='header-logo'>
-					Logo
+				<Link to={isAuthenticated ? '/playground' : '/login'} className='header-logo'>
+					🏠 Household
 				</Link>
 
-				<nav className='header-nav'>
-					<Link to='/' className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
-						Home
-					</Link>
-					<Link
-						to='/settings'
-						className={`nav-link ${location.pathname === '/settings' ? 'active' : ''}`}>
-						Settings
-					</Link>
-				</nav>
+				{isAuthenticated && (
+					<nav className='header-nav'>
+						<Link to='/playground' className='nav-link'>
+							Playground
+						</Link>
+					</nav>
+				)}
 
 				<div className='quick-actions'>
-					<button className='action-btn'>Action</button>
+					{isAuthenticated ? (
+						<>
+							<span className='header-user'>{user?.email}</span>
+							{isAdmin && <span className='header-badge header-badge--admin'>Admin</span>}
+							<button className='action-btn' onClick={handleLogout}>
+								Logout
+							</button>
+						</>
+					) : (
+						<Link to='/login' className='action-btn'>
+							Login
+						</Link>
+					)}
 				</div>
 			</div>
 		</header>

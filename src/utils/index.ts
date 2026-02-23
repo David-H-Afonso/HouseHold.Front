@@ -1,1 +1,1 @@
-export { customFetch } from './customFetch'
+export { customFetch, handleUnauthorizedAccess } from './customFetch'

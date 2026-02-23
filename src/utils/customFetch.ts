@@ -1,183 +1,184 @@
-/**
- * HTTP methods supported by the custom fetch utility
- */
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS'
+import { environment } from '@/environments'
+import { store } from '@/store'
+import { forceLogout, setTokens } from '@/store/features/auth/authSlice'
+import { persistor } from '@/store'
+import { router } from '@/navigation/router'
 
-/**
- * Configuration options for customFetch requests
- */
-type CustomFetchOptions = {
-	/** HTTP method for the request */
-	method?: HttpMethod
-	/** Request headers as key-value pairs */
-	headers?: Record<string, string>
-	/** Request body data (automatically serialized for JSON) */
-	body?: any
-	/** URL query parameters to append to the endpoint */
-	params?: Record<string, string | number | boolean>
-	/** AbortSignal for request cancellation */
-	signal?: AbortSignal
-	/** Request timeout in milliseconds */
-	timeout?: number
-	/** Custom base URL to prepend to relative URLs */
-	baseURL?: string
-}
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
-/**
- * Builds URL query string from parameters object
- * @param queryParameters - Object containing query parameters
- * @returns Formatted query string with leading '?' or empty string
- */
-const buildQueryString = (queryParameters?: Record<string, string | number | boolean>): string => {
-	if (!queryParameters || Object.keys(queryParameters).length === 0) {
-		return ''
-	}
+// ── Logout handler ──────────────────────────────────────────────────────
 
-	const encodeURIComponent = window.encodeURIComponent
-	const queryPairs = Object.entries(queryParameters)
-		.filter(([_, value]) => value !== null && value !== undefined)
-		.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+let isHandlingUnauthorized = false
+const pendingRequests = new Set<AbortController>()
+const REDIRECT_DELAY_MS = 100
 
-	return queryPairs.length > 0 ? `?${queryPairs.join('&')}` : ''
-}
+export const handleUnauthorizedAccess = () => {
+	if (isHandlingUnauthorized) return
+	isHandlingUnauthorized = true
 
-/**
- * Determines if the request body should be JSON serialized
- * @param requestBody - The body data to check
- * @returns True if body should be JSON serialized
- */
-const shouldSerializeAsJson = (requestBody: any): boolean => {
-	return (
-		typeof requestBody === 'object' &&
-		requestBody !== null &&
-		!(requestBody instanceof FormData) &&
-		!(requestBody instanceof URLSearchParams) &&
-		!(requestBody instanceof Blob) &&
-		!(requestBody instanceof ArrayBuffer)
-	)
-}
-
-/**
- * Processes the response based on its content type
- * @param httpResponse - The fetch Response object
- * @returns Parsed response data
- */
-const parseResponseData = async (httpResponse: Response): Promise<any> => {
-	const responseContentType = httpResponse.headers.get('content-type') || ''
-
-	if (responseContentType.includes('application/json')) {
-		return await httpResponse.json()
-	}
-
-	if (responseContentType.includes('text/')) {
-		return await httpResponse.text()
-	}
-
-	if (
-		responseContentType.includes('application/octet-stream') ||
-		responseContentType.includes('image/')
-	) {
-		return await httpResponse.blob()
-	}
-
-	// Default to text for unknown content types
-	return await httpResponse.text()
-}
-
-/**
- * Creates a timeout promise that rejects after specified milliseconds
- * @param timeoutMs - Timeout duration in milliseconds
- * @returns Promise that rejects with timeout error
- */
-const createTimeoutPromise = (timeoutMs: number): Promise<never> => {
-	return new Promise((_, reject) => {
-		setTimeout(() => {
-			reject(new Error(`Request timeout after ${timeoutMs}ms`))
-		}, timeoutMs)
+	pendingRequests.forEach((ctrl) => {
+		try {
+			ctrl.abort('Session expired')
+		} catch {
+			/* ignore */
+		}
 	})
+	pendingRequests.clear()
+
+	if (!window.location.pathname.includes('/login')) {
+		console.warn('[Auth] Session expired — redirecting to login')
+		store.dispatch(forceLogout())
+		persistor.purge().catch(console.error)
+		sessionStorage.clear()
+		try {
+			localStorage.removeItem('persist:root')
+		} catch {
+			/* ignore */
+		}
+		setTimeout(() => {
+			isHandlingUnauthorized = false
+			router.navigate('/login')
+		}, REDIRECT_DELAY_MS)
+	} else {
+		isHandlingUnauthorized = false
+	}
 }
 
-/**
- * Universal HTTP client for making API requests with automatic JSON handling,
- * query parameter encoding, and comprehensive error handling
- *
- * @template T - Expected response data type
- * @param endpoint - URL endpoint (absolute or relative)
- * @param requestOptions - Configuration options for the request
- * Request options:
- * - method: HTTP method for the request (default: 'GET')
- * - headers: Request headers as key-value pairs (default: {})
- * - body: Request body data (default: undefined)
- * - params: URL query parameters to append to the endpoint (default: undefined)
- * - signal: AbortSignal for request cancellation (default: undefined)
- * - timeout: Request timeout in milliseconds (default: undefined)
- * - baseURL: Custom base URL to prepend to relative URLs (default: '')
- *
- * @returns Promise resolving to typed response data
- */
+// ── Refresh token lock ───────────────────────────────────────────────────
+// One concurrent refresh at most
+
+let refreshPromise: Promise<boolean> | null = null
+
+const tryRefreshToken = async (): Promise<boolean> => {
+	if (refreshPromise) return refreshPromise
+
+	refreshPromise = (async () => {
+		const { refreshToken } = store.getState().auth
+		if (!refreshToken) return false
+		try {
+			const url = `${environment.baseUrl}${environment.apiRoutes.auth.refresh}`
+			const res = await fetch(url, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ refreshToken }),
+			})
+			if (!res.ok) return false
+			const data = await res.json()
+			store.dispatch(setTokens({ accessToken: data.accessToken, refreshToken: data.refreshToken }))
+			return true
+		} catch {
+			return false
+		} finally {
+			refreshPromise = null
+		}
+	})()
+
+	return refreshPromise
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+type QueryParams = Record<string, string | number | boolean | undefined | null>
+
+const buildQueryString = (params?: QueryParams): string => {
+	if (!params) return ''
+	const pairs = Object.entries(params)
+		.filter(([, v]) => v !== null && v !== undefined)
+		.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
+	return pairs.length ? `?${pairs.join('&')}` : ''
+}
+
+const parseResponse = async (res: Response): Promise<any> => {
+	const ct = res.headers.get('content-type') ?? ''
+	if (ct.includes('application/json')) return res.json()
+	if (ct.includes('text/')) return res.text()
+	return res.blob()
+}
+
+// ── Main customFetch ──────────────────────────────────────────────────────────────
+
+type CustomFetchOptions = {
+	method?: HttpMethod
+	headers?: Record<string, string>
+	body?: any
+	params?: QueryParams
+	signal?: AbortSignal
+	baseURL?: string
+	/** Internal: skip the one-retry-after-refresh to avoid infinite loops */
+	_skipRefresh?: boolean
+}
+
 export const customFetch = async <T = any>(
 	endpoint: string,
-	requestOptions: CustomFetchOptions = {}
+	options: CustomFetchOptions = {}
 ): Promise<T> => {
 	const {
 		method = 'GET',
-		headers: customHeaders = {},
-		body: requestBody,
-		params: queryParams,
-		signal: abortSignal,
-		timeout: timeoutMs,
-		baseURL: baseUrl = '',
-	} = requestOptions
+		headers: extraHeaders = {},
+		body,
+		params,
+		signal: callerSignal,
+		baseURL = environment.baseUrl,
+		_skipRefresh = false,
+	} = options
 
-	// Construct the complete URL with base URL and query parameters
-	const completeUrl = baseUrl + endpoint + buildQueryString(queryParams)
+	const url = baseURL + endpoint + buildQueryString(params)
 
-	// Prepare fetch configuration
-	const fetchConfiguration: RequestInit = {
-		method,
-		headers: { ...customHeaders },
-		signal: abortSignal,
+	const controller = new AbortController()
+	pendingRequests.add(controller)
+	if (callerSignal) {
+		if (callerSignal.aborted) controller.abort(callerSignal.reason)
+		else callerSignal.addEventListener('abort', () => controller.abort(callerSignal.reason))
 	}
 
-	// Handle request body serialization for non-GET requests
-	if (requestBody !== undefined && method !== 'GET' && method !== 'HEAD') {
-		if (shouldSerializeAsJson(requestBody)) {
-			fetchConfiguration.body = JSON.stringify(requestBody)
-			fetchConfiguration.headers = {
-				...fetchConfiguration.headers,
-				'Content-Type': 'application/json',
-			}
-		} else {
-			fetchConfiguration.body = requestBody
-		}
+	const accessToken = store.getState().auth.accessToken
+
+	const isJsonBody =
+		body !== undefined &&
+		typeof body === 'object' &&
+		!(body instanceof FormData) &&
+		!(body instanceof Blob)
+
+	const requestHeaders: Record<string, string> = {
+		...extraHeaders,
+		...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+		...(isJsonBody && { 'Content-Type': 'application/json' }),
+	}
+
+	const init: RequestInit = {
+		method,
+		headers: requestHeaders,
+		signal: controller.signal,
+		...(body !== undefined && method !== 'GET'
+			? { body: isJsonBody ? JSON.stringify(body) : body }
+			: {}),
 	}
 
 	try {
-		// Create fetch promise
-		const fetchPromise = fetch(completeUrl, fetchConfiguration)
+		const res = await fetch(url, init)
+		const data = await parseResponse(res)
 
-		// Handle timeout if specified
-		const httpResponse = timeoutMs
-			? await Promise.race([fetchPromise, createTimeoutPromise(timeoutMs)])
-			: await fetchPromise
+		if (!res.ok) {
+			if (res.status === 401 && !_skipRefresh) {
+				const refreshed = await tryRefreshToken()
+				if (refreshed) {
+					pendingRequests.delete(controller)
+					return customFetch<T>(endpoint, { ...options, _skipRefresh: true })
+				} else {
+					handleUnauthorizedAccess()
+					throw new Error('Session expired. Please login again.')
+				}
+			}
 
-		// Parse response data based on content type
-		const responseData = await parseResponseData(httpResponse)
-
-		// Handle HTTP error status codes
-		if (!httpResponse.ok) {
-			const errorMessage =
-				typeof responseData === 'string' ? responseData : JSON.stringify(responseData)
-
-			throw new Error(`HTTP ${httpResponse.status} ${httpResponse.statusText}: ${errorMessage}`)
+			const msg = typeof data === 'string' ? data : (data?.message ?? JSON.stringify(data))
+			throw new Error(`HTTP ${res.status}: ${msg}`)
 		}
 
-		return responseData as T
-	} catch (fetchError) {
-		// Re-throw with enhanced error context
-		if (fetchError instanceof Error) {
-			throw new Error(`Request failed for ${method} ${completeUrl}: ${fetchError.message}`)
-		}
-		throw fetchError
+		return data as T
+	} catch (err) {
+		if (err instanceof Error && err.name === 'AbortError') throw new Error('Request cancelled')
+		throw err
+	} finally {
+		pendingRequests.delete(controller)
 	}
 }

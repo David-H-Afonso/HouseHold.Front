@@ -1,22 +1,65 @@
 /**
  * API endpoints configuration
- * Centralized location for all API routes used across the application
+ * Centralized location for all API routes used across the Household.Api backend
  */
 export const apiRoutes = {
-	/** Example API endpoints */
-	example: {
-		url: '/url/example',
-		/** Add more endpoints here */
-	},
-
-	/** Authentication endpoints */
+	/** Auth endpoints */
 	auth: {
-		// login: '/auth/login',
-		// logout: '/auth/logout',
-		// refresh: '/auth/refresh',
+		login: '/auth/login',
+		refresh: '/auth/refresh',
+		logout: '/auth/logout',
+		logoutAll: '/auth/logout-all',
+		me: '/auth/me',
 	},
 
-	/** User management endpoints */
+	/** Admin endpoints */
+	admin: {
+		createUser: '/admin/users',
+	},
+
+	/** Food items */
+	foodItems: {
+		base: '/food-items',
+		byId: (id: string) => `/food-items/${id}`,
+	},
+
+	/** Dish templates */
+	dishTemplates: {
+		base: '/dish-templates',
+		byId: (id: string) => `/dish-templates/${id}`,
+	},
+
+	/** Meal entries */
+	mealEntries: {
+		base: '/meal-entries',
+		byId: (id: string) => `/meal-entries/${id}`,
+	},
+
+	/** Rooms */
+	rooms: {
+		base: '/rooms',
+		byId: (id: string) => `/rooms/${id}`,
+	},
+
+	/** Task templates */
+	taskTemplates: {
+		base: '/task-templates',
+		byId: (id: string) => `/task-templates/${id}`,
+	},
+
+	/** Task instances */
+	tasks: {
+		today: '/tasks/today',
+		completeInstance: (id: string) => `/tasks/instances/${id}/complete`,
+	},
+
+	/** Issues */
+	issues: {
+		base: '/issues',
+		byId: (id: string) => `/issues/${id}`,
+	},
+
+	// legacy placeholder kept for TS compatibility
 	users: {
 		// list: '/api/users',
 		// profile: '/api/users/profile',

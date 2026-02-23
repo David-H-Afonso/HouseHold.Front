@@ -1,27 +1,27 @@
 // environment.prod.ts
 import { apiRoutes } from '../apiRoutes'
 
+const PLACEHOLDER = 'HOUSEHOLD_API_URL_PLACEHOLDER'
+
 function getApiBaseUrl(): string {
-	// Si estamos en Electron
-	if (typeof window !== 'undefined' && (window as any).API_BASE_URL) {
-		return (window as any).API_BASE_URL
+	// Docker: env-config.js sets window.API_BASE_URL at container startup.
+	// Empty string is valid: means "use relative URLs → nginx proxies API calls".
+	// Guard against the placeholder not being replaced (e.g. local npm run build).
+	const runtimeUrl = typeof window !== 'undefined' ? (window as any).API_BASE_URL : undefined
+	if (runtimeUrl !== undefined && runtimeUrl !== PLACEHOLDER) {
+		return runtimeUrl as string
 	}
-
-	// Si tenemos configuración en runtime (Docker)
-	if (typeof window !== 'undefined' && (window as any).ENV && (window as any).ENV.VITE_API_URL) {
-		return (window as any).ENV.VITE_API_URL
+	if (import.meta.env.VITE_API_BASE_URL) {
+		return import.meta.env.VITE_API_BASE_URL as string
 	}
-
-	// Si definimos la URL en tiempo de build (Docker/Vite)
-	if (import.meta.env.VITE_API_URL) {
-		return import.meta.env.VITE_API_URL as string
-	}
-
-	// Fallback por si acaso
-	return 'http://localhost:5000'
+	return 'http://localhost:8080'
 }
 
 export const environment = {
+	production: true,
 	baseUrl: getApiBaseUrl(),
 	apiRoutes,
+	api: {
+		timeout: 30000,
+	},
 }
