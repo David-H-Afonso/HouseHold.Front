@@ -1,6 +1,111 @@
 # Household Front
 
-React frontend for the Household app manage food items, dish templates, meal entries, and household tasks.
+React SPA for Household — a personal home management app covering food tracking, meal planning, dish templates, household tasks, rooms, and issue reporting.
+
+## Features
+
+- **Food Items** — Shared ingredient/food catalogue with search
+- **Dish Templates** — Per-user dish/recipe definitions
+- **Meal Entries** — Log daily meals with date range filters
+- **Task Templates & Entries** — Manage recurring household tasks
+- **Rooms** — Define the rooms in your home
+- **Issues** — Report and track household issues per room
+- **Admin Panel** — User management for self-hosted instances
+- **JWT Auth** — Secure login with refresh token support
+- **Responsive** — Mobile-friendly layout
+- **Dark Theme** — Consistent dark UI with CSS custom properties
+
+## Tech Stack
+
+- **React 19** + TypeScript 5
+- **Vite** — Build tool
+- **Redux Toolkit** — State management with redux-persist
+- **React Router 7** — Client-side routing
+- **SCSS** — Modular styling with BEM naming
+- **SVG Icons** — via vite-plugin-svgr
+
+## Prerequisites
+
+- [Node.js 20+](https://nodejs.org/)
+- Running Household API instance
+
+## Installation
+
+```bash
+cd Household.Front
+npm install
+```
+
+## Development
+
+```bash
+cp .env.example .env
+# Edit .env with your API URL
+npm run dev
+# Available at http://localhost:5173
+```
+
+## Production Build
+
+```bash
+npm run build
+# Output in dist/
+```
+
+The built files are served by the nginx container in the Docker Compose setup.
+
+## Project Structure
+
+```
+Household.Front/
+├── public/              # Static assets
+└── src/
+    ├── assets/          # SVG icons, images
+    ├── components/
+    │   ├── Admin/       # Admin panel
+    │   ├── Auth/        # Login / protected route
+    │   ├── Header/      # App header
+    │   ├── Home/        # Home / dashboard
+    │   ├── Playground/  # Dev sandbox
+    │   ├── errors/      # Error boundary / route error
+    │   └── elements/    # Shared components
+    ├── environments/    # API base URL config + routes
+    ├── hooks/           # Custom React hooks
+    ├── layouts/         # App layout wrappers
+    ├── models/          # TypeScript interfaces matching API DTOs
+    ├── navigation/      # React Router config
+    ├── services/        # API service layer
+    ├── store/           # Redux slices & selectors
+    └── utils/           # Utility functions
+```
+
+## Available Scripts
+
+| Script            | Description                   |
+| ----------------- | ----------------------------- |
+| `npm run dev`     | Start dev server              |
+| `npm run build`   | Type-check + production build |
+| `npm run lint`    | ESLint                        |
+| `npm run preview` | Preview production build      |
+
+## Docker
+
+```bash
+docker build -t household-web .
+docker run -p 80:80 -e VITE_API_BASE_URL=http://your-api:8080 household-web
+```
+
+See the root `docker-compose.casaos.yml` for CasaOS deployment.
+
+## Environment Variables
+
+| Variable            | Description     | Default                 |
+| ------------------- | --------------- | ----------------------- |
+| `VITE_API_BASE_URL` | Backend API URL | `http://localhost:8080` |
+
+## License
+
+MIT
 
 ## Stack
 
