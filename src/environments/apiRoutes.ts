@@ -93,6 +93,27 @@ export const apiRoutes = {
 		summary: '/modules/games/summary',
 	},
 
+	/** Read-only DoIt daily view */
+	today: {
+		base: '/modules/today',
+	},
+
+	/** Jellywatch gateway */
+	media: {
+		jellywatch: '/modules/media/jellywatch',
+	},
+
+	/** Beast Vault gateway */
+	pokemon: {
+		base: '/modules/pokemon',
+		tags: '/modules/pokemon/tags',
+	},
+
+	/** Warcraft Archive gateway */
+	warcraft: {
+		quickStatus: '/modules/warcraft/quick-status',
+	},
+
 	// legacy placeholder kept for TS compatibility
 	users: {
 		// list: '/api/users',

@@ -1,0 +1,58 @@
+.warcraft-page {
+	--warcraft-bg: #10121c;
+	--warcraft-panel: #181b29;
+	--warcraft-border: #2b3042;
+	display: grid;
+	gap: 24px;
+	max-width: 1000px;
+	margin: 0 auto;
+	border: 1px solid #282d3e;
+	border-radius: 16px;
+	background: radial-gradient(circle at 80% 0, rgba(168, 85, 247, 0.09), transparent 32%), linear-gradient(145deg, #11131e, #0d0f18);
+	color: #edf0fa;
+	padding: clamp(20px, 4vw, 34px);
+	box-shadow: 0 30px 70px -58px #000;
+}
+
+.warcraft-page__header { display: flex; align-items: start; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--warcraft-border); padding-bottom: 18px; }
+.warcraft-page__header > div > span,
+.warcraft-overview__eyebrow { color: #aeb5d4; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.warcraft-page__header h1 { margin: 5px 0 4px; font-size: clamp(1.9rem, 5vw, 2.7rem); letter-spacing: -0.05em; }
+.warcraft-page__header p { margin: 0; color: #929ab9; }
+.warcraft-page__header time { color: #7d85a3; font-size: 0.7rem; }
+
+.warcraft-overview { display: grid; grid-template-columns: 126px minmax(0, 1fr); align-items: center; gap: 24px; border: 1px solid var(--warcraft-border); border-radius: 14px; background: rgba(24, 27, 41, 0.78); padding: 20px; }
+.warcraft-overview__ring { display: grid; width: 112px; aspect-ratio: 1; place-items: center; border-radius: 50%; background: conic-gradient(#57c55a var(--progress), #2c3144 0); }
+.warcraft-overview__ring::before { content: ''; grid-area: 1 / 1; width: 86px; aspect-ratio: 1; border-radius: 50%; background: #171a27; }
+.warcraft-overview__ring > div { z-index: 1; display: grid; justify-items: center; }
+.warcraft-overview__ring strong { font-size: 1.45rem; letter-spacing: -0.04em; }
+.warcraft-overview__ring span { color: #8d96b4; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
+.warcraft-overview > div:last-child { display: grid; gap: 5px; }
+.warcraft-overview > div:last-child > strong { font-size: 2.8rem; line-height: 1; letter-spacing: -0.06em; }
+.warcraft-overview p { margin: 0; color: #969ebb; font-size: 0.8rem; }
+
+.warcraft-status-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.warcraft-status-grid article { display: grid; grid-template-columns: 9px minmax(0, 1fr) auto; align-items: center; gap: 8px; min-height: 102px; border: 1px solid var(--warcraft-border); border-top: 2px solid var(--status-color); border-radius: 12px; background: var(--warcraft-panel); padding: 15px; }
+.warcraft-status-grid__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--status-color); box-shadow: 0 0 0 4px color-mix(in srgb, var(--status-color) 13%, transparent); }
+.warcraft-status-grid article > span:nth-child(2) { color: #b4bad0; font-size: 0.76rem; font-weight: 700; }
+.warcraft-status-grid article > strong { color: #fff; font-size: 1.4rem; }
+.warcraft-status-grid article > div { grid-column: 1 / -1; height: 4px; overflow: hidden; border-radius: 99px; background: #292e40; }
+.warcraft-status-grid article i { display: block; height: 100%; border-radius: inherit; background: var(--status-color); }
+.warcraft-page .module-state { border-color: var(--warcraft-border); background: var(--warcraft-panel); color: #edf0fa; }
+.warcraft-page .module-state p { color: #929ab9; }
+.warcraft-page .module-state a { color: #aeb9ff; }
+.warcraft-page a:focus-visible { outline: 3px solid #7c8cff; outline-offset: 2px; }
+
+@media (max-width: 680px) {
+	.warcraft-page__header { flex-direction: column; }
+	.warcraft-overview { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+	.warcraft-status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 420px) {
+	.warcraft-status-grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.warcraft-page * { transition: none !important; }
+}

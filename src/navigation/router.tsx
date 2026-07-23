@@ -9,9 +9,13 @@ import {
 	AppsPage,
 	DashboardPage,
 	GamesPage,
+	MediaPage,
+	PokemonPage,
 	PlaceholderModulePage,
 	SettingsDashboardPage,
 	SettingsIntegrationsPage,
+	TodayPage,
+	WarcraftPage,
 } from '@/pages'
 
 const protectedPage = (element: ReactNode) => (
@@ -38,6 +42,11 @@ export const router = createBrowserRouter([
 		errorElement: <RouteError />,
 	},
 	{
+		path: '/today',
+		element: protectedPage(<TodayPage />),
+		errorElement: <RouteError />,
+	},
+	{
 		path: '/apps',
 		element: protectedPage(<AppsPage />),
 		errorElement: <RouteError />,
@@ -49,9 +58,7 @@ export const router = createBrowserRouter([
 	},
 	{
 		path: '/media',
-		element: protectedPage(
-			<PlaceholderModulePage title='Media' description='Jellyfin, Jellywatch and Jellyseerr dashboard arrives in Phase 5.' />
-		),
+		element: protectedPage(<MediaPage />),
 		errorElement: <RouteError />,
 	},
 	{
@@ -77,16 +84,12 @@ export const router = createBrowserRouter([
 	},
 	{
 		path: '/pokemon',
-		element: protectedPage(
-			<PlaceholderModulePage title='Pokemon' description='Beast Vault collection browsing arrives in Phase 7.' />
-		),
+		element: protectedPage(<PokemonPage />),
 		errorElement: <RouteError />,
 	},
 	{
 		path: '/warcraft',
-		element: protectedPage(
-			<PlaceholderModulePage title='Warcraft' description='Warcraft Archive weekly checklist arrives in Phase 8.' />
-		),
+		element: protectedPage(<WarcraftPage />),
 		errorElement: <RouteError />,
 	},
 	{

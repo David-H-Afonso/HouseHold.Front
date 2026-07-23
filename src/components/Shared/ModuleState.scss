@@ -1,0 +1,75 @@
+.module-state {
+	display: grid;
+	grid-template-columns: 38px minmax(0, 1fr);
+	align-items: center;
+	gap: 12px;
+	min-height: 92px;
+	border: 1px solid var(--color-border);
+	border-radius: 10px;
+	background: #fff;
+	padding: 16px;
+	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.module-state__mark {
+	display: grid;
+	width: 36px;
+	height: 36px;
+	place-items: center;
+	border-radius: 10px;
+	background: #eef2ff;
+	color: #4338ca;
+	font-weight: 800;
+}
+
+.module-state--error .module-state__mark {
+	background: #fff7ed;
+	color: #c2410c;
+}
+
+.module-state--empty .module-state__mark {
+	background: #f1f5f9;
+	color: #475569;
+}
+
+.module-state h2,
+.module-state p {
+	margin: 0;
+}
+
+.module-state h2 {
+	font-size: 0.98rem;
+}
+
+.module-state p {
+	margin-top: 3px;
+	color: var(--color-text-muted);
+	line-height: 1.45;
+}
+
+.module-state a {
+	display: inline-flex;
+	min-height: 36px;
+	align-items: center;
+	margin-top: 8px;
+	color: #3730a3;
+	font-size: 0.84rem;
+	font-weight: 750;
+}
+
+.module-state__spinner {
+	width: 16px;
+	height: 16px;
+	border: 2px solid rgba(67, 56, 202, 0.2);
+	border-top-color: #4338ca;
+	border-radius: 999px;
+	animation: module-state-spin 700ms linear infinite;
+}
+
+@keyframes module-state-spin {
+	to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.module-state__spinner { animation: none; }
+}

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 
 interface DetailDrawerProps {
 	open: boolean
@@ -8,14 +8,38 @@ interface DetailDrawerProps {
 }
 
 export const DetailDrawer = ({ open, title, children, onClose }: DetailDrawerProps) => {
+	const closeButtonRef = useRef<HTMLButtonElement>(null)
+	const previousFocusRef = useRef<HTMLElement | null>(null)
+	const onCloseRef = useRef(onClose)
+
+	useEffect(() => {
+		onCloseRef.current = onClose
+	}, [onClose])
+
+	useEffect(() => {
+		if (!open) return
+		previousFocusRef.current = document.activeElement as HTMLElement | null
+		closeButtonRef.current?.focus()
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') onCloseRef.current()
+		}
+		document.addEventListener('keydown', onKeyDown)
+		return () => {
+			document.removeEventListener('keydown', onKeyDown)
+			previousFocusRef.current?.focus()
+		}
+	}, [open])
+
 	if (!open) return null
 
 	return (
-		<div className='drawer-backdrop' role='presentation'>
-			<aside className='detail-drawer' aria-label={title}>
+		<div className='drawer-backdrop' role='presentation' onMouseDown={(event) => {
+			if (event.target === event.currentTarget) onClose()
+		}}>
+			<aside className='detail-drawer' role='dialog' aria-modal='true' aria-label={title}>
 				<header>
 					<h2>{title}</h2>
-					<button type='button' onClick={onClose} aria-label='Close details'>
+					<button ref={closeButtonRef} type='button' onClick={onClose} aria-label='Close details'>
 						Close
 					</button>
 				</header>

@@ -1,0 +1,82 @@
+.media-page {
+	--media-bg: #10101c;
+	--media-surface: #191a2b;
+	--media-border: #2c3047;
+	--media-text: #f4f2ff;
+	--media-muted: #a6acc5;
+	display: grid;
+	gap: 28px;
+max-width: 1200px;
+	margin: 0 auto;
+	border: 1px solid #25283b;
+	border-radius: 18px;
+	background: radial-gradient(circle at 88% -10%, rgba(75, 140, 255, 0.14), transparent 32%), radial-gradient(circle at 20% 0, rgba(174, 83, 214, 0.14), transparent 30%), var(--media-bg);
+	color: var(--media-text);
+	padding: clamp(18px, 4vw, 34px);
+	box-shadow: 0 30px 60px -50px #080813;
+}
+
+.media-page__header { display: flex; align-items: start; justify-content: space-between; gap: 20px; }
+.media-page__header > div:first-child > span,
+.media-section__eyebrow { color: #8dd8f6; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.11em; text-transform: uppercase; }
+.media-page__header h1 { margin: 6px 0 4px; font-size: clamp(1.8rem, 4vw, 2.5rem); letter-spacing: -0.045em; }
+.media-page__header p { margin: 0; color: var(--media-muted); }
+.media-page__signal { display: flex; align-items: center; gap: 8px; border: 1px solid #323751; border-radius: 999px; background: rgba(25, 26, 43, 0.85); padding: 8px 12px; color: #c9cee1; font-size: 0.75rem; font-weight: 750; white-space: nowrap; }
+.media-page__signal i { width: 7px; height: 7px; border-radius: 50%; background: #56d991; box-shadow: 0 0 0 4px rgba(86, 217, 145, 0.12); }
+
+.media-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.media-stats > div { display: grid; gap: 3px; border: 1px solid var(--media-border); border-radius: 12px; background: rgba(25, 26, 43, 0.82); padding: 15px; }
+.media-stats strong { font-size: 1.65rem; letter-spacing: -0.04em; background: linear-gradient(135deg, #d68de7, #64c8f3); background-clip: text; color: transparent; }
+.media-stats span { color: var(--media-muted); font-size: 0.75rem; font-weight: 650; }
+
+.media-section { display: grid; gap: 14px; min-width: 0; }
+.media-section > header { display: flex; align-items: end; justify-content: space-between; gap: 15px; }
+.media-section > header h2 { margin: 3px 0 0; font-size: 1.15rem; }
+.media-section > header > span { color: #7f86a1; font-size: 0.72rem; font-weight: 650; }
+
+.media-upcoming { display: grid; grid-auto-columns: 142px; grid-auto-flow: column; gap: 14px; overflow-x: auto; padding: 0 0 10px; scroll-snap-type: x proximity; scrollbar-color: #4a506c transparent; scrollbar-width: thin; }
+.media-upcoming__card { min-width: 0; color: inherit; text-decoration: none; scroll-snap-align: start; }
+.media-upcoming__poster { position: relative; display: grid; height: 202px; place-items: center; overflow: hidden; border: 1px solid var(--media-border); border-radius: 10px; background: linear-gradient(145deg, #2b2b45, #171827); color: #7d84a0; font-size: 2rem; font-weight: 850; }
+.media-upcoming__poster::after { content: ''; position: absolute; inset: auto 0 0; height: 45%; background: linear-gradient(transparent, rgba(4, 4, 10, 0.78)); pointer-events: none; }
+.media-upcoming__poster img { width: 100%; height: 100%; object-fit: cover; }
+.media-upcoming__poster strong,
+.media-upcoming__poster b { position: absolute; z-index: 1; border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 6px; background: rgba(8, 9, 16, 0.86); color: #fff; padding: 4px 7px; font-size: 0.66rem; }
+.media-upcoming__poster strong { top: 7px; left: 7px; max-width: calc(100% - 14px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.media-upcoming__poster b { right: 7px; bottom: 7px; }
+.media-upcoming__info { padding-top: 8px; }
+.media-upcoming__info h3 { margin: 0; overflow: hidden; color: #f3f3fb; font-size: 0.85rem; text-overflow: ellipsis; white-space: nowrap; }
+.media-upcoming__info p { display: -webkit-box; margin: 3px 0 0; overflow: hidden; color: var(--media-muted); font-size: 0.7rem; line-height: 1.35; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+
+.media-activity__list { display: grid; gap: 7px; }
+.media-activity__item { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; align-items: center; gap: 11px; min-height: 65px; border: 1px solid var(--media-border); border-radius: 10px; background: rgba(25, 26, 43, 0.76); color: inherit; padding: 10px 12px; text-decoration: none; }
+.media-activity__icon { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 9px; background: linear-gradient(135deg, rgba(182, 93, 208, 0.2), rgba(40, 163, 222, 0.2)); color: #9bdaf4; }
+.media-activity__icon svg { width: 16px; fill: currentColor; }
+.media-activity__main { display: grid; gap: 2px; min-width: 0; }
+.media-activity__main strong,
+.media-activity__main span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.media-activity__main strong { font-size: 0.88rem; }
+.media-activity__main span { color: var(--media-muted); font-size: 0.75rem; }
+.media-activity__main time { color: #737b99; font-size: 0.67rem; }
+.media-activity__meta { display: flex; align-items: center; gap: 8px; }
+.media-activity__meta span { border: 1px solid #3a405c; border-radius: 999px; padding: 4px 7px; color: #bbc2da; font-size: 0.65rem; font-weight: 750; text-transform: capitalize; }
+.media-activity__meta strong { color: #f8cf63; font-size: 0.72rem; }
+
+.media-page a:hover .media-upcoming__poster,
+.media-page a:hover.media-activity__item { border-color: #626b93; }
+.media-page a:focus-visible { outline: 3px solid #7dd3fc; outline-offset: 3px; }
+.media-page .module-state { border-color: var(--media-border); background: var(--media-surface); color: var(--media-text); }
+.media-page .module-state p { color: var(--media-muted); }
+.media-page .module-state a { color: #9bdaf4; }
+
+@media (max-width: 680px) {
+	.media-page { border-radius: 14px; padding: 18px; }
+	.media-page__header { flex-direction: column; }
+	.media-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.media-section > header { align-items: start; }
+	.media-activity__item { grid-template-columns: 38px minmax(0, 1fr); }
+	.media-activity__meta { grid-column: 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.media-page * { scroll-behavior: auto !important; }
+}

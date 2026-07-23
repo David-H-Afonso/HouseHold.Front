@@ -560,6 +560,11 @@ button.btn--danger {
 	padding: 28px;
 }
 
+.app-shell :where(a, button, input, select, textarea):focus-visible {
+	outline: 3px solid rgba(99, 102, 241, 0.45);
+	outline-offset: 2px;
+}
+
 .sidebar-nav {
 	position: sticky;
 	top: 0;

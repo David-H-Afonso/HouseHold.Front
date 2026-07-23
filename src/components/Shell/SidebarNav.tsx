@@ -4,6 +4,7 @@ import { selectCurrentUser, selectIsAdmin } from '@/store/features/auth/selector
 
 const primaryLinks = [
 	{ to: '/', label: 'Dashboard' },
+	{ to: '/today', label: 'Today' },
 	{ to: '/apps', label: 'Apps' },
 	{ to: '/games', label: 'Games' },
 	{ to: '/media', label: 'Media' },
