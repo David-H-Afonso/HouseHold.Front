@@ -1,9 +1,24 @@
+import type { ReactNode } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { AppLayout } from '@/layouts'
 import { EmptyLayout } from '@/layouts'
 import { Login, ProtectedRoute, PublicRoute } from '@/components/Auth'
 import { RouteError } from '@/components/errors'
 import Playground from '@/components/Playground/containers/Playground'
+import {
+	AppsPage,
+	DashboardPage,
+	GamesPage,
+	PlaceholderModulePage,
+	SettingsDashboardPage,
+	SettingsIntegrationsPage,
+} from '@/pages'
+
+const protectedPage = (element: ReactNode) => (
+	<ProtectedRoute>
+		<AppLayout>{element}</AppLayout>
+	</ProtectedRoute>
+)
 
 export const router = createBrowserRouter([
 	{
@@ -18,22 +33,86 @@ export const router = createBrowserRouter([
 		errorElement: <RouteError />,
 	},
 	{
-		path: '/playground',
-		element: (
-			<ProtectedRoute>
-				<AppLayout>
-					<Playground />
-				</AppLayout>
-			</ProtectedRoute>
+		path: '/',
+		element: protectedPage(<DashboardPage />),
+		errorElement: <RouteError />,
+	},
+	{
+		path: '/apps',
+		element: protectedPage(<AppsPage />),
+		errorElement: <RouteError />,
+	},
+	{
+		path: '/games',
+		element: protectedPage(<GamesPage />),
+		errorElement: <RouteError />,
+	},
+	{
+		path: '/media',
+		element: protectedPage(
+			<PlaceholderModulePage title='Media' description='Jellyfin, Jellywatch and Jellyseerr dashboard arrives in Phase 5.' />
 		),
 		errorElement: <RouteError />,
 	},
 	{
-		path: '/',
-		element: <Navigate to='/playground' replace />,
+		path: '/media/jellyfin',
+		element: protectedPage(
+			<PlaceholderModulePage title='Jellyfin' description='Direct Jellyfin sessions, libraries and latest media arrive in Phase 5.' />
+		),
+		errorElement: <RouteError />,
+	},
+	{
+		path: '/media/requests',
+		element: protectedPage(
+			<PlaceholderModulePage title='Requests' description='Jellyseerr search and request flows arrive in Phase 5.' />
+		),
+		errorElement: <RouteError />,
+	},
+	{
+		path: '/downloads',
+		element: protectedPage(
+			<PlaceholderModulePage title='Downloads' description='qBittorrent, Sonarr and Radarr visibility arrives in Phase 6.' />
+		),
+		errorElement: <RouteError />,
+	},
+	{
+		path: '/pokemon',
+		element: protectedPage(
+			<PlaceholderModulePage title='Pokemon' description='Beast Vault collection browsing arrives in Phase 7.' />
+		),
+		errorElement: <RouteError />,
+	},
+	{
+		path: '/warcraft',
+		element: protectedPage(
+			<PlaceholderModulePage title='Warcraft' description='Warcraft Archive weekly checklist arrives in Phase 8.' />
+		),
+		errorElement: <RouteError />,
+	},
+	{
+		path: '/network',
+		element: protectedPage(
+			<PlaceholderModulePage title='Network' description='WireGuard Easy read-only client status arrives in Phase 9.' />
+		),
+		errorElement: <RouteError />,
+	},
+	{
+		path: '/settings/integrations',
+		element: protectedPage(<SettingsIntegrationsPage />),
+		errorElement: <RouteError />,
+	},
+	{
+		path: '/settings/dashboard',
+		element: protectedPage(<SettingsDashboardPage />),
+		errorElement: <RouteError />,
+	},
+	{
+		path: '/playground',
+		element: protectedPage(<Playground />),
+		errorElement: <RouteError />,
 	},
 	{
 		path: '*',
-		element: <Navigate to='/playground' replace />,
+		element: <Navigate to='/' replace />,
 	},
 ])

@@ -1,15 +1,10 @@
 import React from 'react'
-import { Header } from './elements'
+import { AppShell } from '@/components/Shell'
 
 interface AppLayoutProps {
 	children: React.ReactNode
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-	return (
-		<div className='app-layout'>
-			<Header />
-			<main className='app-layout__content'>{children}</main>
-		</div>
-	)
+	return <AppShell>{children}</AppShell>
 }

@@ -59,6 +59,42 @@ export const apiRoutes = {
 		byId: (id: string) => `/issues/${id}`,
 	},
 
+	/** Integrations */
+	integrations: {
+		base: '/integrations',
+		byId: (id: string) => `/integrations/${id}`,
+		health: '/integrations/health',
+		healthById: (id: string) => `/integrations/${id}/health`,
+		connections: '/integrations/connections',
+		connection: (provider: string) => `/integrations/connections/${provider}`,
+		authorizeConnection: (provider: string) => `/integrations/connections/${provider}/authorize`,
+		testConnection: (provider: string) => `/integrations/connections/${provider}/test`,
+	},
+
+	/** Dashboard */
+	dashboard: {
+		base: '/dashboard',
+	},
+
+	/** App launcher */
+	apps: {
+		base: '/modules/apps',
+		byId: (id: string) => `/modules/apps/${id}`,
+		categories: '/modules/apps/categories',
+		favorite: (id: string) => `/modules/apps/${id}/favorite`,
+	},
+
+	/** Games Database gateway */
+	games: {
+		base: '/modules/games',
+		byId: (id: number) => `/modules/games/${id}`,
+		status: (id: number) => `/modules/games/${id}/status`,
+		statuses: '/modules/games/statuses',
+		summary: '/modules/games/summary',
+		steamSearch: '/modules/games/steam/search',
+		steamAdd: '/modules/games/steam/add',
+	},
+
 	// legacy placeholder kept for TS compatibility
 	users: {
 		// list: '/api/users',

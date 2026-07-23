@@ -1,3 +1,7 @@
+export { appCatalogService } from './AppCatalogService'
 export { authService } from './AuthService'
+export { dashboardService } from './DashboardService'
 export { foodService } from './FoodService'
+export { gamesService } from './GamesService'
 export { homeService } from './HomeService'
+export { integrationService } from './IntegrationService'

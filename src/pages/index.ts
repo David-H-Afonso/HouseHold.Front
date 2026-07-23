@@ -1,0 +1,6 @@
+export { AppsPage } from './AppsPage'
+export { DashboardPage } from './DashboardPage'
+export { GamesPage } from './GamesPage'
+export { PlaceholderModulePage } from './PlaceholderModulePage'
+export { SettingsDashboardPage } from './SettingsDashboardPage'
+export { SettingsIntegrationsPage } from './SettingsIntegrationsPage'

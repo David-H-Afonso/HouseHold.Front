@@ -18,7 +18,7 @@ export const ProtectedRoute = ({ children, adminOnly = false }: ProtectedRoutePr
 	}
 
 	if (adminOnly && !isAdmin) {
-		return <Navigate to='/playground' replace />
+		return <Navigate to='/' replace />
 	}
 
 	return <>{children}</>
