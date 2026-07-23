@@ -91,8 +91,6 @@ export const apiRoutes = {
 		status: (id: number) => `/modules/games/${id}/status`,
 		statuses: '/modules/games/statuses',
 		summary: '/modules/games/summary',
-		steamSearch: '/modules/games/steam/search',
-		steamAdd: '/modules/games/steam/add',
 	},
 
 	// legacy placeholder kept for TS compatibility

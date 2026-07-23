@@ -35,12 +35,3 @@ export interface GamesSummary {
 	statuses: GameStatusOption[]
 	countsByStatus: Record<string, number>
 }
-
-export interface SteamSearchResult {
-	appId: number
-	name: string
-	coverUrl?: string | null
-	logoUrl?: string | null
-	price?: string | null
-	metascore?: number | null
-}

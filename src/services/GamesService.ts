@@ -4,7 +4,6 @@ import type {
 	GamesModuleList,
 	GameStatusOption,
 	GamesSummary,
-	SteamSearchResult,
 } from '@/models/api/Games'
 import { customFetch } from '@/utils'
 
@@ -31,16 +30,6 @@ class GamesService {
 		return customFetch<GameModuleItem>(games.status(id), { method: 'PATCH', body: { statusId } })
 	}
 
-	searchSteam(q: string): Promise<SteamSearchResult[]> {
-		return customFetch<SteamSearchResult[]>(games.steamSearch, { params: { q } })
-	}
-
-	addSteamGame(result: SteamSearchResult): Promise<unknown> {
-		return customFetch(games.steamAdd, {
-			method: 'POST',
-			body: { appId: result.appId, logoUrl: result.logoUrl, coverUrl: result.coverUrl },
-		})
-	}
 }
 
 export const gamesService = new GamesService()

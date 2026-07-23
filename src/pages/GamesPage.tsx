@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { DetailDrawer, FilterTabs, ModuleHeader, SearchBar } from '@/components/Shared'
-import type { GameModuleItem, GameStatusOption, SteamSearchResult } from '@/models/api/Games'
+import type { GameModuleItem, GameStatusOption } from '@/models/api/Games'
 import { gamesService } from '@/services'
 
 export const GamesPage = () => {
@@ -9,8 +9,6 @@ export const GamesPage = () => {
 	const [selectedStatus, setSelectedStatus] = useState('All')
 	const [search, setSearch] = useState('')
 	const [selectedGame, setSelectedGame] = useState<GameModuleItem | null>(null)
-	const [steamQuery, setSteamQuery] = useState('')
-	const [steamResults, setSteamResults] = useState<SteamSearchResult[]>([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
 
@@ -59,51 +57,16 @@ export const GamesPage = () => {
 		setSelectedGame(updated)
 	}
 
-	const searchSteam = async () => {
-		if (steamQuery.trim().length < 2) return
-		setSteamResults(await gamesService.searchSteam(steamQuery))
-	}
-
-	const addSteamGame = async (result: SteamSearchResult) => {
-		await gamesService.addSteamGame(result)
-		setSteamResults((current) => current.filter((item) => item.appId !== result.appId))
-		const refreshed = await gamesService.list({ page: 1, pageSize: 24 })
-		setGames(refreshed.items)
-	}
-
 	return (
 		<div className='page-stack'>
 			<ModuleHeader
 				title='Games'
-				description='Search Games Database, open details, update status and add games from Steam through Household.Api.'
+				description='Browse your Games Database collection, open details and update game status.'
 			/>
 
 			<section className='apps-toolbar'>
 				<SearchBar value={search} placeholder='Search games' onChange={setSearch} />
 				<FilterTabs options={tabOptions} value={selectedStatus} onChange={setSelectedStatus} />
-			</section>
-
-			<section className='steam-search-panel'>
-				<h2>Steam search</h2>
-				<div className='steam-search-panel__controls'>
-					<SearchBar value={steamQuery} placeholder='Search Steam' onChange={setSteamQuery} />
-					<button type='button' onClick={searchSteam}>
-						Search
-					</button>
-				</div>
-				{steamResults.length > 0 && (
-					<div className='steam-results'>
-						{steamResults.map((result) => (
-							<div key={result.appId} className='steam-result'>
-								<span>{result.name}</span>
-								<small>{result.price ?? 'No price'}</small>
-								<button type='button' onClick={() => addSteamGame(result)}>
-									Add
-								</button>
-							</div>
-						))}
-					</div>
-				)}
 			</section>
 
 			{loading && <p className='muted'>Loading games...</p>}
