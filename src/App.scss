@@ -739,6 +739,83 @@ button.btn--danger {
 	font-size: 0.85rem;
 }
 
+.dashboard-connections-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.dashboard-connection {
+	display: grid;
+	grid-template-columns: 36px minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 10px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	padding: 10px;
+}
+
+.dashboard-connection .connection-card__mark {
+	width: 34px;
+	height: 34px;
+	border-radius: 8px;
+	font-size: 0.9rem;
+}
+
+.dashboard-connection__identity,
+.dashboard-connection__states {
+	display: flex;
+	flex-direction: column;
+}
+
+.dashboard-connection__identity {
+	min-width: 0;
+	gap: 2px;
+}
+
+.dashboard-connection__identity strong,
+.dashboard-connection__identity span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dashboard-connection__identity span {
+	color: var(--color-text-muted);
+	font-size: 0.78rem;
+}
+
+.dashboard-connection__states {
+	align-items: flex-end;
+	gap: 3px;
+}
+
+.availability-state {
+	font-size: 0.72rem;
+	font-weight: 750;
+}
+
+.availability-state--live {
+	color: #15803d;
+}
+
+.availability-state--unavailable {
+	color: var(--color-text-muted);
+}
+
+.dashboard-connections-link {
+	display: inline-flex;
+	margin-top: 12px;
+	color: var(--color-primary);
+	font-size: 0.82rem;
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.dashboard-connections-link:hover {
+	text-decoration: underline;
+}
+
 .integration-status {
 	display: inline-flex;
 	align-items: center;
@@ -1194,6 +1271,18 @@ button.btn--danger {
 
 	.connections-grid {
 		grid-template-columns: 1fr;
+	}
+
+	.dashboard-connection {
+		grid-template-columns: 36px minmax(0, 1fr);
+	}
+
+	.dashboard-connection__states {
+		grid-column: 2;
+		align-items: flex-start;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 8px;
 	}
 
 	.module-header {
