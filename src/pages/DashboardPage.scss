@@ -30,3 +30,18 @@
 .dashboard-game-card select{min-height:44px;background:var(--color-control);color:var(--color-text)}
 .warcraft-dashboard-list>div{grid-template-columns:80px minmax(0,1fr) minmax(120px,.5fr)}.warcraft-dashboard-list label{grid-column:3;grid-row:1/span 2}.warcraft-dashboard-list select{width:100%;min-height:44px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-control);color:var(--color-text)}.warcraft-dashboard-list em{grid-column:2/-1;color:var(--color-error-text);font-size:.66rem}
 @media(max-width:960px){.dashboard-widget-slot,.dashboard-widget-slot.is-medium,.dashboard-widget-slot.is-wide{grid-column:1/-1}}
+
+/* Dashboard composition: let the content create hierarchy instead of a wall of cards. */
+.dashboard-page { gap: var(--shell-space-7); }
+.dashboard-operational-grid { gap: var(--shell-space-6) var(--shell-space-5); }
+.operational-widget,.app-status-strip { border: 0; border-top: 1px solid var(--color-border); border-radius: 0; background: transparent; box-shadow: none; padding: var(--shell-space-5) 0 0; }
+.operational-widget h2,.app-status-strip h2 { font-size: 1.08rem; letter-spacing: -.025em; }
+.app-status-strip>div:last-child { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap: 8px 18px; }
+.app-status-strip>div:last-child>div { min-height: 42px; }
+.dashboard-game-card>div { border-radius: 12px; box-shadow: 0 12px 24px rgba(15,23,42,.12); }
+.dashboard-game-card b { width: 32px; height: 32px; border-radius: 9px; }
+.dashboard-game-card select { min-height: 44px; background: var(--color-control); color: var(--color-text); }
+.dashboard-progress strong { font-size: 1.55rem; letter-spacing: -.05em; }
+.dashboard-progress i { background: var(--color-border-subtle); }
+.widget-state { background: color-mix(in srgb,var(--color-surface) 70%,transparent); }
+@media(max-width:520px) { .operational-widget,.app-status-strip { padding: var(--shell-space-5) 0 0; } }

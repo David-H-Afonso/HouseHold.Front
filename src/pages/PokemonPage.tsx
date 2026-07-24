@@ -112,8 +112,8 @@ export const PokemonPage = () => {
 				{tags.length > 0 && <div className='pokemon-tag-filter'>
 					<div className='pokemon-tag-filter__heading'><span>Tags</span>{categories.length > 0 && <small>{categories.length} groups</small>}{selectedTags.length > 0 && <button type='button' onClick={() => { setSelectedTags([]); setSkip(0) }}>Clear</button>}</div>
 					<div className='pokemon-tag-filter__list'>
-						{tags.map((tag) => <button key={tag.id} type='button' aria-pressed={selectedTags.includes(tag.id)} onClick={() => toggleTag(tag.id)} style={{ '--tag-color': tag.colorHex || '#68d5c4' } as CSSProperties}>
-							{tag.imageUrl && <img src={tag.imageUrl} alt='' width={20} height={20} onError={(event) => { event.currentTarget.hidden = true }} />}<span>{tag.name}</span><strong>{tag.pokemonCount}</strong>
+							{tags.map((tag) => <button key={tag.id} type='button' aria-pressed={selectedTags.includes(tag.id)} onClick={() => toggleTag(tag.id)} style={{ '--tag-color': tag.colorHex || '#68d5c4' } as CSSProperties}>
+							{tag.imageUrl && <FallbackImage src={tag.imageUrl} alt='' width={20} height={20} />}<span>{tag.name}</span><strong>{tag.pokemonCount}</strong>
 						</button>)}
 					</div>
 				</div>}
@@ -133,7 +133,7 @@ export const PokemonPage = () => {
 						<div className='pokemon-card__sprite'><FallbackImage src={item.spriteUrl} fallbackSrc={item.fallbackSpriteUrl} alt={item.nickname || item.speciesName} fallbackLabel={item.speciesName} loading='lazy' /></div>
 						<div className='pokemon-card__identity'><h2>{item.nickname || item.speciesName}</h2>{item.nickname && <p>{item.speciesName}</p>}</div>
 						<div className='pokemon-card__types'>{[item.type1, item.type2].filter((type): type is string => Boolean(type)).map((type) => <span key={type} style={typeStyle(type)}>{type}</span>)}</div>
-						{item.tags.length > 0 && <div className='pokemon-card__tags'>{item.tags.slice(0, 4).map((tag) => <span key={tag.id} style={{ '--tag-color': tag.colorHex || '#68d5c4' } as CSSProperties}>{tag.imageUrl && <img src={tag.imageUrl} alt='' width={16} height={16} onError={(event) => { event.currentTarget.hidden = true }} />}{tag.name}</span>)}{item.tags.length > 4 && <span>+{item.tags.length - 4}</span>}</div>}
+						{item.tags.length > 0 && <div className='pokemon-card__tags'>{item.tags.slice(0, 4).map((tag) => <span key={tag.id} style={{ '--tag-color': tag.colorHex || '#68d5c4' } as CSSProperties}>{tag.imageUrl && <FallbackImage src={tag.imageUrl} alt='' width={16} height={16} />}{tag.name}</span>)}{item.tags.length > 4 && <span>+{item.tags.length - 4}</span>}</div>}
 					</PokemonCardShell>)}
 				</div>
 				<nav className='pokemon-pagination' aria-label='Collection pages'>
