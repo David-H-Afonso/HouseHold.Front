@@ -17,7 +17,6 @@ export const HorizontalScroller = ({ children, label, className = '' }: { childr
 		if (!ref.current) return
 		drag.current = { active: true, x: event.clientX, left: ref.current.scrollLeft, moved: false }
 		ref.current.dataset.dragging = 'true'
-		for (const child of ref.current.children) child.setAttribute('inert', '')
 		ref.current.setPointerCapture(event.pointerId)
 	}
 	const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
@@ -30,7 +29,6 @@ export const HorizontalScroller = ({ children, label, className = '' }: { childr
 		drag.current.active = false
 		if (ref.current) {
 			delete ref.current.dataset.dragging
-			for (const child of ref.current.children) child.removeAttribute('inert')
 		}
 	}
 

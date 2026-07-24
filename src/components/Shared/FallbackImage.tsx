@@ -8,17 +8,18 @@ interface FallbackImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, '
 	fallbackLabel?: string
 }
 
+const isProtectedSource = (src: string | null | undefined) => src?.startsWith('/modules/') || src?.startsWith('/api/v1/')
+
 export const FallbackImage = ({ src, fallbackSrc, fallbackLabel = 'Image unavailable', className = '', alt = '', ...props }: FallbackImageProps) => {
 	const [resolvedSource, setResolvedSource] = useState<string | null>(null)
-	const [currentSource, setCurrentSource] = useState(src ?? fallbackSrc ?? null)
+	const [currentSource, setCurrentSource] = useState(isProtectedSource(src) ? null : src ?? fallbackSrc ?? null)
 	const [usedFallback, setUsedFallback] = useState(!src && Boolean(fallbackSrc))
 	const [failed, setFailed] = useState(!src && !fallbackSrc)
 
 	useEffect(() => {
 		let active = true
 		let objectUrl: string | null = null
-		const isProtectedSource = src?.startsWith('/modules/') || src?.startsWith('/api/v1/')
-		if (isProtectedSource && src) {
+		if (isProtectedSource(src) && src) {
 			setFailed(false)
 			setCurrentSource(null)
 			void customFetch<Blob>(src).then((blob) => {
