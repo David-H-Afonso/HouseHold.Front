@@ -39,6 +39,7 @@ const normalize = (value: Partial<UserPreferences> | null | undefined): UserPref
 		...defaults,
 		...value,
 		schemaVersion: 1,
+		timezone: typeof value?.timezone === 'string' && value.timezone.trim() ? value.timezone : defaults.timezone,
 		widgets,
 		gameStatusIds: Array.isArray(value?.gameStatusIds) ? value.gameStatusIds.filter((id) => Number.isInteger(id) && id > 0) : [],
 		repositoryVisibility: value?.repositoryVisibility && typeof value.repositoryVisibility === 'object' ? value.repositoryVisibility : {},
