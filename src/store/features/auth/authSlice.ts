@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
-import type { LoginRequest, MeResponse } from '@/models/api/Auth'
+import type { LoginRequest, LoginResponse, MeResponse } from '@/models/api/Auth'
 import type { AuthState } from '@/models/store/AuthState'
 import { environment } from '@/environments'
 
 const initialState: AuthState = {
 	isAuthenticated: false,
+	requiresPasswordChange: false,
 	user: null,
 	accessToken: null,
 	refreshToken: null,
@@ -18,7 +19,7 @@ const initialState: AuthState = {
  * Login: uses native fetch to avoid circular dependency with customFetch
  * (customFetch imports the store, which imports this slice)
  */
-export const loginUser = createAsyncThunk(
+export const loginUser = createAsyncThunk<LoginResponse, LoginRequest, { rejectValue: string }>(
 	'auth/login',
 	async (credentials: LoginRequest, { rejectWithValue }) => {
 		try {
@@ -31,11 +32,10 @@ export const loginUser = createAsyncThunk(
 
 			if (!res.ok) {
 				if (res.status === 401) throw new Error('Invalid email or password')
-				const err = await res.json().catch(() => ({}))
-				throw new Error(err.message || `Login failed (HTTP ${res.status})`)
+				throw new Error(res.status === 429 ? 'Too many sign-in attempts. Wait and try again.' : 'Sign in is temporarily unavailable.')
 			}
 
-			return await res.json()
+			return (await res.json()) as LoginResponse
 		} catch (e) {
 			return rejectWithValue(e instanceof Error ? e.message : 'Login failed')
 		}
@@ -73,9 +73,16 @@ const authSlice = createSlice({
 			state.refreshToken = action.payload.refreshToken
 		},
 
+		/** Keep route guards in sync when the API enforces a required password change. */
+		requirePasswordChange: (state) => {
+			state.requiresPasswordChange = true
+			if (state.user) state.user.requiresPasswordChange = true
+		},
+
 		/** Force logout — called by customFetch when refresh fails */
 		forceLogout: (state) => {
 			state.isAuthenticated = false
+			state.requiresPasswordChange = false
 			state.user = null
 			state.accessToken = null
 			state.refreshToken = null
@@ -85,6 +92,7 @@ const authSlice = createSlice({
 		/** Manual logout — stores the refresh token so the service can revoke it */
 		logout: (state) => {
 			state.isAuthenticated = false
+			state.requiresPasswordChange = false
 			state.user = null
 			state.accessToken = null
 			state.refreshToken = null
@@ -97,10 +105,12 @@ const authSlice = createSlice({
 			.addCase(loginUser.pending, (state) => {
 				state.loading = true
 				state.error = null
+				state.requiresPasswordChange = false
 			})
 			.addCase(loginUser.fulfilled, (state, action) => {
 				state.loading = false
 				state.isAuthenticated = true
+				state.requiresPasswordChange = action.payload.requiresPasswordChange
 				state.accessToken = action.payload.accessToken
 				state.refreshToken = action.payload.refreshToken
 				state.user = {
@@ -108,12 +118,14 @@ const authSlice = createSlice({
 					email: action.payload.email,
 					userName: action.payload.userName,
 					isAdmin: action.payload.isAdmin,
+					requiresPasswordChange: action.payload.requiresPasswordChange,
 				}
 				state.error = null
 			})
 			.addCase(loginUser.rejected, (state, action) => {
 				state.loading = false
 				state.isAuthenticated = false
+				state.requiresPasswordChange = false
 				state.accessToken = null
 				state.refreshToken = null
 				state.user = null
@@ -123,9 +135,10 @@ const authSlice = createSlice({
 		// fetchMe
 		builder.addCase(fetchMe.fulfilled, (state, action) => {
 			state.user = action.payload
+			state.requiresPasswordChange = action.payload.requiresPasswordChange
 		})
 	},
 })
 
-export const { clearError, forceLogout, logout, setTokens } = authSlice.actions
+export const { clearError, forceLogout, logout, requirePasswordChange, setTokens } = authSlice.actions
 export default authSlice.reducer

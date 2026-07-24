@@ -7,7 +7,7 @@ import type {
 	IntegrationHealth,
 	UpsertIntegrationRequest,
 } from '@/models/api/Integrations'
-import { customFetch } from '@/utils'
+import { customFetch } from '@/utils/customFetch'
 
 const { integrations } = environment.apiRoutes
 

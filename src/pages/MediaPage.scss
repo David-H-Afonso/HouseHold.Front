@@ -6,10 +6,7 @@
 	--media-muted: #a6acc5;
 	display: grid;
 	gap: 28px;
-max-width: 1200px;
-	margin: 0 auto;
-	border: 1px solid #25283b;
-	border-radius: 18px;
+	min-height: calc(100dvh - var(--shell-space-8) * 2);
 	background: radial-gradient(circle at 88% -10%, rgba(75, 140, 255, 0.14), transparent 32%), radial-gradient(circle at 20% 0, rgba(174, 83, 214, 0.14), transparent 30%), var(--media-bg);
 	color: var(--media-text);
 	padding: clamp(18px, 4vw, 34px);
@@ -70,7 +67,7 @@ max-width: 1200px;
 .media-page .module-state a { color: #9bdaf4; }
 
 @media (max-width: 680px) {
-	.media-page { border-radius: 14px; padding: 18px; }
+	.media-page { padding: 18px 16px; }
 	.media-page__header { flex-direction: column; }
 	.media-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 	.media-section > header { align-items: start; }

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { TodayModuleResponse, TodayTask } from '@/models/api/Modules'
 import { moduleService } from '@/services'
+import { isApiError } from '@/utils/customFetch'
 
 const POLL_INTERVAL_MS = 20_000
 
@@ -30,7 +31,7 @@ const applyOptimisticStatus = (data: TodayModuleResponse, occurrenceId: string, 
 	}
 }
 
-export const useTodayModule = (date: string, poll = true) => {
+export const useTodayModule = (date: string, timeZoneId?: string, poll = true) => {
 	const [data, setData] = useState<TodayModuleResponse | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [providerError, setProviderError] = useState(false)
@@ -51,7 +52,7 @@ export const useTodayModule = (date: string, poll = true) => {
 		const requestId = ++requestIdRef.current
 		if (showLoading) setLoading(true)
 		try {
-			const response = await moduleService.today(date)
+			const response = await moduleService.today(date, timeZoneId)
 			if (mountedRef.current && requestId === requestIdRef.current) {
 				setData(response)
 				setProviderError(false)
@@ -63,7 +64,7 @@ export const useTodayModule = (date: string, poll = true) => {
 		} finally {
 			if (mountedRef.current && requestId === requestIdRef.current) setLoading(false)
 		}
-	}, [date])
+	}, [date, timeZoneId])
 
 	useEffect(() => {
 		void refetch(true)
@@ -99,10 +100,12 @@ export const useTodayModule = (date: string, poll = true) => {
 			if (action === 'complete') await moduleService.completeTodayOccurrence(task.occurrenceId)
 			else await moduleService.undoTodayOccurrence(task.occurrenceId)
 			await refetch(false)
-		} catch {
+		} catch (reason) {
 			if (mountedRef.current) {
-				setData((current) => current ? applyOptimisticStatus(current, task.occurrenceId, previousStatus) : current)
-				setActionError(action === 'complete' ? 'Could not complete this task. Try again.' : 'Could not undo this task. Try again.')
+				const canonical = isApiError(reason) && reason.reconcilable ? await refetch(false) : null
+				const confirmed = canonical?.tasks.find((item) => item.occurrenceId === task.occurrenceId)?.occurrenceStatus === optimisticStatus
+				if (!confirmed && !canonical) setData((current) => current ? applyOptimisticStatus(current, task.occurrenceId, previousStatus) : current)
+				if (!confirmed) setActionError(canonical ? 'DoIt did not confirm this action. Its canonical value was restored.' : action === 'complete' ? 'Could not complete this task. Try again.' : 'Could not undo this task. Try again.')
 			}
 		} finally {
 			pendingOccurrencesRef.current.delete(task.occurrenceId)

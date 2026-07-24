@@ -14,32 +14,39 @@ export const Login = () => {
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 
-	const from = (location.state as any)?.from?.pathname || '/playground'
+	const locationState = location.state as { from?: { pathname?: string }; message?: string } | null
+	const requestedPath = locationState?.from?.pathname
+	const message = locationState?.message
+	const from = requestedPath?.startsWith('/') && !requestedPath.startsWith('//') ? requestedPath : '/dashboard'
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault()
 		const result = await dispatch(loginUser({ email, password }))
 		if (loginUser.fulfilled.match(result)) {
-			navigate(from, { replace: true })
+			navigate(result.payload.requiresPasswordChange ? '/change-password' : from, { replace: true })
 		}
 	}
 
 	return (
 		<div className='login'>
 			<div className='login__card'>
-				<h1 className='login__title'>🏠 Household</h1>
+				<div className='login__brand' aria-hidden='true'>H</div>
+				<h1 className='login__title'>Household</h1>
 				<p className='login__subtitle'>Sign in to continue</p>
+				{message && <p className='notice-banner' role='status'>{message}</p>}
 
 				<form className='login__form' onSubmit={handleSubmit}>
 					<div className='login__field'>
 						<label htmlFor='email'>Email</label>
 						<input
 							id='email'
+							name='email'
 							type='email'
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							placeholder='admin@local'
 							autoComplete='email'
+							spellCheck={false}
 							required
 						/>
 					</div>
@@ -48,6 +55,7 @@ export const Login = () => {
 						<label htmlFor='password'>Password</label>
 						<input
 							id='password'
+							name='password'
 							type='password'
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
@@ -57,7 +65,7 @@ export const Login = () => {
 						/>
 					</div>
 
-					{error && <p className='login__error'>{error}</p>}
+					{error && <p className='login__error' role='alert'>{error}</p>}
 
 					<button className='login__submit' type='submit' disabled={loading}>
 						{loading ? 'Signing in…' : 'Sign in'}

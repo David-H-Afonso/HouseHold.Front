@@ -10,11 +10,26 @@ export const apiRoutes = {
 		logout: '/auth/logout',
 		logoutAll: '/auth/logout-all',
 		me: '/auth/me',
+		changePassword: '/auth/change-password',
 	},
 
 	/** Admin endpoints */
 	admin: {
 		createUser: '/admin/users',
+		users: '/admin/users',
+		user: (id: string) => `/admin/users/${id}`,
+		resetPassword: (id: string) => `/admin/users/${id}/reset-password`,
+		invitations: '/admin/invitations',
+	},
+
+	invitations: {
+		redeem: '/invitations/redeem',
+	},
+
+	settings: {
+		preferences: '/api/v1/preferences',
+		dashboardLayout: '/api/v1/dashboard/layout',
+		resetDashboardLayout: '/api/v1/dashboard/layout/reset',
 	},
 
 	/** Food items */
@@ -82,6 +97,13 @@ export const apiRoutes = {
 		byId: (id: string) => `/modules/apps/${id}`,
 		categories: '/modules/apps/categories',
 		favorite: (id: string) => `/modules/apps/${id}/favorite`,
+		update: (id: string) => `/api/v1/admin/casaos/apps/${encodeURIComponent(id)}/update`,
+		rollback: (id: string) => `/api/v1/admin/casaos/apps/${encodeURIComponent(id)}/rollback`,
+		operations: (id: string) => `/api/v1/admin/casaos/apps/${encodeURIComponent(id)}/actions`,
+	},
+
+	casaos: {
+		config: '/api/v1/admin/casaos/config',
 	},
 
 	/** Games Database gateway */
@@ -109,11 +131,23 @@ export const apiRoutes = {
 	pokemon: {
 		base: '/modules/pokemon',
 		tags: '/modules/pokemon/tags',
+		download: (id: number) => `/modules/pokemon/${id}/download`,
 	},
 
 	/** Warcraft Archive gateway */
 	warcraft: {
 		weekly: '/modules/warcraft/weekly',
+		status: (id: number | string) => `/modules/warcraft/trackings/${id}/status`,
+	},
+
+	jellyfin: {
+		base: '/api/v1/jellyfin/dashboard',
+		config: '/api/v1/jellyfin/config',
+	},
+
+	workflows: {
+		base: '/api/v1/github-actions',
+		config: '/api/v1/github-actions/config',
 	},
 
 	// legacy placeholder kept for TS compatibility

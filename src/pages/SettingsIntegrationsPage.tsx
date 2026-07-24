@@ -6,6 +6,9 @@ import type {
 	HouseholdProviderId,
 } from '@/models/api/Integrations'
 import { integrationService } from '@/services'
+import { BrandMark } from '@/components/Shared'
+import { safeExternalUrl } from '@/utils'
+import { useUserPreferences } from '@/contexts/useUserPreferences'
 
 type ConnectionAction = 'connect' | 'test' | 'disconnect'
 type Banner = { tone: 'success' | 'warning' | 'error'; message: string }
@@ -16,14 +19,6 @@ const providerNames: Record<HouseholdProviderId, string> = {
 	jellywatch: 'Jellywatch',
 	'beast-vault': 'Beast Vault',
 	'warcraft-archive': 'Warcraft Archive',
-}
-
-const providerMarks: Record<HouseholdProviderId, string> = {
-	doit: 'D',
-	'games-database': 'G',
-	jellywatch: 'J',
-	'beast-vault': 'B',
-	'warcraft-archive': 'W',
 }
 
 const scopeNames: Record<string, string> = {
@@ -60,10 +55,10 @@ const safeErrors: Record<string, string> = {
 	identity_validation_failed: 'The connected account could not be verified.',
 }
 
-const formatDate = (value?: string | null) => {
+const formatDate = (value: string | null | undefined, timeZone: string) => {
 	if (!value) return null
 	const date = new Date(value)
-	return Number.isNaN(date.getTime()) ? null : date.toLocaleString()
+	return Number.isNaN(date.getTime()) ? null : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short', timeZone }).format(date)
 }
 
 const readCallbackBanner = (): Banner | null => {
@@ -79,6 +74,7 @@ const readCallbackBanner = (): Banner | null => {
 }
 
 export const SettingsIntegrationsPage = () => {
+	const { preferences } = useUserPreferences()
 	const [connections, setConnections] = useState<HouseholdConnection[]>([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
@@ -127,7 +123,13 @@ export const SettingsIntegrationsPage = () => {
 		try {
 			const response = await integrationService.authorizeConnection(connection.provider)
 			const authorizationUrl = new URL(response.authorizationUrl)
-			if (authorizationUrl.protocol !== 'http:' && authorizationUrl.protocol !== 'https:') throw new Error('Unsafe URL')
+			const configuredOpenUrl = safeExternalUrl(connection.openUrl)
+			if (!configuredOpenUrl) throw new Error('Provider URL is unavailable')
+			const configuredOrigin = new URL(configuredOpenUrl).origin
+			if ((authorizationUrl.protocol !== 'http:' && authorizationUrl.protocol !== 'https:')
+				|| authorizationUrl.origin !== configuredOrigin
+				|| authorizationUrl.username
+				|| authorizationUrl.password) throw new Error('Unsafe URL')
 			window.location.assign(authorizationUrl.toString())
 		} catch {
 			setError(`${connection.displayName} could not start the connection flow. Try again.`)
@@ -196,22 +198,20 @@ export const SettingsIntegrationsPage = () => {
 
 			{loading ? (
 				<section className='settings-panel' aria-busy='true'>
-					<p className='muted'>Loading connected applications...</p>
+					<p className='muted'>Loading connected applications…</p>
 				</section>
 			) : (
 				<section className='connections-grid' aria-label='Available applications'>
 					{connections.map((connection) => {
 						const action = actions[connection.provider]
 						const isConnected = connection.status !== 'Disconnected'
-						const lastValidated = formatDate(connection.lastValidatedAt)
-						const connectedAt = formatDate(connection.connectedAt)
+						const lastValidated = formatDate(connection.lastValidatedAt, preferences.timezone)
+						const connectedAt = formatDate(connection.connectedAt, preferences.timezone)
 
 						return (
 							<article className={`connection-card connection-card--${connection.status.toLowerCase()}`} key={connection.provider}>
 								<header className='connection-card__header'>
-									<span className={`connection-card__mark connection-card__mark--${connection.provider}`} aria-hidden='true'>
-										{providerMarks[connection.provider]}
-									</span>
+									<BrandMark provider={connection.provider} />
 									<div>
 										<h2>{connection.displayName}</h2>
 										<span className={`connection-state connection-state--${connection.status.toLowerCase()}`}>
@@ -247,12 +247,12 @@ export const SettingsIntegrationsPage = () => {
 								</div>
 
 								<footer className='connection-card__actions'>
-									{connection.openUrl && (
-										<a href={connection.openUrl} target='_blank' rel='noopener noreferrer'>Open app</a>
+								{safeExternalUrl(connection.openUrl) && (
+										<a href={safeExternalUrl(connection.openUrl)!} target='_blank' rel='noopener noreferrer'>Open app</a>
 									)}
 									{isConnected && (
 										<button type='button' onClick={() => test(connection)} disabled={Boolean(action)}>
-											{action === 'test' ? 'Checking...' : 'Test'}
+										{action === 'test' ? 'Checking…' : 'Test'}
 										</button>
 									)}
 									<button
@@ -261,7 +261,7 @@ export const SettingsIntegrationsPage = () => {
 										onClick={() => connect(connection)}
 										disabled={!connection.configured || Boolean(action)}
 									>
-										{action === 'connect' ? 'Opening...' : isConnected ? 'Reconnect' : 'Connect'}
+									{action === 'connect' ? 'Opening…' : isConnected ? 'Reconnect' : 'Connect'}
 									</button>
 									{isConnected && (
 										<button type='button' className='connection-card__danger' onClick={() => disconnect(connection)} disabled={Boolean(action)}>

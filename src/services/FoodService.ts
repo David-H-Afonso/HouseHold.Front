@@ -1,5 +1,5 @@
 import { environment } from '@/environments'
-import { customFetch } from '@/utils'
+import { customFetch } from '@/utils/customFetch'
 import type {
 	FoodItem,
 	CreateFoodItemRequest,

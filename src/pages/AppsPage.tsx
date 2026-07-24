@@ -2,9 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { AppCategoryTabs, AppLauncherCard } from '@/components/Apps'
 import { ModuleHeader, SearchBar } from '@/components/Shared'
 import type { AppLauncherCategory, AppLauncherItem } from '@/models/api/Apps'
-import { appCatalogService } from '@/services'
+import { appCatalogService } from '@/services/AppCatalogService'
+import { useAppSelector } from '@/store/hooks'
+import { selectIsAdmin } from '@/store/features/auth/selector'
 
 export const AppsPage = () => {
+	const isAdmin = useAppSelector(selectIsAdmin)
 	const [apps, setApps] = useState<AppLauncherItem[]>([])
 	const [categories, setCategories] = useState<AppLauncherCategory[]>([])
 	const [activeCategory, setActiveCategory] = useState('All')
@@ -14,14 +17,16 @@ export const AppsPage = () => {
 
 	useEffect(() => {
 		let mounted = true
-		Promise.all([appCatalogService.list(), appCatalogService.categories()])
-			.then(([appItems, categoryItems]) => {
+		appCatalogService.list()
+			.then((appItems) => {
 				if (!mounted) return
 				setApps(appItems)
-				setCategories(categoryItems)
+				setCategories([...appItems.reduce((result, app) => result.set(app.category, (result.get(app.category) ?? 0) + 1), new Map<string, number>())]
+					.map(([name, count]) => ({ name, count }))
+					.sort((left, right) => left.name.localeCompare(right.name)))
 			})
-			.catch((err: Error) => {
-				if (mounted) setError(err.message)
+			.catch(() => {
+				if (mounted) setError('Applications could not be loaded. Try again.')
 			})
 			.finally(() => {
 				if (mounted) setLoading(false)
@@ -59,9 +64,9 @@ export const AppsPage = () => {
 		try {
 			const updated = await appCatalogService.setFavorite(app.id, nextFavorite)
 			setApps((current) => current.map((item) => (item.id === updated.id ? updated : item)))
-		} catch (err) {
+		} catch {
 			setApps(previous)
-			setError(err instanceof Error ? err.message : 'Favorite update failed.')
+			setError('Favorite update failed. Try again.')
 		}
 	}
 
@@ -69,7 +74,7 @@ export const AppsPage = () => {
 		<div className='page-stack'>
 			<ModuleHeader
 				title='Apps'
-				description='Open Household services from one configurable launcher. Docker status and admin actions stay disabled until later phases.'
+				description='Open every available service safely and compare service health, deployed image, and last check at a glance.'
 			/>
 
 			<section className='apps-toolbar'>
@@ -94,7 +99,7 @@ export const AppsPage = () => {
 
 			<div className='apps-grid'>
 				{visibleApps.map((app) => (
-					<AppLauncherCard key={app.id} app={app} onToggleFavorite={toggleFavorite} />
+					<AppLauncherCard key={app.id} app={app} isAdmin={isAdmin} onToggleFavorite={toggleFavorite} />
 				))}
 			</div>
 		</div>

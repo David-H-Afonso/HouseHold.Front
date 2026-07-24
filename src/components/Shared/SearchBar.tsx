@@ -8,7 +8,7 @@ export const SearchBar = ({ value, placeholder = 'Search', onChange }: SearchBar
 	return (
 		<label className='search-bar'>
 			<span className='sr-only'>Search</span>
-			<input value={value} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} />
+			<input name='search' value={value} placeholder={placeholder.endsWith('…') ? placeholder : `${placeholder}…`} onChange={(event) => onChange(event.target.value)} autoComplete='off' />
 		</label>
 	)
 }

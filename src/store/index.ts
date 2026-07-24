@@ -2,12 +2,24 @@ import { configureStore } from '@reduxjs/toolkit'
 import { persistStore, persistReducer } from 'redux-persist'
 import { combineReducers } from '@reduxjs/toolkit'
 import storage from 'redux-persist/lib/storage'
+import type { PersistedState } from 'redux-persist'
 import { authReducer } from './features/auth'
+import type { AuthState } from '@/models/store/AuthState'
+
+const migrateAuthState = (state: PersistedState) => {
+	const persisted = state as (PersistedState & { auth?: Partial<AuthState> }) | undefined
+	if (persisted?.auth && typeof persisted.auth.requiresPasswordChange !== 'boolean') {
+		persisted.auth.requiresPasswordChange = persisted.auth.user?.requiresPasswordChange === true
+	}
+	return Promise.resolve(persisted)
+}
 
 const persistConfig = {
 	key: 'root',
 	storage,
 	whitelist: ['auth'],
+	version: 2,
+	migrate: migrateAuthState,
 }
 
 const rootReducer = combineReducers({

@@ -5,7 +5,7 @@ import type {
 	GameStatusOption,
 	GamesSummary,
 } from '@/models/api/Games'
-import { customFetch } from '@/utils'
+import { customFetch } from '@/utils/customFetch'
 
 const { games } = environment.apiRoutes
 

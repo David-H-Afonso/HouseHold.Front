@@ -7,13 +7,13 @@ import type {
 	TodayModuleResponse,
 	WarcraftWeeklyResponse,
 } from '@/models/api/Modules'
-import { customFetch } from '@/utils'
+import { customFetch } from '@/utils/customFetch'
 
 const { today, media, pokemon, warcraft } = environment.apiRoutes
 
 class ModuleService {
-	today(date: string): Promise<TodayModuleResponse> {
-		return customFetch<TodayModuleResponse>(today.base, { params: { date } })
+	today(date: string, timeZoneId?: string): Promise<TodayModuleResponse> {
+		return customFetch<TodayModuleResponse>(today.base, { params: { date, timeZoneId } })
 	}
 
 	completeTodayOccurrence(occurrenceId: string): Promise<TodayOccurrenceActionResponse> {
@@ -32,19 +32,28 @@ class ModuleService {
 		return customFetch<WarcraftWeeklyResponse>(warcraft.weekly)
 	}
 
-	pokemon(params: { search: string; tagIds: number[]; skip: number; take: number }): Promise<PokemonModuleResponse> {
+	updateWarcraftStatus(id: number | string, status: string) {
+		return customFetch<WarcraftWeeklyResponse['items'][number]>(warcraft.status(id), { method: 'PATCH', body: { status } })
+	}
+
+	pokemon(params: { search: string; tagIds: number[]; skip: number; take: number; spriteSource?: string }): Promise<PokemonModuleResponse> {
 		return customFetch<PokemonModuleResponse>(pokemon.base, {
 			params: {
 				search: params.search,
 				tagIds: params.tagIds.join(','),
 				skip: params.skip,
 				take: params.take,
+				spriteSource: params.spriteSource,
 			},
 		})
 	}
 
 	pokemonTags(): Promise<PokemonTagOption[]> {
 		return customFetch<PokemonTagOption[]>(pokemon.tags)
+	}
+
+	downloadPokemon(id: number): Promise<Blob> {
+		return customFetch<Blob>(pokemon.download(id))
 	}
 }
 

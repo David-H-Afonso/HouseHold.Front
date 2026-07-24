@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { ModuleState } from '@/components/Shared'
 import type { WarcraftWeeklyItem, WarcraftWeeklyResponse } from '@/models/api/Modules'
 import { moduleService } from '@/services'
+import { useUserPreferences } from '@/contexts/useUserPreferences'
 import './WarcraftPage.scss'
 
 const statusMeta: Record<string, { label: string; description: string; color: string }> = {
@@ -13,17 +14,36 @@ const statusMeta: Record<string, { label: string; description: string; color: st
 	finished: { label: 'Finished', description: 'Completed this week', color: '#57c55a' },
 }
 
-const normalizeStatus = (value: string) => value.replace(/[\s_-]/g, '').toLowerCase()
+const normalizeStatus = (value: string) => {
+	const normalized = value.replace(/[\s_-]/g, '').toLowerCase()
+	return normalized === 'completedlastday' ? 'lastday' : normalized === 'completedlastweek' ? 'lastweek' : normalized
+}
 const statusDetails = (status: string) => statusMeta[normalizeStatus(status)] ?? { label: status, description: 'Current tracking state', color: '#8890b5' }
 
-const formatDate = (value: string | null) => {
+const formatDate = (value: string | null, timeZone: string) => {
 	if (!value) return 'Never'
 	const date = new Date(value)
 	if (Number.isNaN(date.getTime())) return 'Unknown'
-	return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+	return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric', timeZone }).format(date)
 }
 
-const WarcraftRow = ({ item }: { item: WarcraftWeeklyItem }) => {
+const nextStatuses = (item: WarcraftWeeklyItem) => {
+	const current = normalizeStatus(item.status)
+	const transitions: Record<string, string[]> = {
+		notstarted: ['Pending'],
+		pending: ['NotStarted', 'InProgress'],
+		inprogress: ['Pending', 'Finished'],
+		finished: ['NotStarted', 'InProgress'],
+		lastday: ['NotStarted', 'Finished'],
+		lastweek: ['NotStarted', 'Finished'],
+	}
+	const result = [...(transitions[current] ?? [])]
+	if (current === 'finished' && item.period?.toLowerCase() === 'daily') result.push('LastDay')
+	if (current === 'finished' && item.period?.toLowerCase() === 'weekly') result.push('LastWeek')
+	return result
+}
+
+const WarcraftRow = ({ item, pending, error, timeZone, onChange }: { item: WarcraftWeeklyItem; pending: boolean; error?: string; timeZone: string; onChange: (item: WarcraftWeeklyItem, status: string) => void }) => {
 	const meta = statusDetails(item.status)
 	return (
 		<article className='warcraft-row' style={{ '--status-color': meta.color } as CSSProperties}>
@@ -31,16 +51,22 @@ const WarcraftRow = ({ item }: { item: WarcraftWeeklyItem }) => {
 			<div><span>Character</span><strong>{item.characterName}</strong><small>{item.characterClass}</small></div>
 			<div><span>Expansion</span><strong>{item.expansion}</strong></div>
 			<div><span>Difficulty</span><strong>{item.difficulty}</strong></div>
-			<div><span>Last completion</span><strong>{formatDate(item.lastCompletedAt)}</strong></div>
+			<div><span>Period</span><strong>{item.period ?? 'Weekly'}</strong></div>
+			<div><span>Last completion</span><strong>{formatDate(item.lastCompletedAt, timeZone)}</strong></div>
+			<label className='warcraft-row__action'><span>Next status</span><select value='' disabled={pending || nextStatuses(item).length === 0} onChange={(event) => { if (event.target.value) onChange(item, event.target.value) }}><option value=''>{pending ? 'Saving…' : 'Choose next…'}</option>{nextStatuses(item).map((status) => <option key={status} value={status}>{statusDetails(status).label}</option>)}</select></label>
+			{error && <p className='warcraft-row__error' role='alert'>{error}</p>}
 		</article>
 	)
 }
 
 export const WarcraftPage = () => {
+	const { preferences } = useUserPreferences()
 	const [data, setData] = useState<WarcraftWeeklyResponse | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [failed, setFailed] = useState(false)
 	const [filter, setFilter] = useState('unfinished')
+	const [pending, setPending] = useState<Set<number | string>>(() => new Set())
+	const [errors, setErrors] = useState<Record<string, string>>({})
 
 	useEffect(() => {
 		let active = true
@@ -66,11 +92,20 @@ export const WarcraftPage = () => {
 		['all', 'All', data.summary.total],
 	] as const : []
 
+	const updateStatus = async (item: WarcraftWeeklyItem, status: string) => {
+		if (!data || pending.has(item.id)) return
+		const previous = data
+		setPending((current) => new Set(current).add(item.id)); setErrors((current) => ({ ...current, [String(item.id)]: '' })); setData({ ...data, items: data.items.map((entry) => entry.id === item.id ? { ...entry, status } : entry) })
+		try { const updated = await moduleService.updateWarcraftStatus(item.id, status); setData((current) => current ? { ...current, items: current.items.map((entry) => entry.id === updated.id ? updated : entry) } : current) }
+		catch { try { setData(await moduleService.warcraft()) } catch { setData(previous) }; setErrors((current) => ({ ...current, [String(item.id)]: 'This status could not be confirmed. The canonical row was restored.' })) }
+		finally { setPending((current) => { const next = new Set(current); next.delete(item.id); return next }) }
+	}
+
 	return (
 		<div className='warcraft-page'>
 			<header className='warcraft-page__header'>
 				<div><span>Warcraft Archive</span><h1>Weekly progress</h1><p>Track what is complete, what is due again, and what still needs attention.</p></div>
-				{data && <time dateTime={data.generatedAtUtc}>Updated {new Date(data.generatedAtUtc).toLocaleString()}</time>}
+				{data && <time dateTime={data.generatedAtUtc}>Updated {new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short', timeZone: preferences.timezone }).format(new Date(data.generatedAtUtc))}</time>}
 			</header>
 			{loading && <ModuleState kind='loading' title='Loading the archive'>Reading your latest Warcraft week.</ModuleState>}
 			{failed && <ModuleState kind='error' title='Warcraft Archive is not available'>Connect or review the Warcraft Archive provider to see weekly progress.</ModuleState>}
@@ -88,7 +123,7 @@ export const WarcraftPage = () => {
 
 				<section className='warcraft-worklist'>
 					<header><div><span>Worklist</span><h2>Tracked content</h2></div><div className='warcraft-filters' aria-label='Filter Warcraft rows'>{filterOptions.map(([value, label, count]) => <button key={value} type='button' aria-pressed={filter === value} onClick={() => setFilter(value)}>{label}<span>{count}</span></button>)}</div></header>
-					{visibleItems.length === 0 ? <p className='warcraft-worklist__empty'>No rows match this status.</p> : <div className='warcraft-rows'>{visibleItems.map((item) => <WarcraftRow key={item.id} item={item} />)}</div>}
+					{visibleItems.length === 0 ? <p className='warcraft-worklist__empty'>No rows match this status.</p> : <div className='warcraft-rows'>{visibleItems.map((item) => <WarcraftRow key={item.id} item={item} pending={pending.has(item.id)} error={errors[String(item.id)]} timeZone={preferences.timezone} onChange={updateStatus} />)}</div>}
 				</section>
 			</>}
 		</div>

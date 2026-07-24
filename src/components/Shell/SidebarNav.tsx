@@ -1,49 +1,57 @@
-import { NavLink } from 'react-router-dom'
-import { useAppSelector } from '@/store/hooks'
-import { selectCurrentUser, selectIsAdmin } from '@/store/features/auth/selector'
+import { forwardRef } from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { selectCurrentUser, selectIsAdmin, selectRefreshToken } from '@/store/features/auth/selector'
+import { logout } from '@/store/features/auth/authSlice'
+import { authService } from '@/services'
+import { BrandMark, Icon } from '@/components/Shared'
 
 const primaryLinks = [
-	{ to: '/', label: 'Dashboard' },
-	{ to: '/today', label: 'Today' },
-	{ to: '/apps', label: 'Apps' },
-	{ to: '/games', label: 'Games' },
-	{ to: '/media', label: 'Media' },
-	{ to: '/pokemon', label: 'Pokemon' },
-	{ to: '/warcraft', label: 'Warcraft' },
+	{ to: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
+	{ to: '/today', label: 'Today', icon: 'today' },
+	{ to: '/apps', label: 'Apps', icon: 'apps' },
+	{ to: '/games', label: 'Games', icon: 'games' },
+	{ to: '/media', label: 'Jellywatch', icon: 'media' },
+	{ to: '/jellyfin', label: 'Jellyfin', icon: 'jellyfin' },
+	{ to: '/pokemon', label: 'Pokémon', icon: 'pokemon' },
+	{ to: '/warcraft', label: 'Warcraft', icon: 'warcraft' },
+	{ to: '/workflows', label: 'Workflows', icon: 'workflows' },
 ]
 
-const settingsLinks = [
-	{ to: '/settings/integrations', label: 'Integrations' },
-	{ to: '/playground', label: 'API playground' },
-]
+const plannedItems = ['Downloads', 'Network']
 
-const plannedItems = ['Downloads', 'Network', 'Dashboard settings']
-
-export const SidebarNav = () => {
+export const SidebarNav = forwardRef<HTMLElement, { open: boolean; onClose: () => void }>(({ open, onClose }, ref) => {
 	const user = useAppSelector(selectCurrentUser)
 	const isAdmin = useAppSelector(selectIsAdmin)
+	const refreshToken = useAppSelector(selectRefreshToken)
+	const dispatch = useAppDispatch()
+	const navigate = useNavigate()
+
+	const signOut = async () => {
+		if (refreshToken) await authService.logout(refreshToken)
+		dispatch(logout())
+		navigate('/login', { replace: true })
+	}
 
 	return (
-		<aside className='sidebar-nav'>
+		<aside ref={ref} id='primary-navigation' className={`sidebar-nav${open ? ' is-open' : ''}`} aria-label='Application navigation' aria-modal={open ? 'true' : undefined} role={open ? 'dialog' : undefined} tabIndex={open ? -1 : undefined}>
 			<div className='sidebar-nav__brand'>
-				<span className='sidebar-nav__title'>Household</span>
-				<span className='sidebar-nav__subtitle'>Home dashboard</span>
+				<BrandMark provider='household' />
+				<div><span className='sidebar-nav__title'>Household</span><span className='sidebar-nav__subtitle'>Home operations</span></div>
+				<button type='button' className='sidebar-nav__close' onClick={onClose} aria-label='Close navigation'><Icon name='close' /></button>
 			</div>
 
 			<nav className='sidebar-nav__section' aria-label='Main navigation'>
 				{primaryLinks.map((link) => (
-					<NavLink key={link.to} to={link.to} end={link.to === '/'} className='sidebar-nav__link'>
-						{link.label}
+					<NavLink key={link.to} to={link.to} className='sidebar-nav__link'>
+						<Icon name={link.icon} /><span>{link.label}</span>
 					</NavLink>
 				))}
 			</nav>
 
 			<nav className='sidebar-nav__section sidebar-nav__section--settings' aria-label='Settings navigation'>
-				{settingsLinks.map((link) => (
-					<NavLink key={link.to} to={link.to} className='sidebar-nav__link'>
-						{link.label}
-					</NavLink>
-				))}
+				<NavLink to='/settings/integrations' className='sidebar-nav__link'><Icon name='settings' /><span>Settings</span></NavLink>
+				{import.meta.env.DEV && isAdmin && <NavLink to='/playground' className='sidebar-nav__link'><Icon name='workflows' /><span>API playground</span></NavLink>}
 			</nav>
 
 			<section className='sidebar-nav__planned' aria-labelledby='planned-navigation-title'>
@@ -56,9 +64,11 @@ export const SidebarNav = () => {
 			</section>
 
 			<div className='sidebar-nav__user'>
-				<span>{user?.userName ?? user?.email ?? 'User'}</span>
-				{isAdmin && <span className='sidebar-nav__role'>Admin</span>}
+				<div><span>{user?.userName ?? user?.email ?? 'User'}</span>{isAdmin && <span className='sidebar-nav__role'>Admin</span>}</div>
+				<button type='button' onClick={signOut} aria-label='Sign out'><Icon name='logout' /></button>
 			</div>
 		</aside>
 	)
-}
+})
+
+SidebarNav.displayName = 'SidebarNav'

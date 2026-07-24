@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { ModuleState, TodayTaskActionRow } from '@/components/Shared'
 import { useTodayModule } from '@/hooks'
+import { useUserPreferences } from '@/contexts/useUserPreferences'
 import type { TodayTask } from '@/models/api/Modules'
 import './TodayPage.scss'
 
@@ -40,8 +41,10 @@ const sectionLabels: Record<string, string> = {
 const sectionOrder = ['available', 'overdue', 'pending', 'unavailable', 'upcoming', 'done', 'completed', 'missed', 'notapplicable']
 
 export const TodayPage = () => {
-	const [date, setDate] = useState(() => toLocalDateValue(new Date()))
-	const { data, loading, providerError, actionError, pendingOccurrences, runAction } = useTodayModule(date)
+	const { preferences } = useUserPreferences()
+	const todayInTimezone = () => new Intl.DateTimeFormat('en-CA', { timeZone: preferences.timezone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date())
+	const [date, setDate] = useState(todayInTimezone)
+	const { data, loading, providerError, actionError, pendingOccurrences, runAction } = useTodayModule(date, preferences.timezone)
 
 	const sections = useMemo(() => {
 		const grouped = new Map<string, TodayTask[]>()
@@ -64,9 +67,9 @@ export const TodayPage = () => {
 		<div className='today-page'>
 			<header className='today-page__header'>
 				<div>
-					<span className='today-page__eyebrow'>DoIt - read only</span>
+					<span className='today-page__eyebrow'>DoIt</span>
 					<h1>Today</h1>
-					<p>{new Date(`${date}T12:00:00`).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+					<p>{new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'long', day: 'numeric', timeZone: preferences.timezone }).format(new Date(`${date}T12:00:00Z`))}</p>
 				</div>
 				<div className='today-page__date-controls' aria-label='Choose task date'>
 					<button type='button' onClick={() => setDate((current) => shiftDate(current, -1))} aria-label='Previous day'>
@@ -74,12 +77,12 @@ export const TodayPage = () => {
 					</button>
 					<label>
 						<span className='sr-only'>Task date</span>
-						<input type='date' value={date} onChange={(event) => setDate(event.target.value)} />
+						<input name='taskDate' type='date' value={date} onChange={(event) => setDate(event.target.value)} />
 					</label>
 					<button type='button' onClick={() => setDate((current) => shiftDate(current, 1))} aria-label='Next day'>
 						<svg viewBox='0 0 24 24' aria-hidden='true'><path d='m9 18 6-6-6-6' /></svg>
 					</button>
-					<button className='today-page__today-button' type='button' onClick={() => setDate(toLocalDateValue(new Date()))}>Today</button>
+					<button className='today-page__today-button' type='button' onClick={() => setDate(todayInTimezone())}>Today</button>
 				</div>
 			</header>
 

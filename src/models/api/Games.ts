@@ -13,6 +13,9 @@ export interface GameModuleItem {
 	steamAppId?: number | null
 	steamPlaytimeForever?: number | null
 	openUrl?: string | null
+	favorite?: boolean
+	addedAt?: string | null
+	updatedAt?: string | null
 }
 
 export interface GamesModuleList {

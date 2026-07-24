@@ -10,7 +10,7 @@ import { router } from '@/navigation/router'
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
 		<Provider store={store}>
-			<PersistGate loading={<div>Loading...</div>} persistor={persistor}>
+			<PersistGate loading={<div className='preference-loading' role='status'>Loading…</div>} persistor={persistor}>
 				<RouterProvider router={router} />
 			</PersistGate>
 		</Provider>

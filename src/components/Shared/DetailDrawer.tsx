@@ -1,4 +1,6 @@
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useId, type ReactNode } from 'react'
+import { useModalFocus } from '@/hooks/useModalFocus'
+import { Icon } from './Icons'
 
 interface DetailDrawerProps {
 	open: boolean
@@ -8,27 +10,8 @@ interface DetailDrawerProps {
 }
 
 export const DetailDrawer = ({ open, title, children, onClose }: DetailDrawerProps) => {
-	const closeButtonRef = useRef<HTMLButtonElement>(null)
-	const previousFocusRef = useRef<HTMLElement | null>(null)
-	const onCloseRef = useRef(onClose)
-
-	useEffect(() => {
-		onCloseRef.current = onClose
-	}, [onClose])
-
-	useEffect(() => {
-		if (!open) return
-		previousFocusRef.current = document.activeElement as HTMLElement | null
-		closeButtonRef.current?.focus()
-		const onKeyDown = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') onCloseRef.current()
-		}
-		document.addEventListener('keydown', onKeyDown)
-		return () => {
-			document.removeEventListener('keydown', onKeyDown)
-			previousFocusRef.current?.focus()
-		}
-	}, [open])
+	const drawerRef = useModalFocus(open, onClose)
+	const titleId = useId()
 
 	if (!open) return null
 
@@ -36,11 +19,11 @@ export const DetailDrawer = ({ open, title, children, onClose }: DetailDrawerPro
 		<div className='drawer-backdrop' role='presentation' onMouseDown={(event) => {
 			if (event.target === event.currentTarget) onClose()
 		}}>
-			<aside className='detail-drawer' role='dialog' aria-modal='true' aria-label={title}>
+			<aside ref={drawerRef} className='detail-drawer' role='dialog' aria-modal='true' aria-labelledby={titleId} tabIndex={-1}>
 				<header>
-					<h2>{title}</h2>
-					<button ref={closeButtonRef} type='button' onClick={onClose} aria-label='Close details'>
-						Close
+					<h2 id={titleId}>{title}</h2>
+					<button type='button' onClick={onClose} aria-label='Close details'>
+						<Icon name='close' />
 					</button>
 				</header>
 				<div>{children}</div>

@@ -18,6 +18,13 @@ export interface TodayTask {
 	availableFromTime: string | null
 	availableUntilTime: string | null
 	recommendedTime: string | null
+	assignmentMode: string
+	assigneeIds: string[]
+	assigneeNames: string[]
+	timeZoneId: string
+	recurrenceType: string
+	completedAt?: string | null
+	completedByUserId?: string | null
 }
 
 export interface TodayModuleResponse {
@@ -100,6 +107,7 @@ export interface WarcraftWeeklyItem {
 	status: string
 	lastCompletedAt: string | null
 	updatedAt: string
+	period?: string | null
 }
 
 export interface WarcraftWeeklyResponse {

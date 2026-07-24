@@ -1,12 +1,16 @@
 import { environment } from '@/environments'
-import { customFetch } from '@/utils'
+import { customFetch } from '@/utils/customFetch'
 import type {
+	ChangePasswordRequest,
+	ChangePasswordResponse,
 	CreateUserRequest,
+	CreateUserResponse,
 	LoginRequest,
 	LoginResponse,
 	MeResponse,
 	UserDto,
 } from '@/models/api/Auth'
+import type { RedeemInvitationRequest } from '@/models/api/Operations'
 
 const { auth, admin } = environment.apiRoutes
 
@@ -26,8 +30,7 @@ class AuthService {
 		})
 		if (!res.ok) {
 			if (res.status === 401) throw new Error('Invalid email or password')
-			const err = await res.json().catch(() => ({}))
-			throw new Error(err.message || `Login failed (HTTP ${res.status})`)
+			throw new Error(res.status === 429 ? 'Too many sign-in attempts. Wait and try again.' : 'Sign in is temporarily unavailable.')
 		}
 		return res.json()
 	}
@@ -54,9 +57,25 @@ class AuthService {
 		return customFetch<MeResponse>(auth.me)
 	}
 
+	async changePassword(request: ChangePasswordRequest): Promise<ChangePasswordResponse> {
+		return customFetch<ChangePasswordResponse>(auth.changePassword, { method: 'POST', body: request })
+	}
+
 	/** Admin: create a new user */
-	async adminCreateUser(request: CreateUserRequest): Promise<UserDto> {
-		return customFetch<UserDto>(admin.createUser, { method: 'POST', body: request })
+	async adminCreateUser(request: CreateUserRequest): Promise<CreateUserResponse> {
+		return customFetch<CreateUserResponse>(admin.createUser, { method: 'POST', body: request })
+	}
+
+	async redeemInvitation(request: RedeemInvitationRequest): Promise<UserDto> {
+		const response = await fetch(`${environment.baseUrl}${environment.apiRoutes.invitations.redeem}`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(request),
+		})
+		if (!response.ok) {
+			throw new Error(response.status === 429 ? 'Too many attempts. Wait and try again.' : 'This invitation is invalid or has expired.')
+		}
+		return response.json()
 	}
 }
 

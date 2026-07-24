@@ -1,10 +1,42 @@
 import { environment } from '@/environments'
 import { store } from '@/store'
-import { forceLogout, setTokens } from '@/store/features/auth/authSlice'
+import { forceLogout, requirePasswordChange, setTokens } from '@/store/features/auth/authSlice'
 import { persistor } from '@/store'
 import { router } from '@/navigation/router'
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+
+type SafeErrorPayload = {
+	code?: unknown
+	reconcilable?: unknown
+}
+
+const safeMessageForStatus = (status: number) => {
+	const safeMessages: Record<number, string> = {
+		400: 'The request could not be completed. Check the information and try again.',
+		403: 'You do not have permission to perform this action.',
+		404: 'The requested resource was not found.',
+		409: 'The request conflicts with the current state. Refresh and try again.',
+		429: 'Too many requests. Wait a moment and try again.',
+	}
+	return safeMessages[status] ?? (status >= 500 ? 'The service is temporarily unavailable.' : 'The request could not be completed.')
+}
+
+export class ApiError extends Error {
+	readonly status: number
+	readonly code?: string
+	readonly reconcilable: boolean
+
+	constructor({ status, code, reconcilable = false, message }: { status: number; code?: string; reconcilable?: boolean; message?: string }) {
+		super(message ?? safeMessageForStatus(status))
+		this.name = 'ApiError'
+		this.status = status
+		this.code = code
+		this.reconcilable = reconcilable
+	}
+}
+
+export const isApiError = (value: unknown): value is ApiError => value instanceof ApiError
 
 // ── Logout handler ──────────────────────────────────────────────────────
 
@@ -26,9 +58,8 @@ export const handleUnauthorizedAccess = () => {
 	pendingRequests.clear()
 
 	if (!window.location.pathname.includes('/login')) {
-		console.warn('[Auth] Session expired — redirecting to login')
 		store.dispatch(forceLogout())
-		persistor.purge().catch(console.error)
+		void persistor.purge().catch(() => { /* In-memory credentials are already cleared. */ })
 		sessionStorage.clear()
 		try {
 			localStorage.removeItem('persist:root')
@@ -89,8 +120,12 @@ const buildQueryString = (params?: QueryParams): string => {
 }
 
 const parseResponse = async (res: Response): Promise<any> => {
+	if (res.status === 204 || res.headers.get('content-length') === '0') return undefined
 	const ct = res.headers.get('content-type') ?? ''
-	if (ct.includes('application/json')) return res.json()
+	if (ct.includes('application/json')) {
+		try { return await res.json() }
+		catch { return undefined }
+	}
 	if (ct.includes('text/')) return res.text()
 	return res.blob()
 }
@@ -159,24 +194,33 @@ export const customFetch = async <T = any>(
 		const data = await parseResponse(res)
 
 		if (!res.ok) {
-			if (res.status === 401 && !_skipRefresh) {
+			const payload = data && typeof data === 'object' && !(data instanceof Blob) ? data as SafeErrorPayload : undefined
+			const code = typeof payload?.code === 'string' ? payload.code : undefined
+			const reconcilable = payload?.reconcilable === true
+
+			if (res.status === 403 && code === 'password_change_required') {
+				store.dispatch(requirePasswordChange())
+				if (window.location.pathname !== '/change-password') void router.navigate('/change-password', { replace: true })
+				throw new ApiError({ status: res.status, code, reconcilable, message: 'Change your temporary password to continue.' })
+			}
+
+			if (res.status === 401 && !_skipRefresh && !store.getState().auth.requiresPasswordChange) {
 				const refreshed = await tryRefreshToken()
 				if (refreshed) {
 					pendingRequests.delete(controller)
 					return customFetch<T>(endpoint, { ...options, _skipRefresh: true })
 				} else {
 					handleUnauthorizedAccess()
-					throw new Error('Session expired. Please login again.')
+					throw new ApiError({ status: 401, code: 'session_expired', message: 'Session expired. Sign in again.' })
 				}
 			}
 
-			const msg = typeof data === 'string' ? data : (data?.message ?? JSON.stringify(data))
-			throw new Error(`HTTP ${res.status}: ${msg}`)
+			throw new ApiError({ status: res.status, code, reconcilable })
 		}
 
 		return data as T
 	} catch (err) {
-		if (err instanceof Error && err.name === 'AbortError') throw new Error('Request cancelled')
+		if (err instanceof Error && err.name === 'AbortError') throw new ApiError({ status: 0, code: 'request_cancelled', message: 'Request cancelled.' })
 		throw err
 	} finally {
 		pendingRequests.delete(controller)
