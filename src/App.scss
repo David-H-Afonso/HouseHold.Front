@@ -1449,11 +1449,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 button:disabled { cursor: not-allowed; opacity: .55; }
 
 .horizontal-scroller { position: relative; min-width: 0; }
-.horizontal-scroller__controls { position: absolute; z-index: 3; top: -55px; right: 0; display: flex; gap: 4px; }
-.horizontal-scroller__controls button { display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-surface); color: var(--color-text-muted); cursor: pointer; }
-.horizontal-scroller__controls svg { width: 16px; }
-.horizontal-scroller__track { min-width: 0; overflow-x: auto; padding: 3px 2px 8px; scroll-behavior: smooth; scroll-snap-type: x proximity; scrollbar-color: #b6beca transparent; scrollbar-width: thin; touch-action: pan-y pinch-zoom; cursor: grab; }
-.horizontal-scroller__track:active { cursor: grabbing; }
+.horizontal-scroller__track { min-width: 0; overflow-x: auto; overscroll-behavior-inline: contain; padding: 3px 2px 8px; scroll-behavior: smooth; scroll-snap-type: x proximity; scrollbar-color: #b6beca transparent; scrollbar-width: thin; touch-action: pan-x pan-y pinch-zoom; }
 .horizontal-scroller__track>* > * { scroll-snap-align: start; }
 
 .drawer-backdrop,.dialog-backdrop { position: fixed; z-index: 100; inset: 0; overflow:hidden; background: rgba(15,23,42,.48); }
@@ -1902,7 +1898,6 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 html{overscroll-behavior:none}body{overscroll-behavior-y:none}button,a{touch-action:manipulation;-webkit-tap-highlight-color:rgba(64,88,216,.16)}input,select,textarea{background-color:var(--color-control);color:var(--color-text)}
 .page-stack{padding:max(var(--shell-space-8),env(safe-area-inset-top)) max(var(--shell-space-8),env(safe-area-inset-right)) max(var(--shell-space-8),env(safe-area-inset-bottom)) max(var(--shell-space-8),env(safe-area-inset-left))}.skip-link{background:var(--color-surface);color:var(--color-text)}
 .button-primary,.icon-button-with-label{border-color:var(--color-accent);background:var(--color-accent)}.button-secondary{border-color:var(--color-border);background:var(--color-control);color:var(--color-text)}
-.horizontal-scroller__controls{top:-59px}.horizontal-scroller__controls button{width:44px;height:44px}.horizontal-scroller__track[data-dragging='true']{user-select:none}
 .drawer-backdrop,.dialog-backdrop{overscroll-behavior:contain;background:var(--color-overlay)}.detail-drawer{overscroll-behavior:contain;background:var(--color-surface);padding:max(20px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) 20px}.detail-drawer>header{background:var(--color-surface)}.detail-drawer>header button{background:var(--color-control);color:var(--color-text-muted)}
 .confirm-dialog{max-height:calc(100dvh - 32px);overflow:auto;overscroll-behavior:contain;background:var(--color-surface)}.confirm-dialog__field input{border-color:var(--color-border);background:var(--color-control)}.confirm-dialog__error{background:var(--color-error-bg);color:var(--color-error-text)!important}
 .settings-nav a{color:var(--color-text-muted)}.settings-nav a:hover,.settings-nav a.active{background:var(--color-bg-alt);color:var(--color-text)}.settings-section,.widget-settings-list>article{background:var(--color-surface)}.settings-field>span,.widget-size-field>span{color:var(--color-text-muted)}.settings-field input,.settings-field select,.widget-size-field select,.widget-order-buttons button{border-color:var(--color-border);background:var(--color-control);color:var(--color-text)}
