@@ -64,6 +64,7 @@
 }
 
 .operational-widget > header span,
+.operational-widget > header .provider-link,
 .app-status-strip > header span {
 	color: var(--color-text-muted);
 	font-size: .72rem;
@@ -71,6 +72,12 @@
 	letter-spacing: .09em;
 	text-transform: uppercase;
 }
+
+.provider-link { text-decoration: none; }
+.provider-link:hover,
+.provider-link:focus-visible { color: var(--color-text); }
+.operational-widget > header.without-title { align-items: center; margin-bottom: var(--shell-space-2); }
+.operational-widget > header.without-title > a { width: 32px; height: 32px; }
 
 .operational-widget h2,
 .app-status-strip h2 {

@@ -136,6 +136,7 @@ export interface PokemonModuleItem {
 	type2: string | null
 	spriteUrl: string | null
 	fallbackSpriteUrl: string | null
+	addedAt: string | null
 	tags: PokemonTag[]
 	openUrl: string | null
 }

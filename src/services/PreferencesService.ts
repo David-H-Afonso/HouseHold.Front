@@ -60,7 +60,7 @@ const writeDevice = (userId: string, preferences: UserPreferences) => {
 
 const fromServer = (preferences: ServerUserPreferences, layout: ServerDashboardLayout): UserPreferences => normalize({
 	schemaVersion: 1,
-	timezone: preferences.timeZoneId,
+	timezone: preferences.timeZoneId ?? undefined,
 	visualPreference: preferences.visualPreference,
 	pokemonSpriteSource: preferences.pokemonSpriteSource,
 	gameStatusIds: preferences.gamesStatusOrder,
@@ -115,10 +115,21 @@ const toServerLayout = (preferences: UserPreferences): ServerDashboardLayout => 
 class PreferencesService {
 	async load(userId: string): Promise<{ preferences: UserPreferences; persistence: PreferencePersistence }> {
 		try {
-			const [preferences, layout] = await Promise.all([
+			const [serverPreferences, layout] = await Promise.all([
 				customFetch<ServerUserPreferences>(environment.apiRoutes.settings.preferences),
 				customFetch<ServerDashboardLayout>(environment.apiRoutes.settings.dashboardLayout),
 			])
+			let preferences = serverPreferences
+			if (!preferences.timeZoneId) {
+				const timeZoneId = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+				preferences = { ...preferences, timeZoneId }
+				try {
+					preferences = await customFetch<ServerUserPreferences>(environment.apiRoutes.settings.preferences, {
+						method: 'PATCH',
+						body: { schemaVersion: 1, timeZoneId },
+					})
+				} catch { /* Keep server preferences and use the browser zone for this session. */ }
+			}
 			const result = fromServer(preferences, layout)
 			writeDevice(userId, result)
 			return { preferences: result, persistence: 'server' }

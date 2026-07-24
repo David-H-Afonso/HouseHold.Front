@@ -36,7 +36,9 @@ const scopeNames: Record<string, string> = {
 	'pokemon.read': 'View Pokemon',
 	'pokemon.favorite.write': 'Update favorites',
 	'pokemon.notes.write': 'Update notes',
+	'pokemon.download': 'Download original Pokemon files',
 	'dashboard.read': 'View dashboard',
+	'tracking.status.write': 'Update tracking status',
 }
 
 const statusLabels: Record<HouseholdConnectionStatus, string> = {

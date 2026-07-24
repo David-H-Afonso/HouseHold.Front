@@ -49,7 +49,7 @@ export interface UserPreferences {
 
 export interface ServerUserPreferences {
 	schemaVersion: 1
-	timeZoneId: string
+	timeZoneId: string | null
 	visualPreference: 'system' | 'light' | 'dark'
 	pokemonSpriteSource: PokemonSpriteSource
 	gamesStatusOrder: number[]

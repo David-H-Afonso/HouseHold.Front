@@ -16,12 +16,12 @@ class ModuleService {
 		return customFetch<TodayModuleResponse>(today.base, { params: { date, timeZoneId } })
 	}
 
-	completeTodayOccurrence(occurrenceId: string): Promise<TodayOccurrenceActionResponse> {
-		return customFetch<TodayOccurrenceActionResponse>(today.complete(occurrenceId), { method: 'POST' })
+	completeTodayOccurrence(occurrenceId: string, date?: string, timeZoneId?: string): Promise<TodayOccurrenceActionResponse> {
+		return customFetch<TodayOccurrenceActionResponse>(today.complete(occurrenceId), { method: 'POST', params: { date, timeZoneId } })
 	}
 
-	undoTodayOccurrence(occurrenceId: string): Promise<TodayOccurrenceActionResponse> {
-		return customFetch<TodayOccurrenceActionResponse>(today.undo(occurrenceId), { method: 'POST' })
+	undoTodayOccurrence(occurrenceId: string, date?: string, timeZoneId?: string): Promise<TodayOccurrenceActionResponse> {
+		return customFetch<TodayOccurrenceActionResponse>(today.undo(occurrenceId), { method: 'POST', params: { date, timeZoneId } })
 	}
 
 	media(): Promise<MediaModuleResponse> {

@@ -97,8 +97,8 @@ export const useTodayModule = (date: string, timeZoneId?: string, poll = true) =
 		setPendingOccurrences((current) => new Set(current).add(task.occurrenceId))
 		setData((current) => current ? applyOptimisticStatus(current, task.occurrenceId, optimisticStatus) : current)
 		try {
-			if (action === 'complete') await moduleService.completeTodayOccurrence(task.occurrenceId)
-			else await moduleService.undoTodayOccurrence(task.occurrenceId)
+			if (action === 'complete') await moduleService.completeTodayOccurrence(task.occurrenceId, date, timeZoneId)
+			else await moduleService.undoTodayOccurrence(task.occurrenceId, date, timeZoneId)
 			await refetch(false)
 		} catch (reason) {
 			if (mountedRef.current) {
@@ -117,7 +117,7 @@ export const useTodayModule = (date: string, timeZoneId?: string, poll = true) =
 				})
 			}
 		}
-	}, [refetch])
+	}, [date, refetch, timeZoneId])
 
 	return { data, loading, providerError, actionError, pendingOccurrences, refetch, runAction }
 }
