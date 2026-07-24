@@ -17,6 +17,12 @@ const timeLabel = (task: TodayTask) => {
 	return [schedule, task.zoneName, task.scope].filter(Boolean).join(' - ')
 }
 
+const completedLabel = (task: TodayTask) => {
+	if (!task.completedAt) return null
+	const date = new Date(task.completedAt)
+	return Number.isNaN(date.getTime()) ? null : `Completed ${new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23', timeZone: task.timeZoneId }).format(date)}`
+}
+
 interface TodayTaskActionRowProps {
 	task: TodayTask
 	pending: boolean
@@ -44,14 +50,14 @@ export const TodayTaskActionRow = ({ task, pending, compact = false, onAction }:
 			<button type='button' className='today-action-row__details' onClick={() => setDetailsOpen(true)} aria-label={`View details for ${task.title}`}>
 			<span className='today-action-row__content'>
 				<strong>{task.title}</strong>
-				<small>{timeLabel(task)}</small>
+				<small>{[timeLabel(task), completedLabel(task)].filter(Boolean).join(' · ')}</small>
 			</span>
 			<span className='today-action-row__state'>{pending ? 'Saving' : completed ? 'Done' : task.state}</span>
 			</button>
 		</div>
 		<DetailDrawer open={detailsOpen} title={task.title} onClose={() => setDetailsOpen(false)}>
 			<dl className='task-detail-list'>
-				<div><dt>Zone</dt><dd>{task.zoneName ?? 'No zone'}</dd></div><div><dt>Scope</dt><dd>{task.scope}</dd></div><div><dt>Date</dt><dd>{task.occurrenceDate}</dd></div><div><dt>Availability</dt><dd>{task.availableFromTime ? `From ${task.availableFromTime.slice(0, 5)}` : 'Any time'}{task.availableUntilTime ? ` until ${task.availableUntilTime.slice(0, 5)}` : ''}</dd></div><div><dt>Recommended</dt><dd>{task.recommendedTime?.slice(0, 5) ?? 'Not set'}</dd></div><div><dt>Recurrence</dt><dd>{task.recurrenceType || 'Managed by DoIt'}</dd></div><div><dt>Assignment</dt><dd>{task.assignmentMode || 'Not assigned'}{task.assigneeNames.length ? ` · ${task.assigneeNames.join(', ')}` : ''}</dd></div><div><dt>Timezone</dt><dd>{task.timeZoneId}</dd></div><div><dt>Status</dt><dd>{task.occurrenceStatus}</dd></div>
+			<div><dt>Zone</dt><dd>{task.zoneName ?? 'No zone'}</dd></div><div><dt>Scope</dt><dd>{task.scope}</dd></div><div><dt>Date</dt><dd>{task.occurrenceDate}</dd></div><div><dt>Availability</dt><dd>{task.availableFromTime ? `From ${task.availableFromTime.slice(0, 5)}` : 'Any time'}{task.availableUntilTime ? ` until ${task.availableUntilTime.slice(0, 5)}` : ''}</dd></div><div><dt>Recommended</dt><dd>{task.recommendedTime?.slice(0, 5) ?? 'Not set'}</dd></div><div><dt>Recurrence</dt><dd>{task.recurrenceType || 'Managed by DoIt'}</dd></div><div><dt>Assignment</dt><dd>{task.assignmentMode || 'Not assigned'}{task.assigneeNames.length ? ` · ${task.assigneeNames.join(', ')}` : ''}</dd></div><div><dt>Timezone</dt><dd>{task.timeZoneId}</dd></div>{task.completedAt && <div><dt>Completed at</dt><dd>{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'medium', timeZone: task.timeZoneId }).format(new Date(task.completedAt))}</dd></div>}<div><dt>Status</dt><dd>{task.occurrenceStatus}</dd></div>
 			</dl>
 		</DetailDrawer>
 	</>
