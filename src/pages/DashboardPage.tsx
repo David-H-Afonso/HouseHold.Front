@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { BrandMark, FallbackImage, HorizontalScroller, Icon, ModuleHeader, TodayTaskActionRow } from '@/components/Shared'
 import { useTodayModule } from '@/hooks'
@@ -7,7 +7,7 @@ import type { AppLauncherItem } from '@/models/api/Apps'
 import type { GameModuleItem, GameStatusOption } from '@/models/api/Games'
 import type { JellyfinModuleResponse, WorkflowRun, WorkflowsResponse } from '@/models/api/Operations'
 import type { MediaModuleResponse, PokemonModuleItem, UpcomingMedia, WarcraftWeeklyResponse } from '@/models/api/Modules'
-import type { DashboardWidgetId } from '@/models/api/Preferences'
+import type { DashboardWidgetId, DashboardWidgetPreference } from '@/models/api/Preferences'
 import { appCatalogService } from '@/services/AppCatalogService'
 import { gamesService, moduleService, operationsService } from '@/services'
 import { safeExternalUrl } from '@/utils'
@@ -51,6 +51,27 @@ const WidgetShell = ({ id, title, provider, link, children, state, size }: { id:
 	<header><div><span>{provider}</span><h2>{title}</h2></div><Link to={link} aria-label={`Open ${title}`}><Icon name='external' /></Link></header>
 	{state.loading ? <div className='widget-skeleton' aria-label={`Loading ${title}`}><i /><i /><i /></div> : state.error ? <div className='widget-state is-error'><strong>Unavailable</strong><span>This provider did not respond.</span><Link to='/settings/integrations'>Review integration</Link></div> : children}
 </section>
+
+const DashboardWidgetSlot = ({ widget, index, children }: { widget: DashboardWidgetPreference; index: number; children: ReactNode }) => {
+	const slotRef = useRef<HTMLDivElement>(null)
+	const contentRef = useRef<HTMLDivElement>(null)
+	const lane = widget.id === 'app-status' || widget.size === 'wide' ? 'wide' : index % 2 === 0 ? 'left' : 'right'
+
+	useLayoutEffect(() => {
+		const slot = slotRef.current
+		const content = contentRef.current
+		if (!slot || !content) return
+		const updateSpan = () => slot.style.setProperty('--dashboard-row-span', String(Math.ceil((content.getBoundingClientRect().height + 24) / 8)))
+		const observer = new ResizeObserver(updateSpan)
+		observer.observe(content)
+		updateSpan()
+		return () => observer.disconnect()
+	}, [])
+
+	return <div ref={slotRef} className={`dashboard-widget-slot dashboard-widget-slot--${widget.id} is-${widget.size}`} data-lane={lane}>
+		<div ref={contentRef}>{children}</div>
+	</div>
+}
 
 export const DashboardPage = () => {
 	const { preferences, ready } = useUserPreferences()
@@ -135,6 +156,6 @@ export const DashboardPage = () => {
 	if (!ready) return <div className='dashboard-page page-stack'><div className='preference-loading' role='status'>Loading dashboard preferences…</div></div>
 	return <div className='dashboard-page page-stack'>
 		<ModuleHeader title='Home' description='A focused view of what needs attention across your household.' actions={<button className='icon-button-with-label' type='button' onClick={() => { setRefreshKey((value) => value + 1); void today.refetch(true) }}><Icon name='refresh' />Refresh</button>} />
-		<div className='dashboard-operational-grid'>{orderedWidgets.map((widget) => <div key={widget.id} className={`dashboard-widget-slot is-${widget.size}`}>{content[widget.id]}</div>)}</div>
+		<div className='dashboard-operational-grid'>{orderedWidgets.map((widget, index) => <DashboardWidgetSlot key={widget.id} widget={widget} index={index}>{content[widget.id]}</DashboardWidgetSlot>)}</div>
 	</div>
 }

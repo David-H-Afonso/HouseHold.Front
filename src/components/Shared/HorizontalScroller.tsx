@@ -14,6 +14,7 @@ export const HorizontalScroller = ({ children, label, className = '' }: { childr
 	}
 	const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
 		if (event.pointerType === 'mouse' && event.button !== 0) return
+		if (event.target instanceof Element && event.target.closest('a, button, input, select, textarea, label')) return
 		if (!ref.current) return
 		drag.current = { active: true, x: event.clientX, left: ref.current.scrollLeft, moved: false }
 		ref.current.dataset.dragging = 'true'
