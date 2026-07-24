@@ -3,8 +3,9 @@ import type {
 	MediaModuleResponse,
 	PokemonModuleResponse,
 	PokemonTagOption,
+	TodayOccurrenceActionResponse,
 	TodayModuleResponse,
-	WarcraftQuickStatus,
+	WarcraftWeeklyResponse,
 } from '@/models/api/Modules'
 import { customFetch } from '@/utils'
 
@@ -15,12 +16,20 @@ class ModuleService {
 		return customFetch<TodayModuleResponse>(today.base, { params: { date } })
 	}
 
+	completeTodayOccurrence(occurrenceId: string): Promise<TodayOccurrenceActionResponse> {
+		return customFetch<TodayOccurrenceActionResponse>(today.complete(occurrenceId), { method: 'POST' })
+	}
+
+	undoTodayOccurrence(occurrenceId: string): Promise<TodayOccurrenceActionResponse> {
+		return customFetch<TodayOccurrenceActionResponse>(today.undo(occurrenceId), { method: 'POST' })
+	}
+
 	media(): Promise<MediaModuleResponse> {
 		return customFetch<MediaModuleResponse>(media.jellywatch)
 	}
 
-	warcraft(): Promise<WarcraftQuickStatus> {
-		return customFetch<WarcraftQuickStatus>(warcraft.quickStatus)
+	warcraft(): Promise<WarcraftWeeklyResponse> {
+		return customFetch<WarcraftWeeklyResponse>(warcraft.weekly)
 	}
 
 	pokemon(params: { search: string; tagIds: number[]; skip: number; take: number }): Promise<PokemonModuleResponse> {

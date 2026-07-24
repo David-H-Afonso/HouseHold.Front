@@ -30,7 +30,6 @@ export const GamesPage = () => {
 			.then((items) => {
 				if (!active) return
 				setStatuses(items)
-				setSelectedStatusId(items.find((status) => status.statusType === 'Playing')?.id ?? null)
 				setStatusesReady(true)
 			})
 			.catch(() => {

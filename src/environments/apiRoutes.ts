@@ -96,6 +96,8 @@ export const apiRoutes = {
 	/** Read-only DoIt daily view */
 	today: {
 		base: '/modules/today',
+		complete: (occurrenceId: string) => `/modules/today/occurrences/${occurrenceId}/complete`,
+		undo: (occurrenceId: string) => `/modules/today/occurrences/${occurrenceId}/undo`,
 	},
 
 	/** Jellywatch gateway */
@@ -111,7 +113,7 @@ export const apiRoutes = {
 
 	/** Warcraft Archive gateway */
 	warcraft: {
-		quickStatus: '/modules/warcraft/quick-status',
+		weekly: '/modules/warcraft/weekly',
 	},
 
 	// legacy placeholder kept for TS compatibility

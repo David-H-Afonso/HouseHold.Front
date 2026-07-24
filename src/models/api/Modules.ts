@@ -27,6 +27,13 @@ export interface TodayModuleResponse {
 	tasks: TodayTask[]
 }
 
+export interface TodayOccurrenceActionResponse {
+	occurrenceId: string
+	taskId: string
+	occurrenceDate: string
+	occurrenceStatus: string
+}
+
 export interface MediaProfile {
 	displayName: string
 	totalSeriesWatching: number
@@ -45,6 +52,8 @@ export interface MediaActivity {
 	eventType: string | number
 	timestamp: string
 	userRating: number | null
+	tmdbRating: number | null
+	posterUrl: string | null
 	openUrl: string | null
 }
 
@@ -69,7 +78,7 @@ export interface MediaModuleResponse {
 	upcoming: UpcomingMedia[]
 }
 
-export interface WarcraftQuickStatus {
+export interface WarcraftWeeklySummary {
 	total: number
 	notStarted: number
 	pending: number
@@ -77,7 +86,26 @@ export interface WarcraftQuickStatus {
 	lastDay: number
 	lastWeek: number
 	finished: number
+	remaining: number
+	completionPercent: number
+}
+
+export interface WarcraftWeeklyItem {
+	id: number | string
+	characterName: string
+	characterClass: string
+	contentName: string
+	expansion: string
+	difficulty: string
+	status: string
+	lastCompletedAt: string | null
+	updatedAt: string
+}
+
+export interface WarcraftWeeklyResponse {
 	generatedAtUtc: string
+	summary: WarcraftWeeklySummary
+	items: WarcraftWeeklyItem[]
 }
 
 export interface PokemonTag {
@@ -99,6 +127,7 @@ export interface PokemonModuleItem {
 	type1: string | null
 	type2: string | null
 	spriteUrl: string | null
+	fallbackSpriteUrl: string | null
 	tags: PokemonTag[]
 	openUrl: string | null
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ModuleState } from '@/components/Shared'
+import { FallbackImage, ModuleState } from '@/components/Shared'
 import type { MediaModuleResponse, UpcomingMedia } from '@/models/api/Modules'
 import { moduleService } from '@/services'
 import { safeExternalUrl } from '@/utils'
@@ -22,6 +22,12 @@ const upcomingLabel = (item: UpcomingMedia) => {
 	if (days === 0) return `Today${time ? ` - ${time}` : ''}`
 	if (days === 1) return `Tomorrow${time ? ` - ${time}` : ''}`
 	return source.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
+}
+
+const activityRating = (userRating: number | null, tmdbRating: number | null) => {
+	if (userRating !== null) return { label: 'Personal', value: userRating }
+	if (tmdbRating !== null) return { label: 'TMDB', value: tmdbRating }
+	return null
 }
 
 export const MediaPage = () => {
@@ -68,7 +74,7 @@ export const MediaPage = () => {
 								const url = safeExternalUrl(item.openUrl)
 								const content = <>
 									<div className='media-upcoming__poster'>
-										{item.posterUrl ? <img src={item.posterUrl} alt='' loading={index < 5 ? 'eager' : 'lazy'} /> : <span aria-hidden='true'>{item.seriesTitle.slice(0, 1)}</span>}
+									<FallbackImage src={item.posterUrl} alt={`${item.seriesTitle} poster`} fallbackLabel={item.seriesTitle} loading={index < 5 ? 'eager' : 'lazy'} />
 										<strong>{upcomingLabel(item)}</strong>
 										{item.batchCount > 1 && <b>+{item.batchCount - 1}</b>}
 									</div>
@@ -84,12 +90,13 @@ export const MediaPage = () => {
 					<header><div><span className='media-section__eyebrow'>Latest updates</span><h2>Recent activity</h2></div><span>Last 3 events</span></header>
 					{data.activity.length === 0 ? <ModuleState kind='empty' title='No recent activity'>Your latest watches will appear here.</ModuleState> : (
 						<div className='media-activity__list'>
-							{data.activity.slice(0, 3).map((item) => {
-								const url = safeExternalUrl(item.openUrl)
-								const content = <>
-									<div className='media-activity__icon' aria-hidden='true'><svg viewBox='0 0 24 24'><path d='m8 5 11 7-11 7V5Z' /></svg></div>
-									<div className='media-activity__main'><strong>{item.title}</strong>{item.episodeName && <span>{episodeCode(item.seasonNumber, item.episodeNumber)} - {item.episodeName}</span>}<time dateTime={item.timestamp}>{new Date(item.timestamp).toLocaleString()}</time></div>
-									<div className='media-activity__meta'><span>{String(item.mediaType)}</span>{item.userRating !== null && <strong>Rating {item.userRating}</strong>}</div>
+						{data.activity.slice(0, 3).map((item) => {
+							const url = safeExternalUrl(item.openUrl)
+							const rating = activityRating(item.userRating, item.tmdbRating)
+							const content = <>
+								<FallbackImage className='media-activity__poster' src={item.posterUrl} alt={`${item.title} poster`} fallbackLabel={item.title} loading='lazy' />
+								<div className='media-activity__main'><strong>{item.title}</strong>{item.episodeName && <span>{episodeCode(item.seasonNumber, item.episodeNumber)} - {item.episodeName}</span>}<time dateTime={item.timestamp}>{new Date(item.timestamp).toLocaleString()}</time></div>
+								<div className='media-activity__meta'><span>{String(item.mediaType)}</span>{rating && <strong><small>{rating.label}</small>{rating.value}</strong>}</div>
 								</>
 								return url ? <a key={item.eventId} href={url} target='_blank' rel='noopener noreferrer' className='media-activity__item'>{content}</a> : <article key={item.eventId} className='media-activity__item'>{content}</article>
 							})}

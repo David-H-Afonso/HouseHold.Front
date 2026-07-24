@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
-import { ModuleState } from '@/components/Shared'
-import type { TodayModuleResponse, TodayTask } from '@/models/api/Modules'
-import { moduleService } from '@/services'
+import { useMemo, useState } from 'react'
+import { ModuleState, TodayTaskActionRow } from '@/components/Shared'
+import { useTodayModule } from '@/hooks'
+import type { TodayTask } from '@/models/api/Modules'
 import './TodayPage.scss'
 
 const toLocalDateValue = (date: Date) => {
@@ -39,43 +39,9 @@ const sectionLabels: Record<string, string> = {
 
 const sectionOrder = ['available', 'overdue', 'pending', 'unavailable', 'upcoming', 'done', 'completed', 'missed', 'notapplicable']
 
-const shortTime = (value: string | null) => value?.slice(0, 5) ?? null
-
-const taskTime = (task: TodayTask) => {
-	if (task.recommendedTime) return `Recommended ${shortTime(task.recommendedTime)}`
-	if (task.availableFromTime && task.availableUntilTime) {
-		return `Available ${shortTime(task.availableFromTime)}-${shortTime(task.availableUntilTime)}`
-	}
-	if (task.availableFromTime) return `Available from ${shortTime(task.availableFromTime)}`
-	if (task.availableUntilTime) return `Available until ${shortTime(task.availableUntilTime)}`
-	return 'Any time'
-}
-
 export const TodayPage = () => {
 	const [date, setDate] = useState(() => toLocalDateValue(new Date()))
-	const [data, setData] = useState<TodayModuleResponse | null>(null)
-	const [loading, setLoading] = useState(true)
-	const [failed, setFailed] = useState(false)
-
-	useEffect(() => {
-		let active = true
-		setLoading(true)
-		setFailed(false)
-		moduleService
-			.today(date)
-			.then((response) => {
-				if (active) setData(response)
-			})
-			.catch(() => {
-				if (active) setFailed(true)
-			})
-			.finally(() => {
-				if (active) setLoading(false)
-			})
-		return () => {
-			active = false
-		}
-	}, [date])
+	const { data, loading, providerError, actionError, pendingOccurrences, runAction } = useTodayModule(date)
 
 	const sections = useMemo(() => {
 		const grouped = new Map<string, TodayTask[]>()
@@ -117,7 +83,7 @@ export const TodayPage = () => {
 				</div>
 			</header>
 
-			{progress && !failed && (
+			{progress && !providerError && (
 				<section className='today-progress' aria-label={`${completed} of ${progress.total} tasks resolved`}>
 					<div className='today-progress__summary'>
 						<div><strong>{progress.pending}</strong><span>pending</span></div>
@@ -141,25 +107,17 @@ export const TodayPage = () => {
 			)}
 
 			{loading && <ModuleState kind='loading' title='Loading your day'>Getting the latest tasks from DoIt.</ModuleState>}
-			{failed && <ModuleState kind='error' title='DoIt is not available'>Connect or review the DoIt provider to see today's tasks.</ModuleState>}
-			{!loading && !failed && data?.tasks.length === 0 && <ModuleState kind='empty' title='Nothing scheduled'>There are no tasks for this date.</ModuleState>}
+			{providerError && <ModuleState kind='error' title='DoIt is not available'>Connect or review the DoIt provider to see today's tasks.</ModuleState>}
+			{actionError && <p className='today-page__action-error' role='alert'>{actionError}</p>}
+			{!loading && !providerError && data?.tasks.length === 0 && <ModuleState kind='empty' title='Nothing scheduled'>There are no tasks for this date.</ModuleState>}
 
-			{!loading && !failed && sections.length > 0 && (
+			{!loading && !providerError && sections.length > 0 && (
 				<div className='today-sections'>
 					{sections.map(([key, tasks]) => (
 						<section className={`today-section today-section--${key}`} key={key}>
 							<header><h2>{sectionLabels[key] ?? key}</h2><span>{tasks.length}</span></header>
 							<div className='today-section__list'>
-								{tasks.map((task) => (
-									<article className='today-task' key={task.occurrenceId}>
-										<span className='today-task__state' aria-hidden='true' />
-										<div className='today-task__main'>
-											<strong>{task.title}</strong>
-											<span>{taskTime(task)}</span>
-										</div>
-										<div className='today-task__meta'>{task.zoneName && <span>{task.zoneName}</span>}<span>{task.scope}</span></div>
-									</article>
-								))}
+								{tasks.map((task) => <TodayTaskActionRow key={task.occurrenceId} task={task} pending={pendingOccurrences.has(task.occurrenceId)} onAction={runAction} />)}
 							</div>
 						</section>
 					))}

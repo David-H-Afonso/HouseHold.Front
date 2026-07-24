@@ -8,17 +8,16 @@ const primaryLinks = [
 	{ to: '/apps', label: 'Apps' },
 	{ to: '/games', label: 'Games' },
 	{ to: '/media', label: 'Media' },
-	{ to: '/downloads', label: 'Downloads' },
 	{ to: '/pokemon', label: 'Pokemon' },
 	{ to: '/warcraft', label: 'Warcraft' },
-	{ to: '/network', label: 'Network' },
 ]
 
 const settingsLinks = [
 	{ to: '/settings/integrations', label: 'Integrations' },
-	{ to: '/settings/dashboard', label: 'Dashboard settings' },
 	{ to: '/playground', label: 'API playground' },
 ]
+
+const plannedItems = ['Downloads', 'Network', 'Dashboard settings']
 
 export const SidebarNav = () => {
 	const user = useAppSelector(selectCurrentUser)
@@ -46,6 +45,15 @@ export const SidebarNav = () => {
 					</NavLink>
 				))}
 			</nav>
+
+			<section className='sidebar-nav__planned' aria-labelledby='planned-navigation-title'>
+				<h2 id='planned-navigation-title'>Planned</h2>
+				{plannedItems.map((item) => (
+					<span key={item} className='sidebar-nav__planned-item' aria-disabled='true'>
+						<span>{item}</span><small>Soon</small>
+					</span>
+				))}
+			</section>
 
 			<div className='sidebar-nav__user'>
 				<span>{user?.userName ?? user?.email ?? 'User'}</span>

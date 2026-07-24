@@ -1,11 +1,32 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react'
-import { ModuleState } from '@/components/Shared'
+import { FallbackImage, ModuleState } from '@/components/Shared'
 import type { PokemonModuleItem, PokemonModuleResponse, PokemonTagOption } from '@/models/api/Modules'
 import { moduleService } from '@/services'
 import { safeExternalUrl } from '@/utils'
 import './PokemonPage.scss'
 
 const TAKE = 24
+
+const typeColors: Record<string, string> = {
+	normal: '#a8a77a', fire: '#ee8130', water: '#6390f0', electric: '#f7d02c', grass: '#7ac74c',
+	ice: '#96d9d6', fighting: '#c22e28', poison: '#a33ea1', ground: '#e2bf65', flying: '#a98ff3',
+	psychic: '#f95587', bug: '#a6b91a', rock: '#b6a136', ghost: '#735797', dragon: '#6f35fc',
+	dark: '#705746', steel: '#b7b7ce', fairy: '#d685ad',
+}
+
+const relativeLuminance = (hex: string) => {
+	const channels = [hex.slice(1, 3), hex.slice(3, 5), hex.slice(5, 7)].map((value) => Number.parseInt(value, 16) / 255)
+	const [red, green, blue] = channels.map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4)
+	return red * 0.2126 + green * 0.7152 + blue * 0.0722
+}
+
+const typeStyle = (type: string) => {
+	const color = typeColors[type.toLowerCase()] ?? '#68a090'
+	const luminance = relativeLuminance(color)
+	const whiteContrast = 1.05 / (luminance + 0.05)
+	const darkContrast = (luminance + 0.05) / 0.059
+	return { '--type-color': color, '--type-text': whiteContrast >= darkContrast ? '#ffffff' : '#111827' } as CSSProperties
+}
 
 const PokemonCardShell = ({ item, children }: { item: PokemonModuleItem; children: ReactNode }) => {
 	const url = safeExternalUrl(item.openUrl)
@@ -93,9 +114,9 @@ export const PokemonPage = () => {
 					{data.items.map((item) => <PokemonCardShell key={item.id} item={item}>
 						<div className='pokemon-card__badges'><span>Lv. {item.level}</span><span>#{String(item.speciesId).padStart(3, '0')}</span></div>
 						<div className='pokemon-card__flags'>{item.favorite && <span title='Favorite'><svg viewBox='0 0 24 24' aria-hidden='true'><path d='m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z' /></svg><span className='sr-only'>Favorite</span></span>}{item.isShiny && <b>Shiny</b>}{item.isEgg && <b>Egg</b>}</div>
-						<div className='pokemon-card__sprite'>{item.spriteUrl ? <img src={item.spriteUrl} alt={item.nickname || item.speciesName} loading='lazy' /> : <span aria-hidden='true'>?</span>}</div>
+						<div className='pokemon-card__sprite'><FallbackImage src={item.spriteUrl} fallbackSrc={item.fallbackSpriteUrl} alt={item.nickname || item.speciesName} fallbackLabel={item.speciesName} loading='lazy' /></div>
 						<div className='pokemon-card__identity'><h2>{item.nickname || item.speciesName}</h2>{item.nickname && <p>{item.speciesName}</p>}</div>
-						<div className='pokemon-card__types'>{[item.type1, item.type2].filter(Boolean).map((type) => <span key={type}>{type}</span>)}</div>
+						<div className='pokemon-card__types'>{[item.type1, item.type2].filter((type): type is string => Boolean(type)).map((type) => <span key={type} style={typeStyle(type)}>{type}</span>)}</div>
 						{item.tags.length > 0 && <div className='pokemon-card__tags'>{item.tags.slice(0, 4).map((tag) => <span key={tag.id} style={{ '--tag-color': tag.colorHex || '#68d5c4' } as CSSProperties}>{tag.imageUrl && <img src={tag.imageUrl} alt='' />}{tag.name}</span>)}{item.tags.length > 4 && <span>+{item.tags.length - 4}</span>}</div>}
 					</PokemonCardShell>)}
 				</div>

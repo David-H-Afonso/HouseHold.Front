@@ -2,7 +2,7 @@
 .games-page__toolbar { display: grid; gap: 12px; border: 1px solid var(--color-border); border-radius: 12px; background: #fff; padding: 12px; }
 .games-page__toolbar .search-bar input { min-height: 44px; border-radius: 9px; }
 .games-page__statuses { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
-.games-page__statuses button { display: inline-flex; flex: 0 0 auto; min-height: 38px; align-items: center; gap: 7px; border: 1px solid #d9dee6; border-radius: 999px; background: #fff; color: #536071; padding: 5px 11px; font: inherit; font-size: 0.76rem; font-weight: 750; cursor: pointer; }
+.games-page__statuses button { display: inline-flex; flex: 0 0 auto; min-height: 44px; align-items: center; gap: 7px; border: 1px solid #d9dee6; border-radius: 999px; background: #fff; color: #536071; padding: 5px 11px; font: inherit; font-size: 0.76rem; font-weight: 750; cursor: pointer; }
 .games-page__statuses button > span { width: 7px; height: 7px; border-radius: 50%; background: var(--status-color, #94a3b8); }
 .games-page__statuses button[aria-pressed='true'] { border-color: color-mix(in srgb, var(--status-color, #111827) 68%, #cbd5e1); background: color-mix(in srgb, var(--status-color, #111827) 10%, white); color: #172033; }
 .games-page__statuses button:first-child[aria-pressed='true'] { background: #111827; color: #fff; border-color: #111827; }
