@@ -139,6 +139,7 @@ type CustomFetchOptions = {
 	params?: QueryParams
 	signal?: AbortSignal
 	baseURL?: string
+	onResponse?: (response: Response) => void
 	/** Internal: skip the one-retry-after-refresh to avoid infinite loops */
 	_skipRefresh?: boolean
 }
@@ -154,6 +155,7 @@ export const customFetch = async <T = any>(
 		params,
 		signal: callerSignal,
 		baseURL = environment.baseUrl,
+		onResponse,
 		_skipRefresh = false,
 	} = options
 
@@ -191,6 +193,7 @@ export const customFetch = async <T = any>(
 
 	try {
 		const res = await fetch(url, init)
+		onResponse?.(res)
 		const data = await parseResponse(res)
 
 		if (!res.ok) {

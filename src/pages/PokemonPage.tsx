@@ -89,7 +89,7 @@ export const PokemonPage = () => {
 	const download = async (event: MouseEvent, item: PokemonModuleItem) => {
 		event.preventDefault(); event.stopPropagation(); if (downloading !== null) return
 		setDownloading(item.id); setDownloadError(null)
-		try { const blob = await moduleService.downloadPokemon(item.id); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = `${(item.nickname || item.speciesName).replace(/[^a-z0-9_-]+/gi, '-')}.pkm`; link.click(); URL.revokeObjectURL(url) }
+		try { const download = await moduleService.downloadPokemon(item.id); const url = URL.createObjectURL(download.blob); const link = document.createElement('a'); link.href = url; const fallbackName = `${(item.nickname || item.speciesName).replace(/[^a-z0-9_-]+/gi, '-')}.pkm`; link.download = download.fileName || fallbackName; link.click(); URL.revokeObjectURL(url) }
 		catch { setDownloadError(`Download is not configured for ${item.nickname || item.speciesName}.`) }
 		finally { setDownloading(null) }
 	}

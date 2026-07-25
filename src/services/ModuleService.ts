@@ -52,8 +52,16 @@ class ModuleService {
 		return customFetch<PokemonTagOption[]>(pokemon.tags)
 	}
 
-	downloadPokemon(id: number): Promise<Blob> {
-		return customFetch<Blob>(pokemon.download(id))
+	downloadPokemon(id: number): Promise<{ blob: Blob; fileName: string | null }> {
+		let fileName: string | null = null
+		return customFetch<Blob>(pokemon.download(id), {
+			onResponse: (response) => {
+				const disposition = response.headers.get('content-disposition')
+				const encoded = disposition?.match(/filename\*=UTF-8''([^;]+)/i)?.[1]
+				const plain = disposition?.match(/filename="?([^";]+)"?/i)?.[1]
+				fileName = encoded ? decodeURIComponent(encoded) : plain ?? null
+			},
+		}).then((blob) => ({ blob, fileName }))
 	}
 }
 
