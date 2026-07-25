@@ -148,7 +148,7 @@
 .dashboard-carousel--pokemon { grid-auto-columns: 128px; }
 
 .dashboard-game-card { display: grid; min-width: 0; gap: 6px; }
-.dashboard-game-card > div { position: relative; display: grid; overflow: hidden; aspect-ratio: 2/3; place-items: center; border: 0; border-radius: 12px; background: #171c28; color: #8b96ad; font-size: 2.4rem; font-weight: 800; box-shadow: 0 12px 24px -18px rgba(0, 0, 0, .9); }
+.dashboard-game-card:not(.games-cover-card) > div { position: relative; display: grid; overflow: hidden; aspect-ratio: 2/3; place-items: center; border: 0; border-radius: 12px; background: #171c28; color: #8b96ad; font-size: 2.4rem; font-weight: 800; box-shadow: 0 12px 24px -18px rgba(0, 0, 0, .9); }
 .dashboard-game-card img { width: 100%; height: 100%; object-fit: cover; }
 .dashboard-game-card b { position: absolute; top: 7px; right: 7px; display: grid; width: 32px; height: 32px; place-items: center; border-radius: 9px; background: rgba(7, 10, 16, .82); color: #f7c948; }
 .dashboard-game-card b svg { width: 15px; fill: currentColor; }

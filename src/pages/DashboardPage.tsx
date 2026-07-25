@@ -145,6 +145,8 @@ export const DashboardPage = () => {
 	const jellyfinItems = jellyfin.data?.continueWatching.length ? jellyfin.data.continueWatching : jellyfin.data?.nextUp.slice(0, 3) ?? []
 	const appStatusItems = (apps.data ?? []).filter((app) => app.favorite || app.frontStatus !== 'healthy' || app.apiStatus !== 'healthy').slice(0, 8)
 	const providerUrl = (provider: string) => {
+		if (provider === 'Games Database') return 'https://gamesdatabase.davidhormigafonso.work'
+		if (provider === 'Beast Vault') return 'https://beastvault.davidhormigafonso.work'
 		const normalizedProvider = provider.toLowerCase().replace(/[^a-z0-9]/g, '')
 		const app = apps.data?.find((item) => item.name.toLowerCase() === provider.toLowerCase() || item.id.toLowerCase().replace(/[^a-z0-9]/g, '') === normalizedProvider)
 		return safeExternalUrl(app?.openUrl ?? app?.externalUrl)
