@@ -120,7 +120,7 @@ export const TodayPage = () => {
 						<section className={`today-section today-section--${key}`} key={key}>
 							<header><h2>{sectionLabels[key] ?? key}</h2><span>{tasks.length}</span></header>
 							<div className='today-section__list'>
-								{tasks.map((task) => <TodayTaskActionRow key={task.occurrenceId} task={task} pending={pendingOccurrences.has(task.occurrenceId)} onAction={runAction} />)}
+								{tasks.map((task) => <TodayTaskActionRow key={task.occurrenceId} task={task} displayTimeZone={preferences.timezone} pending={pendingOccurrences.has(task.occurrenceId)} onAction={runAction} />)}
 							</div>
 						</section>
 					))}
