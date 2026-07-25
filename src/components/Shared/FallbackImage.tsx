@@ -2,6 +2,10 @@ import { useEffect, useState, type ImgHTMLAttributes } from 'react'
 import { customFetch } from '@/utils/customFetch'
 import './FallbackImage.scss'
 
+const IMAGE_CACHE_TTL = 60 * 60 * 1000
+const protectedImageCache = new Map<string, { objectUrl: string; expiresAt: number }>()
+const pendingProtectedImages = new Map<string, Promise<string>>()
+
 interface FallbackImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> {
 	src: string | null | undefined
 	fallbackSrc?: string | null
@@ -9,6 +13,25 @@ interface FallbackImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, '
 }
 
 const isProtectedSource = (src: string | null | undefined) => src?.startsWith('/modules/') || src?.startsWith('/api/v1/')
+
+const loadProtectedImage = (src: string) => {
+	const now = Date.now()
+	const cached = protectedImageCache.get(src)
+	if (cached && cached.expiresAt > now) return Promise.resolve(cached.objectUrl)
+	if (cached) {
+		URL.revokeObjectURL(cached.objectUrl)
+		protectedImageCache.delete(src)
+	}
+	const pending = pendingProtectedImages.get(src)
+	if (pending) return pending
+	const request = customFetch<Blob>(src).then((blob) => {
+		const objectUrl = URL.createObjectURL(blob)
+		protectedImageCache.set(src, { objectUrl, expiresAt: Date.now() + IMAGE_CACHE_TTL })
+		return objectUrl
+	}).finally(() => pendingProtectedImages.delete(src))
+	pendingProtectedImages.set(src, request)
+	return request
+}
 
 export const FallbackImage = ({ src, fallbackSrc, fallbackLabel = 'Image unavailable', className = '', alt = '', ...props }: FallbackImageProps) => {
 	const [resolvedSource, setResolvedSource] = useState<string | null>(null)
@@ -18,13 +41,11 @@ export const FallbackImage = ({ src, fallbackSrc, fallbackLabel = 'Image unavail
 
 	useEffect(() => {
 		let active = true
-		let objectUrl: string | null = null
 		if (isProtectedSource(src) && src) {
 			setFailed(false)
 			setCurrentSource(null)
-			void customFetch<Blob>(src).then((blob) => {
+			void loadProtectedImage(src).then((objectUrl) => {
 				if (!active) return
-				objectUrl = URL.createObjectURL(blob)
 				setResolvedSource(objectUrl)
 				setCurrentSource(objectUrl)
 				setUsedFallback(false)
@@ -42,7 +63,6 @@ export const FallbackImage = ({ src, fallbackSrc, fallbackLabel = 'Image unavail
 		}
 		return () => {
 			active = false
-			if (objectUrl) URL.revokeObjectURL(objectUrl)
 		}
 	}, [fallbackSrc, src])
 

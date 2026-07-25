@@ -6,6 +6,7 @@ export interface GameModuleItem {
 	platformName?: string | null
 	logo?: string | null
 	cover?: string | null
+	hero?: string | null
 	grade?: number | null
 	score?: number | null
 	started?: string | null

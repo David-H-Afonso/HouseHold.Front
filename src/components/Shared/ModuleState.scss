@@ -6,7 +6,7 @@
 	min-height: 92px;
 	border: 1px solid var(--color-border);
 	border-radius: 10px;
-	background: #fff;
+	background: var(--color-surface);
 	padding: 16px;
 	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
@@ -17,19 +17,19 @@
 	height: 36px;
 	place-items: center;
 	border-radius: 10px;
-	background: #eef2ff;
-	color: #4338ca;
+	background: color-mix(in srgb, var(--color-accent) 14%, var(--color-surface));
+	color: var(--color-accent);
 	font-weight: 800;
 }
 
 .module-state--error .module-state__mark {
-	background: #fff7ed;
-	color: #c2410c;
+	background: var(--color-error-bg);
+	color: var(--color-error-text);
 }
 
 .module-state--empty .module-state__mark {
-	background: #f1f5f9;
-	color: #475569;
+	background: var(--color-bg-alt);
+	color: var(--color-text-muted);
 }
 
 .module-state h2,
@@ -52,7 +52,7 @@
 	min-height: 36px;
 	align-items: center;
 	margin-top: 8px;
-	color: #3730a3;
+	color: var(--color-accent);
 	font-size: 0.84rem;
 	font-weight: 750;
 }
@@ -60,8 +60,8 @@
 .module-state__spinner {
 	width: 16px;
 	height: 16px;
-	border: 2px solid rgba(67, 56, 202, 0.2);
-	border-top-color: #4338ca;
+	border: 2px solid color-mix(in srgb, var(--color-accent) 22%, transparent);
+	border-top-color: var(--color-accent);
 	border-radius: 999px;
 	animation: module-state-spin 700ms linear infinite;
 }

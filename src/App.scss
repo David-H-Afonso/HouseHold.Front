@@ -728,7 +728,7 @@ button.btn--danger {
 .settings-panel,
 .empty-panel,
 .action-log-panel {
-	background: #ffffff;
+	background: var(--color-surface);
 	border: 1px solid var(--color-border);
 	border-radius: var(--radius);
 	padding: 18px;
@@ -1557,7 +1557,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 }
 
 .app-launcher-card {
-	background: #ffffff;
+	background: var(--color-surface);
 	border: 1px solid var(--color-border);
 	border-radius: var(--radius);
 	padding: 16px;
@@ -1579,8 +1579,8 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 	width: 42px;
 	height: 42px;
 	border-radius: var(--radius);
-	background: #e0f2fe;
-	color: #075985;
+	background: color-mix(in srgb, var(--color-accent) 14%, var(--color-surface));
+	color: var(--color-accent);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -1606,7 +1606,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 
 .app-favorite {
 	border: 1px solid var(--color-border);
-	background: #ffffff;
+	background: var(--color-control);
 	border-radius: var(--radius);
 	padding: 6px 9px;
 	font-weight: 700;
@@ -1614,9 +1614,9 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 }
 
 .app-favorite--active {
-	background: #fef3c7;
-	color: #92400e;
-	border-color: #fde68a;
+	background: var(--color-success-bg);
+	color: var(--color-success-text);
+	border-color: var(--color-success);
 }
 
 .app-launcher-card__description {
@@ -1651,7 +1651,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 	min-height: 44px;
 	border: 1px solid var(--color-border);
 	border-radius: var(--radius);
-	background: #ffffff;
+	background: var(--color-control);
 	color: var(--color-text);
 	padding: 8px 12px;
 	font-weight: 750;
@@ -1659,8 +1659,8 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 }
 
 .app-admin-button {
-	border-color: #b7c2d1;
-	background: #f7f8fa;
+	border-color: var(--color-border);
+	background: var(--color-bg-alt);
 }
 
 .app-update-current {
@@ -1672,8 +1672,8 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .app-operation-notice {
 	margin: 0;
 	border-left: 3px solid var(--status-ready);
-	background: #ecfdf3;
-	color: #166534;
+	background: var(--color-success-bg);
+	color: var(--color-success-text);
 	padding: 9px 10px;
 	font-size: .78rem;
 	line-height: 1.45;
