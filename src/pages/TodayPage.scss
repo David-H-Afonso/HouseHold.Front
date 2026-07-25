@@ -1,5 +1,5 @@
 .today-page {
-	--today-line: #dfe4ea;
+	--today-line: var(--color-border);
 	display: grid;
 	gap: 20px;
 	max-width: 980px;
@@ -17,7 +17,7 @@
 
 .today-page__eyebrow,
 .today-section > header h2 {
-	color: #6b7280;
+	color: var(--color-text-muted);
 	font-size: 0.72rem;
 	font-weight: 800;
 	letter-spacing: 0.08em;
@@ -46,10 +46,10 @@
 .today-page__date-controls input {
 	min-height: 44px;
 	box-sizing: border-box;
-	border: 1px solid #cfd6df;
+	border: 1px solid var(--color-border);
 	border-radius: 10px;
-	background: #fff;
-	color: #1f2937;
+	background: var(--color-control);
+	color: var(--color-text);
 	font: inherit;
 }
 
@@ -60,7 +60,7 @@
 	cursor: pointer;
 }
 
-.today-page__date-controls button:hover { background: #f3f4f6; }
+.today-page__date-controls button:hover { background: var(--color-control-hover); }
 .today-page__date-controls svg { width: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
 .today-page__date-controls input { padding: 0 10px; }
 .today-page__date-controls .today-page__today-button { padding: 0 13px; font-weight: 750; }
@@ -68,7 +68,7 @@
 .today-progress {
 	border: 1px solid var(--today-line);
 	border-radius: 14px;
-	background: #fff;
+	background: var(--color-surface);
 	padding: 18px;
 	box-shadow: 0 8px 24px -24px rgba(15, 23, 42, 0.7);
 }
@@ -90,13 +90,13 @@
 	height: 8px;
 	overflow: hidden;
 	border-radius: 999px;
-	background: #e5e7eb;
+	background: var(--color-bg-alt);
 }
 
 .today-progress__done { background: #16a34a; }
 .today-progress__missed { background: #dc2626; }
 .today-progress__na { background: #94a3b8; }
-.today-progress__pending { background: #e5e7eb; }
+.today-progress__pending { background: var(--color-bg-alt); }
 
 .today-progress__legend {
 	display: flex;
@@ -105,22 +105,22 @@
 	margin: 12px 0 0;
 	padding: 0;
 	list-style: none;
-	color: #64748b;
+	color: var(--color-text-muted);
 	font-size: 0.75rem;
 }
 
 .today-progress__legend li { display: flex; align-items: center; gap: 5px; }
-.today-progress__legend i { width: 7px; height: 7px; border-radius: 50%; background: #e5e7eb; }
+.today-progress__legend i { width: 7px; height: 7px; border-radius: 50%; background: var(--color-bg-alt); }
 .today-progress__legend .is-done { background: #16a34a; }
 .today-progress__legend .is-missed { background: #dc2626; }
 .today-progress__legend .is-na { background: #94a3b8; }
-.today-progress__legend strong { color: #334155; }
+.today-progress__legend strong { color: var(--color-text); }
 
 .today-sections { display: grid; gap: 24px; }
 .today-section { display: grid; gap: 3px; }
 .today-section > header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--today-line); padding-bottom: 7px; }
 .today-section > header h2 { margin: 0; }
-.today-section > header span { display: grid; min-width: 24px; height: 24px; place-items: center; border-radius: 999px; background: #e9edf2; color: #475569; font-size: 0.72rem; font-weight: 800; }
+.today-section > header span { display: grid; min-width: 24px; height: 24px; place-items: center; border-radius: 999px; background: var(--color-bg-alt); color: var(--color-text-muted); font-size: 0.72rem; font-weight: 800; }
 
 .today-section__list { display: grid; }
 .today-section .today-action-row { padding: 8px 2px; }
@@ -141,7 +141,7 @@
 .today-section--unavailable .today-task__state,
 .today-section--upcoming .today-task__state { border-color: #94a3b8; }
 .today-section--done .today-task__state,
-.today-section--completed .today-task__state { border-color: #16a34a; background: #16a34a; box-shadow: inset 0 0 0 2px #fff; }
+.today-section--completed .today-task__state { border-color: #16a34a; background: #16a34a; box-shadow: inset 0 0 0 2px var(--color-surface); }
 .today-section--missed .today-task__state { border-color: #dc2626; background: #dc2626; }
 .today-section--notapplicable .today-task__state { border-color: #94a3b8; background: #94a3b8; }
 
@@ -149,9 +149,9 @@
 .today-task__main strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.95rem; }
 .today-task__main span { color: var(--color-text-muted); font-size: 0.78rem; }
 .today-section--done .today-task__main strong,
-.today-section--completed .today-task__main strong { color: #64748b; text-decoration: line-through; }
+.today-section--completed .today-task__main strong { color: var(--color-text-muted); text-decoration: line-through; }
 .today-task__meta { display: flex; gap: 6px; justify-content: flex-end; }
-.today-task__meta span { border: 1px solid #dbe1e8; border-radius: 999px; background: #fff; padding: 4px 8px; color: #526073; font-size: 0.7rem; font-weight: 700; white-space: nowrap; }
+.today-task__meta span { border: 1px solid var(--color-border); border-radius: 999px; background: var(--color-control); padding: 4px 8px; color: var(--color-text-muted); font-size: 0.7rem; font-weight: 700; white-space: nowrap; }
 
 .today-page :focus-visible { outline: 3px solid rgba(79, 70, 229, 0.35); outline-offset: 2px; }
 

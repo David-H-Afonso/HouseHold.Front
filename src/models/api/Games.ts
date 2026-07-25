@@ -13,6 +13,14 @@ export interface GameModuleItem {
 	steamAppId?: number | null
 	steamPlaytimeForever?: number | null
 	openUrl?: string | null
+	released?: string | null
+	comment?: string | null
+	critic?: number | null
+	criticProvider?: string | null
+	story?: number | null
+	completion?: number | null
+	playedStatusName?: string | null
+	playWithNames?: string[]
 	favorite?: boolean
 	addedAt?: string | null
 	updatedAt?: string | null
