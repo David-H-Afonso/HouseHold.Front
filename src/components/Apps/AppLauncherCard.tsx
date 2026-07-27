@@ -106,12 +106,11 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 			</div>
 
 			<div className='app-launcher-card__actions'>
-				{canAdminister && app.updateAvailable !== false && (
+				{canAdminister && (
 					<button type='button' className='app-admin-button' onClick={() => { setActionError(null); setDialogAction({ type: 'update' }) }}>
 						{app.updateAvailable === true ? 'Update' : 'Check/update'}
 					</button>
 				)}
-				{canAdminister && app.updateAvailable === false && <span className='app-update-current'>Up to date</span>}
 				{openUrl ? (
 					<a className='app-open-button' href={openUrl} target='_blank' rel='noopener noreferrer'>
 						Open <Icon name='external' />
