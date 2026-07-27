@@ -2,6 +2,7 @@ export type DashboardWidgetId =
 	| 'app-status'
 	| 'games'
 	| 'today'
+	| 'calendar'
 	| 'jellywatch'
 	| 'jellyfin'
 	| 'warcraft'
@@ -60,7 +61,7 @@ export interface ServerUserPreferences {
 }
 
 export interface ServerDashboardLayoutItem {
-	type: 'apps' | 'games' | 'doit' | 'jellywatch' | 'jellyfin' | 'warcraft' | 'pokemon' | 'github-actions'
+	type: 'apps' | 'games' | 'doit' | 'calendar' | 'jellywatch' | 'jellyfin' | 'warcraft' | 'pokemon' | 'github-actions'
 	position: number
 	visible: boolean
 	size: 'small' | 'medium' | 'large'
@@ -82,6 +83,7 @@ export const dashboardWidgetCatalog: ReadonlyArray<{
 	{ id: 'app-status', name: 'Application status', description: 'Compact service health and account connection LEDs.', defaultSize: 'compact', allowedSizes: ['compact', 'medium', 'wide'] },
 	{ id: 'games', name: 'Games', description: 'Games from your selected Games Database statuses.', defaultSize: 'medium', allowedSizes: ['medium', 'wide'] },
 	{ id: 'today', name: 'Today', description: 'Relevant DoIt tasks and daily progress.', defaultSize: 'medium', allowedSizes: ['compact', 'medium', 'wide'] },
+	{ id: 'calendar', name: 'Calendar', description: 'Upcoming DoIt events and reminders.', defaultSize: 'medium', allowedSizes: ['medium', 'wide'] },
 	{ id: 'jellywatch', name: 'Jellywatch', description: 'Episodes airing in the next seven days.', defaultSize: 'medium', allowedSizes: ['medium', 'wide'] },
 	{ id: 'jellyfin', name: 'Jellyfin', description: 'Continue Watching with Next Up as a fallback.', defaultSize: 'medium', allowedSizes: ['medium', 'wide'] },
 	{ id: 'warcraft', name: 'Warcraft', description: 'Weekly progress and the first pending actions.', defaultSize: 'medium', allowedSizes: ['compact', 'medium', 'wide'] },

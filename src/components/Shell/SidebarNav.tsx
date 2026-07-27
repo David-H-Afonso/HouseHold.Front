@@ -10,6 +10,7 @@ import { useUserPreferences } from '@/contexts/useUserPreferences'
 const primaryLinks = [
 	{ to: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
 	{ to: '/today', label: 'Today', icon: 'today' },
+	{ to: '/calendar', label: 'Calendar', icon: 'today' },
 	{ to: '/apps', label: 'Apps', icon: 'apps' },
 	{ to: '/games', label: 'Games', icon: 'games' },
 	{ to: '/media', label: 'Jellywatch', icon: 'media' },

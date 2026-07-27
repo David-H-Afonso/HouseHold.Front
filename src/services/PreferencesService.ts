@@ -14,7 +14,7 @@ export type PreferencePersistence = 'server' | 'device'
 
 const storageKey = (userId: string) => `household:preferences:${userId}`
 const frontendToServerWidget: Record<DashboardWidgetId, ServerDashboardLayoutItem['type']> = {
-	'app-status': 'apps', games: 'games', today: 'doit', jellywatch: 'jellywatch', jellyfin: 'jellyfin',
+	'app-status': 'apps', games: 'games', today: 'doit', calendar: 'calendar', jellywatch: 'jellywatch', jellyfin: 'jellyfin',
 	warcraft: 'warcraft', pokemon: 'pokemon', workflows: 'github-actions',
 }
 const serverToFrontendWidget = Object.fromEntries(

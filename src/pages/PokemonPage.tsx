@@ -16,18 +16,9 @@ const typeColors: Record<string, string> = {
 	dark: '#705746', steel: '#b7b7ce', fairy: '#d685ad',
 }
 
-const relativeLuminance = (hex: string) => {
-	const channels = [hex.slice(1, 3), hex.slice(3, 5), hex.slice(5, 7)].map((value) => Number.parseInt(value, 16) / 255)
-	const [red, green, blue] = channels.map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4)
-	return red * 0.2126 + green * 0.7152 + blue * 0.0722
-}
-
 const typeStyle = (type: string) => {
 	const color = typeColors[type.toLowerCase()] ?? '#68a090'
-	const luminance = relativeLuminance(color)
-	const whiteContrast = 1.05 / (luminance + 0.05)
-	const darkContrast = (luminance + 0.05) / 0.059
-	return { '--type-color': color, '--type-text': whiteContrast >= darkContrast ? '#ffffff' : '#111827' } as CSSProperties
+	return { '--type-color': color, '--type-text': '#ffffff' } as CSSProperties
 }
 
 const PokemonCardShell = ({ item, children }: { item: PokemonModuleItem; children: ReactNode }) => {

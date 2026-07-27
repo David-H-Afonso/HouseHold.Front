@@ -122,6 +122,10 @@ export const apiRoutes = {
 		undo: (occurrenceId: string) => `/modules/today/occurrences/${occurrenceId}/undo`,
 	},
 
+	calendar: {
+		events: '/modules/calendar/events',
+	},
+
 	/** Jellywatch gateway */
 	media: {
 		jellywatch: '/modules/media/jellywatch',

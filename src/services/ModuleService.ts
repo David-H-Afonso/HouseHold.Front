@@ -7,13 +7,18 @@ import type {
 	TodayModuleResponse,
 	WarcraftWeeklyResponse,
 } from '@/models/api/Modules'
+import type { CalendarEvent as CalendarEventModel } from '@/models/api/Calendar'
 import { customFetch } from '@/utils/customFetch'
 
-const { today, media, pokemon, warcraft } = environment.apiRoutes
+const { today, calendar, media, pokemon, warcraft } = environment.apiRoutes
 
 class ModuleService {
 	today(date: string, timeZoneId?: string): Promise<TodayModuleResponse> {
 		return customFetch<TodayModuleResponse>(today.base, { params: { date, timeZoneId } })
+	}
+
+	calendarEvents(from: string, to: string): Promise<CalendarEventModel[]> {
+		return customFetch<CalendarEventModel[]>(calendar.events, { params: { from, to } })
 	}
 
 	completeTodayOccurrence(occurrenceId: string, date?: string, timeZoneId?: string): Promise<TodayOccurrenceActionResponse> {
@@ -36,7 +41,7 @@ class ModuleService {
 		return customFetch<WarcraftWeeklyResponse['items'][number]>(warcraft.status(id), { method: 'PATCH', body: { status } })
 	}
 
-	pokemon(params: { search: string; tagIds: number[]; skip: number; take: number; spriteSource?: string }): Promise<PokemonModuleResponse> {
+	pokemon(params: { search: string; tagIds: number[]; skip: number; take: number; spriteSource?: string; favorite?: boolean }): Promise<PokemonModuleResponse> {
 		return customFetch<PokemonModuleResponse>(pokemon.base, {
 			params: {
 				search: params.search,
@@ -44,6 +49,7 @@ class ModuleService {
 				skip: params.skip,
 				take: params.take,
 				spriteSource: params.spriteSource,
+				favorite: params.favorite,
 			},
 		})
 	}

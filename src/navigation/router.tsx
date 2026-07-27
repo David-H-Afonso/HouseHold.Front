@@ -6,6 +6,7 @@ import { RouteError } from '@/components/errors'
 
 const AppsPage = lazy(() => import('@/pages/AppsPage').then((module) => ({ default: module.AppsPage })))
 const ChangePasswordPage = lazy(() => import('@/pages/ChangePasswordPage').then((module) => ({ default: module.ChangePasswordPage })))
+const CalendarPage = lazy(() => import('@/pages/CalendarPage').then((module) => ({ default: module.CalendarPage })))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage').then((module) => ({ default: module.DashboardPage })))
 const GamesPage = lazy(() => import('@/pages/GamesPage').then((module) => ({ default: module.GamesPage })))
 const JellyfinPage = lazy(() => import('@/pages/JellyfinPage').then((module) => ({ default: module.JellyfinPage })))
@@ -34,6 +35,7 @@ export const router = createBrowserRouter([
 	{ path: '/', element: <Navigate to='/dashboard' replace /> },
 	{ path: '/dashboard', element: protectedPage(<DashboardPage />), errorElement: <RouteError /> },
 	{ path: '/today', element: protectedPage(<TodayPage />), errorElement: <RouteError /> },
+	{ path: '/calendar', element: protectedPage(<CalendarPage />), errorElement: <RouteError /> },
 	{ path: '/apps', element: protectedPage(<AppsPage />), errorElement: <RouteError /> },
 	{ path: '/games', element: protectedPage(<GamesPage />), errorElement: <RouteError /> },
 	{ path: '/media', element: protectedPage(<MediaPage />), errorElement: <RouteError /> },

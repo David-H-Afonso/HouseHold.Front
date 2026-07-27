@@ -27,6 +27,7 @@ const scopeNames: Record<string, string> = {
 	'tasks.complete': 'Complete tasks',
 	'tasks.undo': 'Undo task completion',
 	'tasks.create': 'Create tasks',
+	'calendar.read': 'View calendar events',
 	'games.read': 'View games',
 	'games.status.write': 'Update game status',
 	'activity.read': 'View activity',
@@ -55,6 +56,7 @@ const safeErrors: Record<string, string> = {
 	refresh_token_expired: 'Your connection expired. Reconnect to continue.',
 	token_unavailable: 'The saved connection can no longer be read. Reconnect to continue.',
 	identity_validation_failed: 'The connected account could not be verified.',
+	permission_missing: 'This connection is missing a permission. Reconnect to grant the latest access.',
 }
 
 const formatDate = (value: string | null | undefined, timeZone: string) => {
