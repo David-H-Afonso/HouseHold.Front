@@ -3,6 +3,7 @@ import type { AppLauncherItem, AppOperation } from '@/models/api/Apps'
 import { BrandMark, ConfirmActionDialog, Icon, IntegrationStatusBadge } from '@/components/Shared'
 import { appCatalogService } from '@/services/AppCatalogService'
 import { safeExternalUrl } from '@/utils'
+import { isApiError } from '@/utils/customFetch'
 import { useUserPreferences } from '@/contexts/useUserPreferences'
 
 interface AppLauncherCardProps {
@@ -63,8 +64,10 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 			void appCatalogService.operations(app.id).then((items) => {
 				if (Array.isArray(items)) setOperations(items)
 			}).catch(() => { /* The accepted state remains useful while history catches up. */ })
-		} catch {
-			setActionError('The operation could not be queued. Check the app state and try again.')
+		} catch (error) {
+			setActionError(isApiError(error) && error.code === 'casaos_reconnect_required'
+				? 'CasaOS rejected the saved token. Reconnect CasaOS in Settings → Apps, then try again.'
+				: 'The operation could not be queued. Check the app state and try again.')
 		} finally {
 			setSubmitting(false)
 		}

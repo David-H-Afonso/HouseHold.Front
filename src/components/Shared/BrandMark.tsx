@@ -10,6 +10,7 @@ const labels: Record<string, string> = {
 	'beast-vault': 'BV',
 	pokemon: 'BV',
 	'warcraft-archive': 'WA',
+	warcraftarchive: 'WA',
 	warcraft: 'WA',
 	github: 'GH',
 }
@@ -26,6 +27,7 @@ const publicBrandImages: Record<string, string> = {
 	beastvault: 'https://beastvault.davidhormigafonso.work/favicon.ico',
 	warcraft: 'https://warcraftarchive.davidhormigafonso.work/favicon.ico',
 	'warcraft-archive': 'https://warcraftarchive.davidhormigafonso.work/favicon.ico',
+	warcraftarchive: 'https://warcraftarchive.davidhormigafonso.work/favicon.ico',
 }
 
 export const BrandMark = ({ provider, name, iconUrl, size = 'medium' }: { provider: string; name?: string; iconUrl?: string | null; size?: 'small' | 'medium' | 'large' }) => {
