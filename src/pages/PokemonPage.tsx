@@ -103,7 +103,7 @@ export const PokemonPage = () => {
 				{tags.length > 0 && <div className='pokemon-tag-filter'>
 					<div className='pokemon-tag-filter__heading'><span>Tags</span>{categories.length > 0 && <small>{categories.length} groups</small>}{selectedTags.length > 0 && <button type='button' onClick={() => { setSelectedTags([]); setSkip(0) }}>Clear</button>}</div>
 					<div className='pokemon-tag-filter__list'>
-							{tags.map((tag) => <button key={tag.id} type='button' aria-pressed={selectedTags.includes(tag.id)} onClick={() => toggleTag(tag.id)} style={{ '--tag-color': tag.colorHex || '#68d5c4' } as CSSProperties}>
+											{tags.map((tag) => <button className={tag.imageUrl ? 'has-image' : undefined} key={tag.id} type='button' aria-pressed={selectedTags.includes(tag.id)} onClick={() => toggleTag(tag.id)} style={{ '--tag-color': tag.colorHex || '#68d5c4' } as CSSProperties}>
 							{tag.imageUrl && <FallbackImage src={tag.imageUrl} alt='' width={20} height={20} />}<span>{tag.name}</span><strong>{tag.pokemonCount}</strong>
 						</button>)}
 					</div>
