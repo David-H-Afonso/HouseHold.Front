@@ -45,6 +45,7 @@ export interface UserPreferences {
 	timezone: string
 	jellyfinUserId: string
 	repositoryVisibility: Record<string, boolean>
+	showShoppation: boolean
 }
 
 export interface ServerUserPreferences {
@@ -104,4 +105,5 @@ export const createDefaultPreferences = (): UserPreferences => ({
 	timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
 	jellyfinUserId: '',
 	repositoryVisibility: {},
+	showShoppation: false,
 })

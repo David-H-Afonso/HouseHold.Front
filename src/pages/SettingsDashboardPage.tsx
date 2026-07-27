@@ -62,6 +62,10 @@ export const SettingsDashboardPage = () => {
 				</article>
 			})}</section>}
 			{ready && <section className='settings-section dashboard-content-settings'>
+				<div><h3>Sidebar links</h3><p>Optional external links can be shown alongside the main Household navigation.</p></div>
+				<label className='switch-field'><input type='checkbox' checked={preferences.showShoppation} onChange={(event) => void updatePreferences({ showShoppation: event.target.checked })} /><span aria-hidden='true' /><div><strong>Shoppation</strong><small>Open the connected Bungie shop and show the daily reset countdown.</small></div></label>
+			</section>}
+			{ready && <section className='settings-section dashboard-content-settings'>
 				<div><h3>Games Widget</h3><p>Select the statuses to show and arrange their query/display priority. Leave all statuses clear to keep the widget intentionally empty.</p></div>
 				{optionsLoading ? <p className='muted'>Loading Games Database statuses…</p> : gameStatuses.length === 0 ? <p className='muted'>No game statuses are available.</p> : <div className='dashboard-status-options'>
 					{gameStatuses.map((status) => {

@@ -66,6 +66,11 @@ const fromServer = (preferences: ServerUserPreferences, layout: ServerDashboardL
 	gameStatusIds: preferences.gamesStatusOrder,
 	jellyfinUserId: preferences.jellyfinUserId ?? '',
 	repositoryVisibility: Object.fromEntries(preferences.hiddenGitHubRepos.map((repository) => [repository, false])),
+	showShoppation: (() => {
+		const settingsJson = layout.widgets.find((widget) => widget.type === 'apps')?.settingsJson
+		try { return JSON.parse(settingsJson ?? '{}').showShoppation === true }
+		catch { return false }
+	})(),
 	widgets: layout.widgets.map((widget) => ({
 			id: serverToFrontendWidget[widget.type],
 			order: widget.position,
@@ -108,7 +113,7 @@ const toServerLayout = (preferences: UserPreferences): ServerDashboardLayout => 
 			size: widget.size === 'compact' ? 'small' : widget.size === 'medium' ? 'medium' : 'large',
 			settingsJson: widget.id === 'pokemon'
 				? JSON.stringify({ dashboardMode: preferences.pokemonDashboardMode, dashboardTagId: preferences.pokemonDashboardTagId })
-				: null,
+				: widget.id === 'app-status' ? JSON.stringify({ showShoppation: preferences.showShoppation }) : null,
 		})),
 })
 

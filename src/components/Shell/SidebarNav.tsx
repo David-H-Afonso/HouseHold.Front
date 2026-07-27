@@ -1,10 +1,11 @@
-import { forwardRef } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { selectCurrentUser, selectIsAdmin, selectRefreshToken } from '@/store/features/auth/selector'
 import { logout } from '@/store/features/auth/authSlice'
 import { authService } from '@/services'
 import { BrandMark, Icon } from '@/components/Shared'
+import { useUserPreferences } from '@/contexts/useUserPreferences'
 
 const primaryLinks = [
 	{ to: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
@@ -19,6 +20,30 @@ const primaryLinks = [
 ]
 
 const plannedItems = ['Downloads', 'Network']
+const SHOPPATION_URL = 'https://shoppation.com/?bungie=connected'
+const SHOPPATION_TIME_ZONE = 'Europe/Madrid'
+
+const secondsUntilShoppationReset = () => {
+	const parts = new Intl.DateTimeFormat('en-GB', {
+		timeZone: SHOPPATION_TIME_ZONE,
+		hour: '2-digit',
+		minute: '2-digit',
+		second: '2-digit',
+		hourCycle: 'h23',
+	}).formatToParts(new Date())
+	const values = Object.fromEntries(parts.filter(({ type }) => type !== 'literal').map(({ type, value }) => [type, Number(value)]))
+	const currentSeconds = values.hour * 3600 + values.minute * 60 + values.second
+	const resetSeconds = 19 * 3600
+	const remaining = resetSeconds - currentSeconds
+	return remaining > 0 ? remaining : remaining + 24 * 3600
+}
+
+const formatCountdown = (totalSeconds: number) => {
+	const hours = Math.floor(totalSeconds / 3600)
+	const minutes = Math.floor((totalSeconds % 3600) / 60)
+	const seconds = totalSeconds % 60
+	return `${hours}h ${minutes}m ${seconds}s`
+}
 
 export const SidebarNav = forwardRef<HTMLElement, { open: boolean; onClose: () => void }>(({ open, onClose }, ref) => {
 	const user = useAppSelector(selectCurrentUser)
@@ -26,6 +51,15 @@ export const SidebarNav = forwardRef<HTMLElement, { open: boolean; onClose: () =
 	const refreshToken = useAppSelector(selectRefreshToken)
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
+	const { preferences } = useUserPreferences()
+	const [shoppationCountdown, setShoppationCountdown] = useState(secondsUntilShoppationReset)
+
+	useEffect(() => {
+		if (!preferences.showShoppation) return
+		const update = () => setShoppationCountdown(secondsUntilShoppationReset())
+		const interval = window.setInterval(update, 1000)
+		return () => window.clearInterval(interval)
+	}, [preferences.showShoppation])
 
 	const signOut = async () => {
 		if (refreshToken) await authService.logout(refreshToken)
@@ -47,6 +81,9 @@ export const SidebarNav = forwardRef<HTMLElement, { open: boolean; onClose: () =
 						<Icon name={link.icon} /><span>{link.label}</span>
 					</NavLink>
 				))}
+				{preferences.showShoppation && <a className='sidebar-nav__link sidebar-nav__external-link' href={SHOPPATION_URL} target='_blank' rel='noopener noreferrer'>
+					<Icon name='apps' /><span className='sidebar-nav__external-copy'><span>Shoppation</span><small aria-live='polite'>Reset in {formatCountdown(shoppationCountdown)}</small></span><Icon name='external' />
+				</a>}
 			</nav>
 
 			<nav className='sidebar-nav__section sidebar-nav__section--settings' aria-label='Settings navigation'>
