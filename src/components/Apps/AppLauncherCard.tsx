@@ -45,20 +45,19 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 		return () => { active = false }
 	}, [app.id, canAdminister])
 
-	const submitAction = async () => {
-		if (!dialogAction) return
+	const executeAction = async (actionToRun: AppAction) => {
 		setSubmitting(true)
 		setActionError(null)
 		try {
-			if (dialogAction.type === 'update') {
+			if (actionToRun.type === 'update') {
 				await appCatalogService.update(app.id, { confirmation: `UPDATE ${app.id}` })
 			} else {
 				await appCatalogService.rollback(app.id, {
-					backupId: dialogAction.backupId,
+					backupId: actionToRun.backupId,
 					confirmation: `ROLLBACK ${app.id}`,
 				})
 			}
-			const action = dialogAction.type === 'update' ? 'Update' : 'Rollback'
+			const action = actionToRun.type === 'update' ? 'Update' : 'Rollback'
 			setNotice(`${action} accepted and queued. ${app.name} may restart.${isHousehold ? ' Updating Household may disconnect this page.' : ''}`)
 			setDialogAction(null)
 			void appCatalogService.operations(app.id).then((items) => {
@@ -71,6 +70,10 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 		} finally {
 			setSubmitting(false)
 		}
+	}
+
+	const submitAction = async () => {
+		if (dialogAction) await executeAction(dialogAction)
 	}
 
 	const requiredPhrase = dialogAction?.type === 'rollback' ? `ROLLBACK ${app.id}` : `UPDATE ${app.id}`
@@ -107,7 +110,7 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 
 			<div className='app-launcher-card__actions'>
 				{canAdminister && (
-					<button type='button' className='app-admin-button' onClick={() => { setActionError(null); setDialogAction({ type: 'update' }) }}>
+					<button type='button' className='app-admin-button' disabled={submitting} onClick={() => { setActionError(null); void executeAction({ type: 'update' }) }}>
 						{app.updateAvailable === true ? 'Update' : 'Check/update'}
 					</button>
 				)}
@@ -120,6 +123,7 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 				)}
 			</div>
 
+			{actionError && !dialogAction && <p className='error-banner' role='alert'>{actionError}</p>}
 			{notice && <p className='app-operation-notice' role='status'>{notice}</p>}
 
 			{canAdminister && operations.length > 0 && <div className='app-operation-history'>
