@@ -66,10 +66,10 @@
 .pokemon-card__sprite .image-fallback-state { border-radius: 50%; color: #c4d5d2; filter: none; }
 .pokemon-card__sprite > span { color: #5c7471; font-size: 2.3rem; font-weight: 800; }
 .pokemon-card__identity { min-width: 0; text-align: center; }
-.pokemon-card__identity h2 { margin: 0; overflow: hidden; color: #fff; font-family: 'Pokemon GBA', sans-serif; font-size: 1rem; font-weight: 400; letter-spacing: .02em; text-shadow: 4px 3px 0 #7a7a7a; text-overflow: ellipsis; white-space: nowrap; }
+.pokemon-card__identity h2 { margin: 0; overflow: hidden; color: #fff; font-family: 'Pokemon GBA', sans-serif; font-size: 1rem; font-weight: 400; letter-spacing: .02em; text-shadow: 1px 1px 0 #7a7a7a; text-overflow: ellipsis; white-space: nowrap; }
 .pokemon-card__identity p { margin: 2px 0 0; color: var(--pokemon-muted); font-size: 0.7rem; }
 .pokemon-card__types { display: flex; justify-content: center; gap: 5px; }
-.pokemon-card__types span { border: 1px solid #7a7a7a; border-radius: 999px; background: #b8b8b8; padding: 5px 8px 3px; color: #fff; font-family: 'Pokemon GBA', sans-serif; font-size: 0.7rem; letter-spacing: .03em; line-height: 1; text-shadow: 4px 3px 0 #7a7a7a; text-transform: uppercase; }
+.pokemon-card__types span { border: 1px solid color-mix(in srgb, var(--type-color) 76%, #fff); border-radius: 999px; background: var(--type-color); padding: 5px 8px 3px; color: #fff; font-family: 'Pokemon GBA', sans-serif; font-size: 0.7rem; letter-spacing: .03em; line-height: 1; text-shadow: 1px 1px 0 #7a7a7a; text-transform: uppercase; }
 .pokemon-card__tags { display: flex; align-content: start; justify-content: center; flex-wrap: wrap; gap: 4px; }
 .pokemon-card__tags span { display: inline-flex; align-items: center; gap: 3px; border: 1px solid color-mix(in srgb, var(--tag-color, #68d5c4) 48%, #314448); border-radius: 6px; background: color-mix(in srgb, var(--tag-color, #68d5c4) 10%, transparent); padding: 3px 5px; color: #bcd0cc; font-size: 0.58rem; }
 .pokemon-card__tags img { width: 13px; height: 13px; object-fit: contain; }
