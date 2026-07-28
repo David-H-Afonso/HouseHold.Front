@@ -155,12 +155,12 @@
 .operational-widget > .horizontal-scroller { min-height: 0; flex: 1; }
 .operational-widget > .horizontal-scroller .horizontal-scroller__track { height: 100%; }
 .dashboard-carousel { display: grid; height: 100%; grid-auto-flow: column; align-items: start; gap: 12px; }
-.dashboard-carousel--games { grid-auto-columns: 142px; }
-.dashboard-carousel--media { grid-auto-columns: 132px; }
+.dashboard-carousel--games { grid-auto-columns: 148px; }
+.dashboard-carousel--media { grid-auto-columns: 128px; }
 .dashboard-carousel--jellyfin { grid-auto-columns: 100%; }
 .dashboard-carousel--pokemon { grid-auto-columns: 136px; }
 .dashboard-widget-slot.is-medium .dashboard-carousel--media,
-.dashboard-widget-slot.is-wide .dashboard-carousel--media { grid-auto-columns: 148px; }
+.dashboard-widget-slot.is-wide .dashboard-carousel--media { grid-auto-columns: 128px; }
 .dashboard-widget-slot.is-medium .dashboard-carousel--jellyfin { grid-auto-columns: calc((100% - 12px) / 2); }
 .dashboard-widget-slot.is-wide .dashboard-carousel--jellyfin { grid-auto-columns: min(320px, calc((100% - 36px) / 4)); }
 
@@ -184,8 +184,16 @@
 .dashboard-carousel--pokemon a,
 .dashboard-carousel--jellyfin article,
 .dashboard-carousel--jellyfin a { display: grid; width: 100%; min-width: 0; gap: 4px; color: inherit; text-decoration: none; }
+.dashboard-carousel--pokemon a {
+	grid-template-rows: 190px auto auto;
+	height: auto;
+	border: 1px solid var(--color-border-subtle);
+	border-radius: 10px;
+	background: #142225;
+	padding: 8px;
+}
 .dashboard-carousel--media img,
-.dashboard-carousel--media .image-fallback-state { display: block; width: 100%; aspect-ratio: 2 / 3; height: auto; border-radius: 10px; object-fit: cover; }
+.dashboard-carousel--media .image-fallback-state { display: block; width: 128px; height: 192px; aspect-ratio: 2 / 3; border-radius: 10px; object-fit: cover; }
 .dashboard-carousel--media strong,
 .dashboard-carousel--jellyfin strong,
 .dashboard-carousel--pokemon strong { display: block; width: 100%; max-width: 100%; min-width: 0; overflow: hidden; font-size: .8rem; text-overflow: ellipsis; white-space: nowrap; }
@@ -198,8 +206,8 @@
 .dashboard-carousel--jellyfin a { border-radius: 10px; cursor: pointer; }
 .dashboard-carousel--jellyfin a:focus-visible { outline: var(--focus-ring); outline-offset: 4px; }
 .dashboard-carousel--pokemon img,
-.dashboard-carousel--pokemon .image-fallback-state { display: block; width: 128px; height: 96px; justify-self: center; border-radius: 10px; background: #142225; object-fit: contain; color: #d1e2df; }
-.dashboard-carousel--pokemon img { display: block; width: 128px; height: 96px; justify-self: center; border-radius: 10px; background: #142225; object-fit: contain; }
+.dashboard-carousel--pokemon .image-fallback-state { display: block; width: 100%; height: 190px; border-radius: 6px; background: transparent; object-fit: contain; color: #d1e2df; }
+.dashboard-carousel--pokemon img { display: block; width: 100%; height: 190px; border-radius: 6px; background: transparent; object-fit: contain; }
 .dashboard-calendar-list { display: grid; min-height: 0; flex: 1; align-content: start; gap: 2px; overflow-y: auto; scrollbar-color: var(--color-border) transparent; scrollbar-width: thin; }
 .dashboard-calendar-list article { display: grid; gap: 3px; border-bottom: 1px solid var(--color-border-subtle); padding: 9px 0; }
 .dashboard-calendar-list article:last-child { border-bottom: 0; }
@@ -261,10 +269,10 @@
 	.dashboard-widget-slot,
 	.dashboard-widget-slot.is-compact,
 	.dashboard-widget-slot.is-wide { width: 100%; }
-	.dashboard-carousel--games { grid-auto-columns: 122px; }
+	.dashboard-carousel--games { grid-auto-columns: 136px; }
 	.dashboard-carousel--media,
 	.dashboard-widget-slot.is-medium .dashboard-carousel--media,
-	.dashboard-widget-slot.is-wide .dashboard-carousel--media { grid-auto-columns: 132px; }
+	.dashboard-widget-slot.is-wide .dashboard-carousel--media { grid-auto-columns: 128px; }
 	.dashboard-carousel--jellyfin { grid-auto-columns: 100%; }
 	.dashboard-widget-slot.is-medium .dashboard-carousel--jellyfin,
 	.dashboard-widget-slot.is-wide .dashboard-carousel--jellyfin { grid-auto-columns: 100%; }
