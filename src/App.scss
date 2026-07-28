@@ -1452,7 +1452,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .icon-button-with-label svg { width: 17px; }
 button:disabled { cursor: not-allowed; opacity: .55; }
 
-.horizontal-scroller { position: relative; min-width: 0; overflow: hidden; }
+.horizontal-scroller { position: relative; min-width: 0; }
 .horizontal-scroller__track { min-width: 0; overflow-x: auto; overflow-y: clip; overscroll-behavior-inline: contain; overscroll-behavior-block: none; padding: 3px 2px 8px; scroll-behavior: smooth; scroll-snap-type: x proximity; scrollbar-color: #b6beca transparent; scrollbar-width: thin; touch-action: pan-x pinch-zoom; }
 .horizontal-scroller__track>* > * { scroll-snap-align: start; }
 
