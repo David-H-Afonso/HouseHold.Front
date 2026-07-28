@@ -69,15 +69,17 @@ export const SettingsAppsPage = () => {
 		const formElement = event.currentTarget
 		const form = new FormData(formElement)
 		const token = String(form.get('token')).trim()
+		const refreshToken = String(form.get('refreshToken')).trim()
 		setError(null)
 		try {
 			const result = await casaOsService.updateConfig({
 				internalBaseUrl: String(form.get('baseUrl')).trim(),
 				...(token ? { rawToken: token } : {}),
+				...(refreshToken ? { rawRefreshToken: refreshToken } : {}),
 			})
 			setCasaOsConfig(result)
 			formElement.reset()
-			setNotice('CasaOS connection saved. The token remains write-only and server-side.')
+			setNotice('CasaOS connection saved. Household will refresh it automatically when a refresh token is configured.')
 		} catch { setError('CasaOS configuration could not be saved.') }
 	}
 
@@ -105,11 +107,12 @@ export const SettingsAppsPage = () => {
 				<div>
 					<h3>CasaOS app management</h3>
 					<p>Status: <strong>{casaOsConfig?.configured ? 'Configured' : 'Not configured'}</strong>. Household uses this server-side connection to check, update, and roll back apps from the Apps page.</p>
-					<p>The token is write-only: Household never returns or displays it. Leave the token empty to retain the saved value; entering one replaces it.</p>
+					<p>Tokens are write-only: Household never returns or displays them. Configure both CasaOS tokens once so Household can renew the connection automatically.</p>
 				</div>
 				<form onSubmit={configureCasaOs}>
 					<label className='settings-field'><span>CasaOS URL</span><input name='baseUrl' type='url' placeholder='http://casaos.local' autoComplete='url' required /></label>
 					<label className='settings-field'><span>{casaOsConfig?.hasToken ? 'New token (leave empty to retain)' : 'Token'}</span><input name='token' type='password' autoComplete='new-password' required={!casaOsConfig?.hasToken} /></label>
+					<label className='settings-field'><span>{casaOsConfig?.hasRefreshToken ? 'New refresh token (leave empty to retain)' : 'Refresh token'}</span><input name='refreshToken' type='password' autoComplete='new-password' required={!casaOsConfig?.hasRefreshToken} /></label>
 					<button className='button-primary' type='submit'>Save CasaOS connection</button>
 				</form>
 			</section>

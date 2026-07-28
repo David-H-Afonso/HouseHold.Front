@@ -30,11 +30,13 @@ export interface AppLauncherCategory {
 export interface CasaOsConfig {
 	configured: boolean
 	hasToken: boolean
+	hasRefreshToken: boolean
 }
 
 export interface UpdateCasaOsConfigRequest {
 	internalBaseUrl: string
 	rawToken?: string
+	rawRefreshToken?: string
 }
 
 export type AppOperationAction = 'update' | 'rollback' | string
