@@ -9,6 +9,15 @@ import './MediaPage.scss'
 const episodeCode = (season: number | null, episode: number | null) =>
 	season === null || episode === null ? null : `S${season} E${episode}`
 
+const upcomingTimestamp = (item: UpcomingMedia): number => {
+	const timestamp = item.airTimeUtc ? Date.parse(item.airTimeUtc) : NaN
+	if (!Number.isNaN(timestamp)) return timestamp
+
+	const fallbackTime = item.airTime ?? (/^\d{1,2}:\d{2}/.test(item.airTimeUtc ?? '') ? item.airTimeUtc : null)
+	const fallback = Date.parse(`${item.airDate}T${fallbackTime ?? '00:00'}`)
+	return Number.isNaN(fallback) ? Number.MAX_SAFE_INTEGER : fallback
+}
+
 const upcomingLabel = (item: UpcomingMedia, timeZone: string) => {
 	const utcSource = item.airTimeUtc ? new Date(item.airTimeUtc) : null
 	const source = utcSource && !Number.isNaN(utcSource.getTime())
@@ -35,7 +44,9 @@ export const MediaPage = () => {
 	useEffect(() => {
 		let active = true
 		moduleService.media()
-			.then((response) => { if (active) setData(response) })
+			.then((response) => {
+				if (active) setData({ ...response, upcoming: [...response.upcoming].sort((a, b) => upcomingTimestamp(a) - upcomingTimestamp(b)) })
+			})
 			.catch(() => { if (active) setFailed(true) })
 			.finally(() => { if (active) setLoading(false) })
 		return () => { active = false }
