@@ -255,6 +255,16 @@
 	.dashboard-widget-slot,
 	.dashboard-widget-slot.is-compact { grid-column: span 1; }
 	.dashboard-widget-slot.is-wide { grid-column: 1 / -1; }
+	.dashboard-carousel--games { grid-auto-columns: 124px; }
+	.dashboard-carousel--media,
+	.dashboard-widget-slot.is-medium .dashboard-carousel--media,
+	.dashboard-widget-slot.is-wide .dashboard-carousel--media { grid-auto-columns: 116px; }
+	.dashboard-carousel--media img,
+	.dashboard-carousel--media .image-fallback-state { width: 116px; height: 174px; }
+	.dashboard-carousel--pokemon { grid-auto-columns: 120px; }
+	.dashboard-carousel--pokemon a { grid-template-rows: 168px auto auto; padding: 6px; }
+	.dashboard-carousel--pokemon img,
+	.dashboard-carousel--pokemon .image-fallback-state { height: 168px; }
 }
 
 @container dashboard (max-width: 560px) {
@@ -269,13 +279,19 @@
 	.dashboard-widget-slot,
 	.dashboard-widget-slot.is-compact,
 	.dashboard-widget-slot.is-wide { width: 100%; }
-	.dashboard-carousel--games { grid-auto-columns: 136px; }
+	.dashboard-carousel--games { grid-auto-columns: 116px; }
 	.dashboard-carousel--media,
 	.dashboard-widget-slot.is-medium .dashboard-carousel--media,
-	.dashboard-widget-slot.is-wide .dashboard-carousel--media { grid-auto-columns: 128px; }
+	.dashboard-widget-slot.is-wide .dashboard-carousel--media { grid-auto-columns: 112px; }
+	.dashboard-carousel--media img,
+	.dashboard-carousel--media .image-fallback-state { width: 112px; height: 168px; }
 	.dashboard-carousel--jellyfin { grid-auto-columns: 100%; }
 	.dashboard-widget-slot.is-medium .dashboard-carousel--jellyfin,
 	.dashboard-widget-slot.is-wide .dashboard-carousel--jellyfin { grid-auto-columns: 100%; }
+	.dashboard-carousel--pokemon { grid-auto-columns: 116px; }
+	.dashboard-carousel--pokemon a { grid-template-rows: 160px auto auto; }
+	.dashboard-carousel--pokemon img,
+	.dashboard-carousel--pokemon .image-fallback-state { height: 160px; }
 	.app-status-strip > div:last-child,
 	.dashboard-widget-slot--app-status.is-wide .app-status-strip > div:last-child { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 	.warcraft-dashboard-list > div { grid-template-columns: 74px minmax(0, 1fr); }
