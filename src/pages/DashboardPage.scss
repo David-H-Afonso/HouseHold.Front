@@ -19,13 +19,12 @@
 	display: grid;
 	grid-template-columns: repeat(12, minmax(0, 1fr));
 	gap: var(--shell-space-4);
-	align-items: stretch;
+	align-items: start;
 }
 
 .dashboard-widget-slot {
 	min-width: 0;
 	grid-column: span 6;
-	display: flex;
 }
 
 .dashboard-widget-slot--app-status { grid-column: 1 / -1; }
@@ -36,7 +35,7 @@
 .app-status-strip {
 	position: relative;
 	width: 100%;
-	height: 100%;
+	height: auto;
 	min-width: 0;
 	overflow: hidden;
 	border: 1px solid var(--color-border-subtle);
@@ -141,7 +140,7 @@
 .dashboard-carousel { display: grid; grid-auto-flow: column; gap: 12px; }
 .dashboard-carousel--games { grid-auto-columns: 142px; }
 .dashboard-carousel--media { grid-auto-columns: 148px; }
-.dashboard-carousel--jellyfin { grid-auto-columns: minmax(220px, 1fr); }
+.dashboard-carousel--jellyfin { grid-auto-columns: clamp(220px, 46%, 360px); }
 .dashboard-carousel--pokemon { grid-auto-columns: 128px; }
 
 .dashboard-game-card { display: grid; min-width: 0; gap: 6px; }
@@ -242,8 +241,6 @@
 	.dashboard-widget-slot,
 	.dashboard-widget-slot.is-compact,
 	.dashboard-widget-slot.is-wide { width: 100%; }
-	.operational-widget,
-	.app-status-strip { height: auto; }
 	.dashboard-carousel--games { grid-auto-columns: 122px; }
 	.dashboard-carousel--media { grid-auto-columns: 132px; }
 	.dashboard-carousel--jellyfin { grid-auto-columns: 100%; }
