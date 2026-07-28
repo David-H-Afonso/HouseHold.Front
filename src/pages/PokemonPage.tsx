@@ -26,6 +26,10 @@ const PokemonCardShell = ({ item, children }: { item: PokemonModuleItem; childre
 	return url ? <a href={url} target='_blank' rel='noopener noreferrer' className='pokemon-card'>{children}</a> : <article className='pokemon-card'>{children}</article>
 }
 
+const formLabel = (item: PokemonModuleItem) => item.formName && !['normal', 'default'].includes(item.formName.toLowerCase())
+	? `${item.speciesName} · ${item.formName}`
+	: item.speciesName
+
 export const PokemonPage = () => {
 	const [search, setSearch] = useState('')
 	const [query, setQuery] = useState('')
@@ -122,7 +126,7 @@ export const PokemonPage = () => {
 						<div className='pokemon-card__flags'>{item.favorite && <span title='Favorite'><svg viewBox='0 0 24 24' aria-hidden='true'><path d='m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z' /></svg><span className='sr-only'>Favorite</span></span>}{item.isShiny && <b>Shiny</b>}{item.isEgg && <b>Egg</b>}</div>
 						<button className='pokemon-card__download' type='button' onClick={(event) => download(event, item)} disabled={downloading !== null} aria-label={`Download ${item.nickname || item.speciesName}`}><Icon name='download' />{downloading === item.id && <span className='sr-only'>Downloading</span>}</button>
 						<div className='pokemon-card__sprite'><FallbackImage src={item.spriteUrl} fallbackSrc={item.fallbackSpriteUrl} alt={item.nickname || item.speciesName} fallbackLabel={item.speciesName} loading='lazy' /></div>
-						<div className='pokemon-card__identity'><h2>{item.nickname || item.speciesName}</h2>{item.nickname && <p>{item.speciesName}</p>}</div>
+						<div className='pokemon-card__identity'><h2>{item.nickname || formLabel(item)}</h2>{item.nickname && <p>{formLabel(item)}</p>}</div>
 						<div className='pokemon-card__types'>{[item.type1, item.type2].filter((type): type is string => Boolean(type)).map((type) => <span key={type} style={typeStyle(type)}>{type}</span>)}</div>
 						{item.tags.length > 0 && <div className='pokemon-card__tags'>{item.tags.slice(0, 4).map((tag) => <span key={tag.id} style={{ '--tag-color': tag.colorHex || '#68d5c4' } as CSSProperties}>{tag.imageUrl && <FallbackImage src={tag.imageUrl} alt='' width={16} height={16} />}{tag.name}</span>)}{item.tags.length > 4 && <span>+{item.tags.length - 4}</span>}</div>}
 					</PokemonCardShell>)}

@@ -66,7 +66,9 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 		} catch (error) {
 			setActionError(isApiError(error) && error.code === 'casaos_reconnect_required'
 				? 'CasaOS rejected the saved token. Reconnect CasaOS in Settings → Apps, then try again.'
-				: 'The operation could not be queued. Check the app state and try again.')
+				: isApiError(error) && error.status === 429
+					? 'CasaOS actions are temporarily rate-limited. Wait a few minutes before trying again.'
+					: 'The operation could not be queued. Check the app state and try again.')
 		} finally {
 			setSubmitting(false)
 		}

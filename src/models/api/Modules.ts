@@ -127,6 +127,7 @@ export interface PokemonModuleItem {
 	id: number
 	speciesId: number
 	speciesName: string
+	formName: string | null
 	nickname: string | null
 	level: number
 	isShiny: boolean
