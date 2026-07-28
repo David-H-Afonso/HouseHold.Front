@@ -6,6 +6,7 @@ import { selectIsAdmin } from '@/store/features/auth/selector'
 import { casaOsService, operationsService } from '@/services'
 import type { GitHubActionsConfig, JellyfinConfig } from '@/models/api/Operations'
 import type { CasaOsConfig } from '@/models/api/Apps'
+import { isApiError } from '@/utils/customFetch'
 
 const spriteSources: Array<{ value: PokemonSpriteSource; label: string }> = [
 	{ value: 'home', label: 'Pokémon HOME' },
@@ -80,7 +81,11 @@ export const SettingsAppsPage = () => {
 			setCasaOsConfig(result)
 			formElement.reset()
 			setNotice('CasaOS connection saved. Household will refresh it automatically when a refresh token is configured.')
-		} catch { setError('CasaOS configuration could not be saved.') }
+		} catch (reason) {
+			setError(isApiError(reason) && reason.code === 'casaos_token_pair_invalid'
+				? 'CasaOS rejected this token pair. Sign in to CasaOS again, then copy both fresh tokens from the same session.'
+				: 'CasaOS configuration could not be saved.')
+		}
 	}
 
 	return <div className='settings-page'>
@@ -107,7 +112,8 @@ export const SettingsAppsPage = () => {
 				<div>
 					<h3>CasaOS app management</h3>
 					<p>Status: <strong>{casaOsConfig?.configured ? 'Configured' : 'Not configured'}</strong>. Household uses this server-side connection to check, update, and roll back apps from the Apps page.</p>
-					<p>Tokens are write-only: Household never returns or displays them. Configure both CasaOS tokens once so Household can renew the connection automatically.</p>
+					<p>Sign in to CasaOS, open browser DevTools → Application → Local Storage, and copy <code>access_token</code> and <code>refresh_token</code> from the same session. Household validates and rotates them when saved, then renews them automatically every hour.</p>
+					<p>Tokens are write-only: Household never returns or displays them. You only need to repeat this after CasaOS UserService restarts and invalidates every existing CasaOS session.</p>
 				</div>
 				<form onSubmit={configureCasaOs}>
 					<label className='settings-field'><span>CasaOS URL</span><input name='baseUrl' type='url' placeholder='http://casaos.local' autoComplete='url' required /></label>
