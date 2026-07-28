@@ -155,7 +155,7 @@
 .operational-widget > .horizontal-scroller { min-height: 0; flex: 1; }
 .operational-widget > .horizontal-scroller .horizontal-scroller__track { height: 100%; }
 .dashboard-carousel { display: grid; height: 100%; grid-auto-flow: column; align-items: start; gap: 12px; }
-.dashboard-carousel--games { grid-auto-columns: 148px; }
+.dashboard-carousel--games { grid-auto-columns: 136px; }
 .dashboard-carousel--media { grid-auto-columns: 128px; }
 .dashboard-carousel--jellyfin { grid-auto-columns: 100%; }
 .dashboard-carousel--pokemon { grid-auto-columns: 136px; }
@@ -193,7 +193,7 @@
 	padding: 8px;
 }
 .dashboard-carousel--media img,
-.dashboard-carousel--media .image-fallback-state { display: block; width: 128px; height: 192px; aspect-ratio: 2 / 3; border-radius: 10px; object-fit: cover; }
+.dashboard-carousel--media .image-fallback-state { display: block; width: 128px; height: 190px; max-height: calc(100% - 44px); aspect-ratio: 2 / 3; border-radius: 10px; object-fit: cover; }
 .dashboard-carousel--media strong,
 .dashboard-carousel--jellyfin strong,
 .dashboard-carousel--pokemon strong { display: block; width: 100%; max-width: 100%; min-width: 0; overflow: hidden; font-size: .8rem; text-overflow: ellipsis; white-space: nowrap; }
