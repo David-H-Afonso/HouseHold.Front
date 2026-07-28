@@ -80,7 +80,7 @@ export const dashboardWidgetCatalog: ReadonlyArray<{
 	defaultSize: DashboardWidgetSize
 	allowedSizes: DashboardWidgetSize[]
 }> = [
-	{ id: 'app-status', name: 'Application status', description: 'Compact service health and account connection LEDs.', defaultSize: 'compact', allowedSizes: ['compact', 'medium', 'wide'] },
+  { id: 'app-status', name: 'Application status', description: 'Service health and account connection at a glance.', defaultSize: 'medium', allowedSizes: ['compact', 'medium', 'wide'] },
 	{ id: 'games', name: 'Games', description: 'Games from your selected Games Database statuses.', defaultSize: 'medium', allowedSizes: ['medium', 'wide'] },
 	{ id: 'today', name: 'Today', description: 'Relevant DoIt tasks and daily progress.', defaultSize: 'medium', allowedSizes: ['compact', 'medium', 'wide'] },
 	{ id: 'calendar', name: 'Calendar', description: 'Upcoming DoIt events and reminders.', defaultSize: 'medium', allowedSizes: ['medium', 'wide'] },

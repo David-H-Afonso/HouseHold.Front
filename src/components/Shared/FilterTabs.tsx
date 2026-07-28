@@ -11,6 +11,8 @@ export const FilterTabs = ({ options, value, onChange }: FilterTabsProps) => {
 				<button
 					key={option}
 					type='button'
+					role='tab'
+					aria-selected={option === value}
 					className={option === value ? 'filter-tabs__tab filter-tabs__tab--active' : 'filter-tabs__tab'}
 					onClick={() => onChange(option)}
 				>

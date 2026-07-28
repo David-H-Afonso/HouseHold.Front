@@ -8,9 +8,9 @@ import { BrandMark, Icon } from '@/components/Shared'
 import { useUserPreferences } from '@/contexts/useUserPreferences'
 
 const primaryLinks = [
-	{ to: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
+	{ to: '/dashboard', label: 'Home', icon: 'home' },
 	{ to: '/today', label: 'Today', icon: 'today' },
-	{ to: '/calendar', label: 'Calendar', icon: 'today' },
+	{ to: '/calendar', label: 'Calendar', icon: 'calendar' },
 	{ to: '/apps', label: 'Apps', icon: 'apps' },
 	{ to: '/games', label: 'Games', icon: 'games' },
 	{ to: '/media', label: 'Jellywatch', icon: 'media' },

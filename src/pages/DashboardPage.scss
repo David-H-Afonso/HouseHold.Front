@@ -17,25 +17,26 @@
 
 .dashboard-operational-grid {
 	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	grid-auto-flow: dense;
-	grid-auto-rows: 8px;
-	column-gap: var(--shell-space-5);
-	align-items: start;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	gap: var(--shell-space-4);
+	align-items: stretch;
 }
 
 .dashboard-widget-slot {
 	min-width: 0;
-	grid-row-end: span var(--dashboard-row-span, 40);
+	grid-column: span 6;
+	display: flex;
 }
 
-.dashboard-widget-slot[data-lane='left'] { grid-column: 1; }
-.dashboard-widget-slot[data-lane='right'] { grid-column: 2; }
-.dashboard-widget-slot[data-lane='wide'] { grid-column: 1 / -1; }
+.dashboard-widget-slot--app-status { grid-column: 1 / -1; }
+.dashboard-widget-slot.is-compact { grid-column: span 4; }
+.dashboard-widget-slot.is-wide { grid-column: 1 / -1; }
 
 .operational-widget,
 .app-status-strip {
 	position: relative;
+	width: 100%;
+	height: 100%;
 	min-width: 0;
 	overflow: hidden;
 	border: 1px solid var(--color-border-subtle);
@@ -139,8 +140,8 @@
 
 .dashboard-carousel { display: grid; grid-auto-flow: column; gap: 12px; }
 .dashboard-carousel--games { grid-auto-columns: 142px; }
-.dashboard-carousel--media { grid-auto-columns: 122px; }
-.dashboard-carousel--jellyfin { grid-auto-columns: clamp(220px, 46%, 320px); }
+.dashboard-carousel--media { grid-auto-columns: 148px; }
+.dashboard-carousel--jellyfin { grid-auto-columns: minmax(220px, 1fr); }
 .dashboard-carousel--pokemon { grid-auto-columns: 128px; }
 
 .dashboard-game-card { display: grid; min-width: 0; gap: 6px; }
@@ -221,8 +222,11 @@
 .dashboard-page .horizontal-scroller__track select { cursor: pointer; }
 
 @container dashboard (max-width: 900px) {
-	.dashboard-operational-grid { display: flex; flex-direction: column; gap: var(--shell-space-5); }
-	.dashboard-widget-slot { width: 100%; grid-row-end: auto; }
+	.dashboard-operational-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.dashboard-widget-slot,
+	.dashboard-widget-slot.is-compact { grid-column: span 1; }
+	.dashboard-widget-slot--app-status,
+	.dashboard-widget-slot.is-wide { grid-column: 1 / -1; }
 	.app-status-strip { grid-template-columns: 1fr; }
 }
 
@@ -234,8 +238,15 @@
 	.dashboard-page .icon-button-with-label { min-height: 34px; padding-inline: 10px; }
 	.operational-widget,
 	.app-status-strip { padding: var(--shell-space-4); }
+	.dashboard-operational-grid { display: flex; flex-direction: column; gap: var(--shell-space-4); }
+	.dashboard-widget-slot,
+	.dashboard-widget-slot.is-compact,
+	.dashboard-widget-slot.is-wide { width: 100%; }
+	.operational-widget,
+	.app-status-strip { height: auto; }
 	.dashboard-carousel--games { grid-auto-columns: 122px; }
-	.dashboard-carousel--jellyfin { grid-auto-columns: 82%; }
+	.dashboard-carousel--media { grid-auto-columns: 132px; }
+	.dashboard-carousel--jellyfin { grid-auto-columns: 100%; }
 	.app-status-strip > div:last-child { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 	.warcraft-dashboard-list > div { grid-template-columns: 74px minmax(0, 1fr); }
 	.warcraft-dashboard-list label { grid-column: 2; grid-row: auto; }
