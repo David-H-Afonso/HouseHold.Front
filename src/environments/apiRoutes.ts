@@ -27,9 +27,9 @@ export const apiRoutes = {
 	},
 
 	settings: {
-		preferences: '/api/v1/preferences',
-		dashboardLayout: '/api/v1/dashboard/layout',
-		resetDashboardLayout: '/api/v1/dashboard/layout/reset',
+		preferences: '/v1/preferences',
+		dashboardLayout: '/v1/dashboard/layout',
+		resetDashboardLayout: '/v1/dashboard/layout/reset',
 	},
 
 	/** Food items */
@@ -97,13 +97,13 @@ export const apiRoutes = {
 		byId: (id: string) => `/modules/apps/${id}`,
 		categories: '/modules/apps/categories',
 		favorite: (id: string) => `/modules/apps/${id}/favorite`,
-		update: (id: string) => `/api/v1/admin/casaos/apps/${encodeURIComponent(id)}/update`,
-		rollback: (id: string) => `/api/v1/admin/casaos/apps/${encodeURIComponent(id)}/rollback`,
-		operations: (id: string) => `/api/v1/admin/casaos/apps/${encodeURIComponent(id)}/actions`,
+		update: (id: string) => `/v1/admin/casaos/apps/${encodeURIComponent(id)}/update`,
+		rollback: (id: string) => `/v1/admin/casaos/apps/${encodeURIComponent(id)}/rollback`,
+		operations: (id: string) => `/v1/admin/casaos/apps/${encodeURIComponent(id)}/actions`,
 	},
 
 	casaos: {
-		config: '/api/v1/admin/casaos/config',
+		config: '/v1/admin/casaos/config',
 	},
 
 	/** Games Database gateway */
@@ -145,13 +145,13 @@ export const apiRoutes = {
 	},
 
 	jellyfin: {
-		base: '/api/v1/jellyfin/dashboard',
-		config: '/api/v1/jellyfin/config',
+		base: '/v1/jellyfin/dashboard',
+		config: '/v1/jellyfin/config',
 	},
 
 	workflows: {
-		base: '/api/v1/github-actions',
-		config: '/api/v1/github-actions/config',
+		base: '/v1/github-actions',
+		config: '/v1/github-actions/config',
 	},
 
 	// legacy placeholder kept for TS compatibility
