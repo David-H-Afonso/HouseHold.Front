@@ -57,19 +57,15 @@ describe('App operation disclosure', () => {
 		expect(screen.getByRole('button', { name: 'Rollback this backup' })).toBeEnabled()
 	})
 
-	it('requires typed confirmation before an update is queued', async () => {
+	it('queues an update immediately without opening a dialog', async () => {
 		vi.spyOn(appCatalogService, 'operations').mockResolvedValue([])
 		const update = vi.spyOn(appCatalogService, 'update').mockResolvedValue()
 		const user = userEvent.setup()
 		render(<TestProviders><AppLauncherCard app={app} isAdmin onToggleFavorite={vi.fn()} /></TestProviders>)
 
 		await user.click(screen.getByRole('button', { name: 'Check/update' }))
-		expect(update).not.toHaveBeenCalled()
-		expect(screen.getByRole('dialog', { name: 'Update Household' })).toBeInTheDocument()
-
-		await user.type(screen.getByRole('textbox'), 'UPDATE household')
-		await user.click(screen.getByRole('button', { name: 'Queue update' }))
 
 		await waitFor(() => expect(update).toHaveBeenCalledWith('household', { confirmation: 'UPDATE household' }))
+		expect(screen.queryByRole('dialog', { name: 'Update Household' })).not.toBeInTheDocument()
 	})
 })

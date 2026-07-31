@@ -114,7 +114,7 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 
 			<div className='app-launcher-card__actions'>
 				{canAdminister && (
-					<button type='button' className='app-admin-button' disabled={submitting} onClick={() => { setActionError(null); setDialogAction({ type: 'update' }) }}>
+					<button type='button' className='app-admin-button' disabled={submitting} onClick={() => { setActionError(null); void executeAction({ type: 'update' }) }}>
 						{app.updateAvailable === true ? 'Update' : 'Check/update'}
 					</button>
 				)}
