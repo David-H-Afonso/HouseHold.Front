@@ -1,12 +1,21 @@
 import { useEffect, useState } from 'react'
 import { BrandMark, Icon, ModuleState } from '@/components/Shared'
 import { useUserPreferences } from '@/contexts/useUserPreferences'
+import type { AppLauncherItem } from '@/models/api/Apps'
 import type { WorkflowRun, WorkflowsResponse } from '@/models/api/Operations'
-import { operationsService } from '@/services'
+import { appCatalogService, operationsService } from '@/services'
 import { safeExternalUrl } from '@/utils'
 import './WorkflowsPage.scss'
 
 const displayStatus = (run: WorkflowRun) => run.status === 'completed' ? (run.conclusion ?? 'unknown') : (run.status ?? 'unknown')
+
+const brandKey = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '')
+
+const buildIconMap = (apps: AppLauncherItem[]) => apps.reduce<Record<string, string>>((result, app) => {
+	if (!app.iconUrl) return result
+	for (const value of [app.id, app.name]) if (value) result[brandKey(value)] = app.iconUrl
+	return result
+}, {})
 
 const executionDate = (run: WorkflowRun) => {
 	for (const value of [run.startedAt, run.completedAt]) {
@@ -47,7 +56,13 @@ export const WorkflowsPage = () => {
 	const [data, setData] = useState<WorkflowsResponse | null>(null)
 	const [failed, setFailed] = useState(false)
 	const [loading, setLoading] = useState(true)
+	const [iconMap, setIconMap] = useState<Record<string, string>>({})
 	const { preferences } = useUserPreferences()
+	useEffect(() => {
+		let active = true
+		appCatalogService.list().then((apps) => { if (active) setIconMap(buildIconMap(apps)) }).catch(() => {})
+		return () => { active = false }
+	}, [])
 	useEffect(() => {
 		let active = true
 		const load = () => operationsService.workflows().then((result) => { if (active) { setData(result); setFailed(false) } }).catch(() => { if (active) setFailed(true) }).finally(() => { if (active) setLoading(false) })
@@ -64,6 +79,6 @@ export const WorkflowsPage = () => {
 		{failed && <ModuleState kind='error' title='Workflows are not configured'>Configure the server-side GitHub integration in Settings. No GitHub token is requested by this page.</ModuleState>}
 		{!loading && !failed && visible.length === 0 && <ModuleState kind='empty' title='No repositories visible'>Enable repositories in Settings or configure the server-side GitHub integration.</ModuleState>}
 		{!loading && !failed && visible.length > 0 && <section className='workflow-summary' aria-label='Workflow summary'><div><strong>{failedCount}</strong><span>Failed</span></div><div><strong>{runningCount}</strong><span>Running</span></div><div><strong>{latestSuccess ? latestSuccess.repository.split('/').at(-1) : 'None'}</strong><span>Latest success</span>{latestSuccess && <WorkflowExecutionTime run={latestSuccess} timeZone={preferences.timezone} />}</div></section>}
-		{groups.map(([application, runs]) => <section className='workflow-group' key={application}><header><BrandMark provider={application.toLowerCase().replaceAll(' ', '-')} name={application} /><div><h2>{application}</h2><span>{runs.length} repositories</span></div></header><div>{runs.map((run) => <WorkflowRow key={run.repository} run={run} timeZone={preferences.timezone} />)}</div></section>)}
+		{groups.map(([application, runs]) => <section className='workflow-group' key={application}><header><BrandMark provider={application.toLowerCase().replaceAll(' ', '-')} name={application} iconUrl={iconMap[brandKey(application)]} /><div><h2>{application}</h2><span>{runs.length} repositories</span></div></header><div>{runs.map((run) => <WorkflowRow key={run.repository} run={run} timeZone={preferences.timezone} />)}</div></section>)}
 	</div>
 }
