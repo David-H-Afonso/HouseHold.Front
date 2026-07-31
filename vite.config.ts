@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import svgr from 'vite-plugin-svgr'
 import react from '@vitejs/plugin-react'
 
@@ -41,5 +41,11 @@ export default defineConfig({
 	server: {
 		port: 5173,
 		host: true,
+	},
+	test: {
+		environment: 'jsdom',
+		setupFiles: './src/test/setup.ts',
+		css: true,
+		clearMocks: true,
 	},
 })

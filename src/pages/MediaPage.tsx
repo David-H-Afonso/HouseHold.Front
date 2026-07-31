@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FallbackImage, ModuleState } from '@/components/Shared'
+import { ExternalProviderLink, FallbackImage, ModuleState } from '@/components/Shared'
 import type { MediaModuleResponse, UpcomingMedia } from '@/models/api/Modules'
 import { moduleService } from '@/services'
 import { safeExternalUrl } from '@/utils'
@@ -63,7 +63,7 @@ export const MediaPage = () => {
 	return (
 		<div className='media-page'>
 			<header className='media-page__header'>
-				<div><span>Jellywatch</span><h1>{data?.profile.displayName ? `${data.profile.displayName}'s watchlist` : 'Media'}</h1><p>What's next and what you watched most recently.</p></div>
+				<div><ExternalProviderLink provider='jellywatch'>Jellywatch</ExternalProviderLink><h1>{data?.profile.displayName ? `${data.profile.displayName}'s watchlist` : 'Media'}</h1></div>
 				{data && !failed && <div className='media-page__signal' aria-label='Jellywatch connected'><i aria-hidden='true' />Live library</div>}
 			</header>
 

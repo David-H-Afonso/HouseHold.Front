@@ -8,6 +8,21 @@ import './WorkflowsPage.scss'
 
 const displayStatus = (run: WorkflowRun) => run.status === 'completed' ? (run.conclusion ?? 'unknown') : (run.status ?? 'unknown')
 
+const executionDate = (run: WorkflowRun) => {
+	for (const value of [run.startedAt, run.completedAt]) {
+		if (!value) continue
+		const date = new Date(value)
+		if (!Number.isNaN(date.getTime())) return date
+	}
+	return null
+}
+
+const WorkflowExecutionTime = ({ run, timeZone, className }: { run: WorkflowRun; timeZone: string; className?: string }) => {
+	const date = executionDate(run)
+	if (!date) return <span className={className}>Execution time unavailable</span>
+	return <time className={className} dateTime={date.toISOString()}>{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short', timeZone }).format(date)}</time>
+}
+
 const runDuration = (run: WorkflowRun) => {
 	if (!run.startedAt) return '—'
 	const start = new Date(run.startedAt).getTime()
@@ -17,12 +32,12 @@ const runDuration = (run: WorkflowRun) => {
 	return seconds < 60 ? `${seconds}s` : `${Math.floor(seconds / 60)}m ${seconds % 60}s`
 }
 
-const WorkflowRow = ({ run }: { run: WorkflowRun }) => {
+const WorkflowRow = ({ run, timeZone }: { run: WorkflowRun; timeZone: string }) => {
 	const url = safeExternalUrl(run.url)
 	const status = displayStatus(run)
 	return <article className='workflow-row'>
 		<span className={`workflow-state is-${status}`} aria-label={`Workflow status: ${status.replaceAll('_', ' ')}`}><i aria-hidden='true' />{status.replaceAll('_', ' ')}</span>
-		<div className='workflow-row__name'><strong>{run.repository}</strong><span>{run.degraded ? 'Status unavailable' : 'Latest run'}</span></div>
+		<div className='workflow-row__name'><strong>{run.repository}</strong><span>{run.degraded ? 'Status unavailable' : 'Latest run'}</span><WorkflowExecutionTime run={run} timeZone={timeZone} className='workflow-row__date' /></div>
 		<div><span>Branch</span><strong>{run.branch ?? '—'}</strong></div><div><span>Commit</span><strong>{run.commit?.slice(0, 7) ?? '—'}</strong></div><div><span>Actor</span><strong>{run.actor ?? '—'}</strong></div><div><span>Duration</span><strong>{runDuration(run)}</strong></div>
 		{url ? <a href={url} target='_blank' rel='noopener noreferrer' aria-label={`Open ${run.repository} workflow on GitHub`}><Icon name='external' /></a> : <span />}
 	</article>
@@ -48,7 +63,7 @@ export const WorkflowsPage = () => {
 		{loading && <ModuleState kind='loading' title='Loading workflows'>Reading the Household GitHub Actions cache.</ModuleState>}
 		{failed && <ModuleState kind='error' title='Workflows are not configured'>Configure the server-side GitHub integration in Settings. No GitHub token is requested by this page.</ModuleState>}
 		{!loading && !failed && visible.length === 0 && <ModuleState kind='empty' title='No repositories visible'>Enable repositories in Settings or configure the server-side GitHub integration.</ModuleState>}
-		{!loading && !failed && visible.length > 0 && <section className='workflow-summary' aria-label='Workflow summary'><div><strong>{failedCount}</strong><span>Failed</span></div><div><strong>{runningCount}</strong><span>Running</span></div><div><strong>{latestSuccess ? latestSuccess.repository.split('/').at(-1) : 'None'}</strong><span>Latest success</span></div></section>}
-		{groups.map(([application, runs]) => <section className='workflow-group' key={application}><header><BrandMark provider={application.toLowerCase().replaceAll(' ', '-')} name={application} /><div><h2>{application}</h2><span>{runs.length} repositories</span></div></header><div>{runs.map((run) => <WorkflowRow key={run.repository} run={run} />)}</div></section>)}
+		{!loading && !failed && visible.length > 0 && <section className='workflow-summary' aria-label='Workflow summary'><div><strong>{failedCount}</strong><span>Failed</span></div><div><strong>{runningCount}</strong><span>Running</span></div><div><strong>{latestSuccess ? latestSuccess.repository.split('/').at(-1) : 'None'}</strong><span>Latest success</span>{latestSuccess && <WorkflowExecutionTime run={latestSuccess} timeZone={preferences.timezone} />}</div></section>}
+		{groups.map(([application, runs]) => <section className='workflow-group' key={application}><header><BrandMark provider={application.toLowerCase().replaceAll(' ', '-')} name={application} /><div><h2>{application}</h2><span>{runs.length} repositories</span></div></header><div>{runs.map((run) => <WorkflowRow key={run.repository} run={run} timeZone={preferences.timezone} />)}</div></section>)}
 	</div>
 }

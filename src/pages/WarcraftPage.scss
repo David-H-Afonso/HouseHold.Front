@@ -10,7 +10,7 @@
 }
 
 .warcraft-page__header { display: flex; align-items: start; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--warcraft-border); padding-bottom: 16px; }
-.warcraft-page__header > div > span,
+.warcraft-page__header > div > .external-provider-link,
 .warcraft-worklist > header > div > span { color: #aeb5d4; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
 .warcraft-page__header h1 { margin: 4px 0; font-size: clamp(1.8rem, 4vw, 2.45rem); letter-spacing: -0.045em; }
 .warcraft-page__header p { max-width: 640px; margin: 0; color: #9ca5c2; }

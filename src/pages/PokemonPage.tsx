@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties, type MouseEvent, type ReactNode } from 'react'
-import { FallbackImage, Icon, ModuleState } from '@/components/Shared'
+import { ExternalProviderLink, FallbackImage, Icon, ModuleState } from '@/components/Shared'
 import { useUserPreferences } from '@/contexts/useUserPreferences'
 import type { PokemonSpriteSource } from '@/models/api/Preferences'
 import type { PokemonModuleItem, PokemonModuleResponse, PokemonTagOption } from '@/models/api/Modules'
@@ -23,7 +23,11 @@ const typeStyle = (type: string) => {
 
 const PokemonCardShell = ({ item, children }: { item: PokemonModuleItem; children: ReactNode }) => {
 	const url = safeExternalUrl(item.openUrl)
-	return url ? <a href={url} target='_blank' rel='noopener noreferrer' className='pokemon-card'>{children}</a> : <article className='pokemon-card'>{children}</article>
+	const label = item.nickname ?? item.speciesName
+	return <article className='pokemon-card'>
+		{url && <a href={url} target='_blank' rel='noopener noreferrer' className='pokemon-card__open' aria-label={`Open ${label} in Beast Vault`} />}
+		{children}
+	</article>
 }
 
 const formLabel = (item: PokemonModuleItem) => item.formName && !['normal', 'default'].includes(item.formName.toLowerCase())
@@ -92,12 +96,11 @@ export const PokemonPage = () => {
 	return (
 		<div className='pokemon-page'>
 			<header className='pokemon-page__header'>
-				<div><span>Beast Vault</span><h1>Pokémon collection</h1><p>Browse companions by species, nickname or tags.</p></div>
-				{data && <strong>{data.total}<span>Pokémon</span></strong>}
+				<div><ExternalProviderLink provider='beast-vault'>Beast Vault</ExternalProviderLink><div className='pokemon-page__title-row'><h1>Pokémon collection</h1>{data && <strong>{data.total}<span>Pokémon</span></strong>}</div></div>
 			</header>
 
 			<section className='pokemon-filters' aria-label='Collection filters'>
-				<label className='pokemon-sprite-source'><span>Sprite source</span><select value={preferences.pokemonSpriteSource} onChange={(event) => updatePreferences({ pokemonSpriteSource: event.target.value as PokemonSpriteSource })}><option value='home'>HOME</option><option value='artwork'>Artwork</option><option value='default'>Default</option><option value='showdown'>Showdown</option><option value='github'>GitHub</option></select></label>
+				<label className='pokemon-sprite-source'><span className='sr-only'>Sprite source</span><select value={preferences.pokemonSpriteSource} onChange={(event) => updatePreferences({ pokemonSpriteSource: event.target.value as PokemonSpriteSource })}><option value='home'>HOME</option><option value='artwork'>Artwork</option><option value='default'>Default</option><option value='showdown'>Showdown</option><option value='github'>GitHub</option></select></label>
 				<label className='pokemon-search'>
 					<span className='sr-only'>Search Pokémon</span>
 					<svg viewBox='0 0 24 24' aria-hidden='true'><circle cx='11' cy='11' r='7' /><path d='m20 20-4-4' /></svg>

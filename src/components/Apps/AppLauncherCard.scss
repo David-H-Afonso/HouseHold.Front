@@ -1,0 +1,90 @@
+.app-operation-notice {
+	margin: 0;
+	border-left: 3px solid var(--status-ready);
+	background: var(--color-success-bg);
+	color: var(--color-success-text);
+	padding: 9px 10px;
+	font-size: .78rem;
+	line-height: 1.45;
+}
+
+.app-operation-history {
+	display: grid;
+	border-top: 1px solid var(--color-border-subtle);
+	padding-top: 6px;
+}
+
+.app-history-toggle {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto 18px;
+	width: 100%;
+	min-height: 36px;
+	align-items: center;
+	gap: 7px;
+	border: 0;
+	border-radius: var(--radius-sm);
+	background: transparent;
+	color: var(--color-text-muted);
+	padding: 0 4px;
+	font: inherit;
+	font-size: .72rem;
+	font-weight: 750;
+	text-align: left;
+	cursor: pointer;
+}
+
+.app-history-toggle:hover { background: var(--color-control); color: var(--color-text); }
+.app-history-toggle:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.app-history-toggle > svg { width: 16px; height: 16px; }
+.app-history-toggle__count { display: grid; min-width: 22px; height: 22px; place-items: center; border: 1px solid var(--color-border); border-radius: 999px; color: var(--color-text-muted); font-size: .65rem; }
+
+.app-operation-history ul {
+	display: grid;
+	max-height: min(250px, 40dvh);
+	margin: 4px 0 0;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding: 0 4px 0 0;
+	list-style: none;
+	scrollbar-color: var(--color-border) transparent;
+	scrollbar-width: thin;
+}
+
+.app-operation-history li {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 3px 10px;
+	border-bottom: 1px solid var(--color-border-subtle);
+	padding: 9px 2px;
+}
+
+.app-operation-history li:last-child { border-bottom: 0; }
+.app-operation-history li > div { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 8px; }
+.app-operation-history li > div strong { font-size: .76rem; }
+.app-operation-history li > div span { color: var(--color-text-muted); font-size: .68rem; }
+.app-operation-history time,
+.app-operation-history small { color: var(--color-text-muted); font-size: .68rem; }
+.app-operation-history li > small { grid-column: 1 / -1; }
+
+.app-rollback-button {
+	grid-column: 1 / -1;
+	justify-self: start;
+	min-height: 38px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: var(--color-control);
+	color: var(--color-text);
+	padding: 0 11px;
+	font: inherit;
+	font-size: .72rem;
+	font-weight: 750;
+	cursor: pointer;
+}
+
+.app-rollback-button:hover { background: var(--color-control-hover); }
+.app-rollback-button:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+
+@media (max-width: 480px) {
+	.app-history-toggle { min-height: 44px; }
+	.app-rollback-button { width: 100%; min-height: 44px; }
+}

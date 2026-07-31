@@ -24,6 +24,8 @@
 	text-transform: uppercase;
 }
 
+.today-page__eyebrow.external-provider-link { color: var(--color-text); }
+
 .today-page__header h1 {
 	margin: 4px 0 1px;
 	font-size: clamp(2rem, 5vw, 2.8rem);

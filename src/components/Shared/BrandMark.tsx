@@ -5,9 +5,11 @@ const labels: Record<string, string> = {
 	doit: 'DO',
 	games: 'GD',
 	'games-database': 'GD',
+	gamesdatabase: 'GD',
 	jellywatch: 'JW',
 	jellyfin: 'JF',
 	'beast-vault': 'BV',
+	beastvault: 'BV',
 	pokemon: 'BV',
 	'warcraft-archive': 'WA',
 	warcraftarchive: 'WA',
@@ -15,33 +17,23 @@ const labels: Record<string, string> = {
 	github: 'GH',
 }
 
-const publicBrandImages: Record<string, string> = {
+const localBrandImages: Record<string, string> = {
 	household: '/household-mark.svg',
-	doit: 'https://doit.davidhormigafonso.work/vite.svg',
-	games: 'https://gamesdatabase.davidhormigafonso.work/favicon.ico',
-	'games-database': 'https://gamesdatabase.davidhormigafonso.work/favicon.ico',
-	gamesdatabase: 'https://gamesdatabase.davidhormigafonso.work/favicon.ico',
-	jellywatch: 'https://jellywatch.davidhormigafonso.work/logo.png',
-	jellyfin: 'https://jellyfin.davidhormigafonso.work/favicon.ico',
-	'beast-vault': 'https://beastvault.davidhormigafonso.work/favicon.ico',
-	beastvault: 'https://beastvault.davidhormigafonso.work/favicon.ico',
-	warcraft: 'https://warcraftarchive.davidhormigafonso.work/favicon.ico',
-	'warcraft-archive': 'https://warcraftarchive.davidhormigafonso.work/favicon.ico',
-	warcraftarchive: 'https://warcraftarchive.davidhormigafonso.work/favicon.ico',
 }
 
 export const BrandMark = ({ provider, name, iconUrl, size = 'medium' }: { provider: string; name?: string; iconUrl?: string | null; size?: 'small' | 'medium' | 'large' }) => {
-	const publicImage = publicBrandImages[provider] ?? publicBrandImages[provider.toLowerCase()]
-	const [source, setSource] = useState(iconUrl || publicImage)
+	const normalizedProvider = provider.toLowerCase()
+	const localImage = localBrandImages[normalizedProvider]
+	const [source, setSource] = useState(iconUrl || localImage)
 	const [failed, setFailed] = useState(!source)
 	useEffect(() => {
-		setSource(iconUrl || publicImage)
-		setFailed(!(iconUrl || publicImage))
-	}, [iconUrl, publicImage])
-	const fallback = labels[provider] ?? name?.slice(0, 2).toUpperCase() ?? '?'
+		setSource(iconUrl || localImage)
+		setFailed(!(iconUrl || localImage))
+	}, [iconUrl, localImage])
+	const fallback = labels[normalizedProvider] ?? name?.trim().slice(0, 2).toUpperCase() ?? '?'
 	const handleImageError = () => {
-		if (source !== publicImage && publicImage) {
-			setSource(publicImage)
+		if (source !== localImage && localImage) {
+			setSource(localImage)
 			return
 		}
 		setFailed(true)

@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import type { AppLauncherItem, AppOperation } from '@/models/api/Apps'
 import { BrandMark, ConfirmActionDialog, Icon, IntegrationStatusBadge } from '@/components/Shared'
 import { appCatalogService } from '@/services/AppCatalogService'
 import { safeExternalUrl } from '@/utils'
 import { isApiError } from '@/utils/customFetch'
 import { useUserPreferences } from '@/contexts/useUserPreferences'
+import './AppLauncherCard.scss'
 
 interface AppLauncherCardProps {
 	app: AppLauncherItem
@@ -24,7 +25,7 @@ const statusLabel = (status: string) => {
 }
 
 export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherCardProps) => {
-	const openUrl = safeExternalUrl(app.openUrl ?? app.externalUrl)
+	const openUrl = safeExternalUrl(app.openUrl)
 	const { preferences } = useUserPreferences()
 	const dateTime = (value: string) => new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short', timeZone: preferences.timezone }).format(new Date(value))
 	const canAdminister = isAdmin && app.adminActionsAvailable
@@ -35,6 +36,7 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 	const [submitting, setSubmitting] = useState(false)
 	const [actionError, setActionError] = useState<string | null>(null)
 	const [notice, setNotice] = useState<string | null>(null)
+	const historyId = useId()
 
 	useEffect(() => {
 		if (!canAdminister) return
@@ -112,7 +114,7 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 
 			<div className='app-launcher-card__actions'>
 				{canAdminister && (
-					<button type='button' className='app-admin-button' disabled={submitting} onClick={() => { setActionError(null); void executeAction({ type: 'update' }) }}>
+					<button type='button' className='app-admin-button' disabled={submitting} onClick={() => { setActionError(null); setDialogAction({ type: 'update' }) }}>
 						{app.updateAvailable === true ? 'Update' : 'Check/update'}
 					</button>
 				)}
@@ -129,10 +131,10 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 			{notice && <p className='app-operation-notice' role='status'>{notice}</p>}
 
 			{canAdminister && operations.length > 0 && <div className='app-operation-history'>
-				<button type='button' className='app-history-toggle' aria-expanded={historyOpen} onClick={() => setHistoryOpen((current) => !current)}>
-					{historyOpen ? 'Hide operations' : `Operations (${operations.length})`}
+				<button type='button' className='app-history-toggle' aria-expanded={historyOpen} aria-controls={historyId} onClick={() => setHistoryOpen((current) => !current)}>
+					<span>Operations</span><span className='app-history-toggle__count'>{operations.length}</span><Icon name={historyOpen ? 'arrowUp' : 'arrowDown'} />
 				</button>
-				{historyOpen && <ul aria-label={`${app.name} operation history`}>
+				{historyOpen && <ul id={historyId} aria-label={`${app.name} operation history`}>
 					{operations.map((operation) => <li key={operation.actionLogId}>
 						<div>
 							<strong>{actionLabel(operation.action)}</strong>

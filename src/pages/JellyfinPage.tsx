@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FallbackImage, HorizontalScroller, Icon, ModuleState } from '@/components/Shared'
+import { ExternalProviderLink, FallbackImage, HorizontalScroller, Icon, ModuleState } from '@/components/Shared'
 import type { JellyfinMediaItem, JellyfinModuleResponse } from '@/models/api/Operations'
 import { operationsService } from '@/services'
 import { safeExternalUrl } from '@/utils'
@@ -18,7 +18,7 @@ export const JellyfinPage = () => {
 	const [failed, setFailed] = useState(false)
 	useEffect(() => { let active = true; operationsService.jellyfin().then((result) => { if (active) setData(result) }).catch(() => { if (active) setFailed(true) }).finally(() => { if (active) setLoading(false) }); return () => { active = false } }, [])
 	return <div className='jellyfin-page'>
-		<header className='jellyfin-page__header'><div><span>Jellyfin</span><h1>Your screen, ready</h1><p>Resume what you were watching or jump directly into the next episode.</p></div></header>
+		<header className='jellyfin-page__header'><div><ExternalProviderLink href={data?.openUrl}>Jellyfin</ExternalProviderLink><h1>Your screen, ready</h1></div></header>
 		{loading && <ModuleState kind='loading' title='Opening Jellyfin'>Loading media for your mapped Jellyfin profile.</ModuleState>}
 		{failed && <ModuleState kind='error' title='Jellyfin is not configured'>Ask an administrator to configure the server key and map your Jellyfin User ID in Settings.</ModuleState>}
 		{data && !failed && <>

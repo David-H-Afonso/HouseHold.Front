@@ -1,0 +1,18 @@
+.external-provider-link {
+	display: inline-flex;
+	align-items: center;
+	gap: .35em;
+	border-radius: 4px;
+	color: inherit;
+	text-decoration: none;
+}
+
+.external-provider-link:hover { text-decoration: underline; text-underline-offset: .18em; }
+.external-provider-link:focus-visible { outline: var(--focus-ring); outline-offset: 3px; }
+.external-provider-link > svg { width: .9em; height: .9em; flex: 0 0 auto; }
+
+a.external-provider-link { min-width: 24px; min-height: 24px; justify-content: center; }
+
+@media (pointer: coarse) {
+	a.external-provider-link { min-height: 44px; }
+}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
-import { ModuleState } from '@/components/Shared'
+import { ExternalProviderLink, ModuleState } from '@/components/Shared'
 import type { WarcraftWeeklyItem, WarcraftWeeklyResponse } from '@/models/api/Modules'
 import { moduleService } from '@/services'
 import { useUserPreferences } from '@/contexts/useUserPreferences'
@@ -104,7 +104,7 @@ export const WarcraftPage = () => {
 	return (
 		<div className='warcraft-page'>
 			<header className='warcraft-page__header'>
-				<div><span>Warcraft Archive</span><h1>Weekly progress</h1><p>Track what is complete, what is due again, and what still needs attention.</p></div>
+				<div><ExternalProviderLink provider='warcraft-archive'>Warcraft Archive</ExternalProviderLink><h1>Weekly progress</h1><p>Track what is complete, what is due again, and what still needs attention.</p></div>
 				{data && <time dateTime={data.generatedAtUtc}>Updated {new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short', timeZone: preferences.timezone }).format(new Date(data.generatedAtUtc))}</time>}
 			</header>
 			{loading && <ModuleState kind='loading' title='Loading the archive'>Reading your latest Warcraft week.</ModuleState>}

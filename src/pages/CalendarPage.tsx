@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ModuleState } from '@/components/Shared'
+import { ExternalProviderLink, ModuleState } from '@/components/Shared'
 import { useUserPreferences } from '@/contexts/useUserPreferences'
 import type { CalendarEvent } from '@/models/api/Calendar'
 import { moduleService } from '@/services'
@@ -63,7 +63,7 @@ export const CalendarPage = () => {
 
 	return <div className='calendar-page page-stack'>
 		<header className='calendar-page__header'>
-			<div><span>DoIt</span><h1>Calendar</h1><p>Events and reminders connected to your DoIt account.</p></div>
+			<div><ExternalProviderLink provider='doit'>DoIt</ExternalProviderLink><h1>Calendar</h1><p>Events and reminders connected to your DoIt account.</p></div>
 			<div className='calendar-page__controls'>
 				<button type='button' onClick={() => setMonth((current) => shiftMonth(current, -1))} aria-label='Previous month'>‹</button>
 				<strong>{title}</strong>

@@ -14,6 +14,7 @@ export interface JellyfinMediaItem {
 }
 
 export interface JellyfinModuleResponse {
+	openUrl?: string | null
 	continueWatching: JellyfinMediaItem[]
 	nextUp: JellyfinMediaItem[]
 	dashboardItems: JellyfinMediaItem[]

@@ -14,10 +14,9 @@
 }
 
 .media-page__header { display: flex; align-items: start; justify-content: space-between; gap: 20px; }
-.media-page__header > div:first-child > span,
+.media-page__header > div:first-child > .external-provider-link,
 .media-section__eyebrow { color: #8dd8f6; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.11em; text-transform: uppercase; }
 .media-page__header h1 { margin: 6px 0 4px; font-size: clamp(1.8rem, 4vw, 2.5rem); letter-spacing: -0.045em; }
-.media-page__header p { margin: 0; color: var(--media-muted); }
 .media-page__signal { display: flex; align-items: center; gap: 8px; border: 1px solid #323751; border-radius: 999px; background: rgba(25, 26, 43, 0.85); padding: 8px 12px; color: #c9cee1; font-size: 0.75rem; font-weight: 750; white-space: nowrap; }
 .media-page__signal i { width: 7px; height: 7px; border-radius: 50%; background: #56d991; box-shadow: 0 0 0 4px rgba(86, 217, 145, 0.12); }
 

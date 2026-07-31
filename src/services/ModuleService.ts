@@ -8,6 +8,7 @@ import type {
 	WarcraftWeeklyResponse,
 } from '@/models/api/Modules'
 import type { CalendarEvent as CalendarEventModel } from '@/models/api/Calendar'
+import type { PokemonSpriteSource } from '@/models/api/Preferences'
 import { customFetch } from '@/utils/customFetch'
 
 const { today, calendar, media, pokemon, warcraft } = environment.apiRoutes
@@ -41,7 +42,7 @@ class ModuleService {
 		return customFetch<WarcraftWeeklyResponse['items'][number]>(warcraft.status(id), { method: 'PATCH', body: { status } })
 	}
 
-	pokemon(params: { search: string; tagIds: number[]; skip: number; take: number; spriteSource?: string; favorite?: boolean }): Promise<PokemonModuleResponse> {
+	pokemon(params: { search: string; tagIds: number[]; skip: number; take: number; spriteSource?: PokemonSpriteSource; favorite?: boolean }): Promise<PokemonModuleResponse> {
 		return customFetch<PokemonModuleResponse>(pokemon.base, {
 			params: {
 				search: params.search,

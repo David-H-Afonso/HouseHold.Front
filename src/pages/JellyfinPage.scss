@@ -1,8 +1,7 @@
 .jellyfin-page { --jf-bg: #090d19; --jf-panel: #12172a; --jf-line: #2a3047; display: grid; min-height: calc(100dvh - var(--shell-space-8) * 2); gap: 32px; background: linear-gradient(135deg, rgba(170, 80, 245, .08), transparent 32%), var(--jf-bg); color: #f8f7ff; padding: clamp(22px, 4vw, 48px); }
 .jellyfin-page__header { display: flex; align-items: start; justify-content: space-between; gap: 20px; }
-.jellyfin-page__header span,.jellyfin-section header span { color: #a7a2d7; font-size: .72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.jellyfin-page__header .external-provider-link,.jellyfin-section header span { color: #a7a2d7; font-size: .72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .jellyfin-page__header h1 { margin: 5px 0; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.05em; }
-.jellyfin-page__header p { margin: 0; color: #a4abc0; }
 .jellyfin-page__header time { color: #858da8; font-size: .75rem; }
 .jellyfin-section { display: grid; min-width: 0; gap: 14px; }
 .jellyfin-section > header { display: flex; align-items: end; justify-content: space-between; gap: 12px; }

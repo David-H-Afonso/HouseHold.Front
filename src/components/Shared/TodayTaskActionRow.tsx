@@ -1,5 +1,6 @@
 import type { TodayTask } from '@/models/api/Modules'
 import { useState } from 'react'
+import { isTodayTaskDeferred } from '@/utils'
 import { DetailDrawer } from './DetailDrawer'
 import './TodayTaskActionRow.scss'
 
@@ -36,9 +37,10 @@ export const TodayTaskActionRow = ({ task, pending, compact = false, displayTime
 	const [detailsOpen, setDetailsOpen] = useState(false)
 	const status = normalizeStatus(task.occurrenceStatus)
 	const completed = status === 'done' || status === 'completed'
-	const actionable = status === 'pending' || completed
+	const deferred = isTodayTaskDeferred(task)
+	const actionable = !deferred && (status === 'pending' || completed)
 	return <>
-		<div className={`today-action-row${compact ? ' today-action-row--compact' : ''}${completed ? ' is-completed' : ''}${pending ? ' is-pending' : ''}`}>
+		<div className={`today-action-row${compact ? ' today-action-row--compact' : ''}${completed ? ' is-completed' : ''}${deferred ? ' is-deferred' : ''}${pending ? ' is-pending' : ''}`}>
 			<label className='today-action-row__action'>
 				<input
 				type='checkbox'

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
 interface ModuleHeaderProps {
-	title: string
+	title: ReactNode
 	description?: string
 	actions?: ReactNode
 }

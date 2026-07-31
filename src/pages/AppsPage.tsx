@@ -72,10 +72,7 @@ export const AppsPage = () => {
 
 	return (
 		<div className='page-stack'>
-			<ModuleHeader
-				title='Apps'
-				description='Open every available service safely and compare service health, deployed image, and last check at a glance.'
-			/>
+			<ModuleHeader title='Apps' />
 
 			<section className='apps-toolbar'>
 				<SearchBar value={search} placeholder='Search apps' onChange={setSearch} />

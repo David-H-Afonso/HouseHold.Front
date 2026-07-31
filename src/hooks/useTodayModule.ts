@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { TodayModuleResponse, TodayTask } from '@/models/api/Modules'
 import { moduleService } from '@/services'
 import { isApiError } from '@/utils/customFetch'
+import { isTodayTaskDeferred } from '@/utils/todayTask'
 
 const POLL_INTERVAL_MS = 20_000
 
@@ -89,7 +90,7 @@ export const useTodayModule = (date: string, timeZoneId?: string, poll = true) =
 	}, [poll, refetch])
 
 	const runAction = useCallback(async (task: TodayTask, action: 'complete' | 'undo') => {
-		if (pendingOccurrencesRef.current.has(task.occurrenceId)) return
+		if (isTodayTaskDeferred(task) || pendingOccurrencesRef.current.has(task.occurrenceId)) return
 		const previousStatus = task.occurrenceStatus
 		const optimisticStatus = action === 'complete' ? 'Done' : 'Pending'
 		setActionError(null)

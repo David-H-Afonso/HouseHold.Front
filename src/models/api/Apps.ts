@@ -6,8 +6,6 @@ export interface AppLauncherItem {
 	category: string
 	description?: string | null
 	iconUrl?: string | null
-	internalUrl?: string | null
-	externalUrl?: string | null
 	openUrl?: string | null
 	favorite: boolean
 	healthStatus: IntegrationHealthStatus

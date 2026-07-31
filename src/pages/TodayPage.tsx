@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ModuleState, TodayTaskActionRow } from '@/components/Shared'
+import { ExternalProviderLink, ModuleState, TodayTaskActionRow } from '@/components/Shared'
 import { useTodayModule } from '@/hooks'
 import { useUserPreferences } from '@/contexts/useUserPreferences'
 import type { TodayTask } from '@/models/api/Modules'
@@ -67,7 +67,7 @@ export const TodayPage = () => {
 		<div className='today-page'>
 			<header className='today-page__header'>
 				<div>
-					<span className='today-page__eyebrow'>DoIt</span>
+					<ExternalProviderLink className='today-page__eyebrow' provider='doit'>DoIt</ExternalProviderLink>
 					<h1>Today</h1>
 					<p>{new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'long', day: 'numeric', timeZone: preferences.timezone }).format(new Date(`${date}T12:00:00Z`))}</p>
 				</div>

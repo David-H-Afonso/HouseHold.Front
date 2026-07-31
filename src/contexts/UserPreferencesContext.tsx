@@ -1,10 +1,12 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useAppSelector } from '@/store/hooks'
 import { selectCurrentUser } from '@/store/features/auth/selector'
 import { createDefaultPreferences } from '@/models/api/Preferences'
 import { preferencesService, type PreferencePersistence } from '@/services/PreferencesService'
 import { UserPreferencesContext } from './useUserPreferences'
 import type { UserPreferences } from '@/models/api/Preferences'
+
+type PreferenceUpdate = Partial<UserPreferences> | ((current: UserPreferences) => UserPreferences)
 
 export const UserPreferencesProvider = ({ children }: { children: ReactNode }) => {
 	const user = useAppSelector(selectCurrentUser)
@@ -13,12 +15,23 @@ export const UserPreferencesProvider = ({ children }: { children: ReactNode }) =
 	const [ready, setReady] = useState(false)
 	const [saving, setSaving] = useState(false)
 	const [persistence, setPersistence] = useState<PreferencePersistence>('device')
+	const preferencesRef = useRef(preferences)
+	const saveQueueRef = useRef<Promise<void>>(Promise.resolve())
+	const pendingSavesRef = useRef(0)
+	const generationRef = useRef(0)
+	const resetPendingRef = useRef(false)
 
 	useEffect(() => {
 		let active = true
+		const generation = ++generationRef.current
+		saveQueueRef.current = Promise.resolve()
+		pendingSavesRef.current = 0
+		resetPendingRef.current = false
+		setSaving(false)
 		setReady(false)
 		preferencesService.load(userId).then((result) => {
-			if (!active) return
+			if (!active || generation !== generationRef.current) return
+			preferencesRef.current = result.preferences
 			setPreferences(result.preferences)
 			setPersistence(result.persistence)
 			setReady(true)
@@ -36,28 +49,77 @@ export const UserPreferencesProvider = ({ children }: { children: ReactNode }) =
 	}, [preferences.visualPreference])
 
 	const persist = async (next: UserPreferences) => {
+		preferencesRef.current = next
 		setPreferences(next)
+		const generation = generationRef.current
+		pendingSavesRef.current += 1
 		setSaving(true)
-		try {
-			setPersistence(await preferencesService.save(userId, next))
-		} finally {
-			setSaving(false)
-		}
+		const save = saveQueueRef.current
+			.catch(() => { /* A failed write must not block the latest preference. */ })
+			.then(() => preferencesService.save(userId, next))
+			.then((result) => { if (generation === generationRef.current) setPersistence(result) })
+			.finally(() => {
+				if (generation !== generationRef.current) return
+				pendingSavesRef.current -= 1
+				if (pendingSavesRef.current === 0) setSaving(false)
+			})
+		saveQueueRef.current = save
+		await save
 	}
 
-	const updatePreferences = (update: Partial<UserPreferences> | ((current: UserPreferences) => UserPreferences)) => {
-		const next = typeof update === 'function' ? update(preferences) : { ...preferences, ...update }
+	const deferPersistUntilReset = (update: PreferenceUpdate) => {
+		const generation = generationRef.current
+		pendingSavesRef.current += 1
+		setSaving(true)
+		const save = saveQueueRef.current
+			.catch(() => { /* A failed reset must not block the queued edit. */ })
+			.then(async () => {
+				if (generation !== generationRef.current) return
+				const current = preferencesRef.current
+				const next = typeof update === 'function' ? update(current) : { ...current, ...update }
+				preferencesRef.current = next
+				setPreferences(next)
+				const result = await preferencesService.save(userId, next)
+				if (generation === generationRef.current) setPersistence(result)
+			})
+			.finally(() => {
+				if (generation !== generationRef.current) return
+				pendingSavesRef.current -= 1
+				if (pendingSavesRef.current === 0) setSaving(false)
+			})
+		saveQueueRef.current = save
+		return save
+	}
+
+	const updatePreferences = (update: PreferenceUpdate) => {
+		if (resetPendingRef.current) return deferPersistUntilReset(update)
+		const current = preferencesRef.current
+		const next = typeof update === 'function' ? update(current) : { ...current, ...update }
 		return persist(next)
 	}
 
 	const resetPreferences = () => {
+		if (resetPendingRef.current) return
+		resetPendingRef.current = true
+		const generation = generationRef.current
+		pendingSavesRef.current += 1
 		setSaving(true)
-		preferencesService.reset(userId)
+		const reset = saveQueueRef.current
+			.catch(() => { /* Reset still runs after a failed queued write. */ })
+			.then(() => preferencesService.reset(userId))
 			.then((result) => {
+				if (generation !== generationRef.current) return
+				preferencesRef.current = result.preferences
 				setPreferences(result.preferences)
 				setPersistence(result.persistence)
 			})
-			.finally(() => setSaving(false))
+			.finally(() => {
+				if (generation !== generationRef.current) return
+				resetPendingRef.current = false
+				pendingSavesRef.current -= 1
+				if (pendingSavesRef.current === 0) setSaving(false)
+			})
+		saveQueueRef.current = reset
 	}
 
 	return (
