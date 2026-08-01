@@ -16,6 +16,27 @@
 .dashboard-page .module-header h1 { font-size: 1.55rem; }
 .dashboard-page .icon-button-with-label { min-height: 36px; padding-inline: 11px; font-size: .82rem; }
 
+.dashboard-media-search {
+	display: grid;
+	grid-template-columns: minmax(160px, auto) minmax(260px, 560px);
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--shell-space-4);
+	border: 1px solid var(--color-border-subtle);
+	border-radius: var(--radius-md);
+	background: var(--color-surface);
+	padding: 12px 14px;
+	box-shadow: var(--shadow-subtle);
+}
+
+.dashboard-media-search > label { font-size: .8rem; font-weight: 800; }
+.dashboard-media-search > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
+.dashboard-media-search input,
+.dashboard-media-search button { min-height: 44px; border-radius: var(--radius-sm); font: inherit; }
+.dashboard-media-search input { min-width: 0; border: 1px solid var(--color-border); background: var(--color-control); color: var(--color-text); padding: 0 12px; }
+.dashboard-media-search button { border: 1px solid var(--color-accent); background: var(--color-accent); color: var(--color-accent-foreground); padding: 0 13px; font-size: .75rem; font-weight: 750; cursor: pointer; }
+.dashboard-media-search button:hover:not(:disabled) { background: var(--color-accent-hover); }
+
 .dashboard-operational-grid {
 	display: grid;
 	grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -253,6 +274,9 @@
 	.dashboard-page .module-header__actions { width: auto; }
 	.dashboard-page .module-header__actions > * { flex: 0 0 auto; }
 	.dashboard-page .icon-button-with-label { min-height: 34px; padding-inline: 10px; }
+	.dashboard-media-search { grid-template-columns: 1fr; align-items: stretch; }
+	.dashboard-media-search > div { grid-template-columns: 1fr; }
+	.dashboard-media-search button { width: 100%; }
 	.operational-widget,
 	.app-status-strip { padding: var(--shell-space-4); }
 	.dashboard-operational-grid { display: flex; flex-direction: column; gap: var(--shell-space-4); }

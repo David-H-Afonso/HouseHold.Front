@@ -18,6 +18,9 @@ export interface AppLauncherItem {
 	lastUpdated?: string | null
 	updateAvailable?: boolean | null
 	adminActionsAvailable: boolean
+	monitoringEnabled: boolean
+	canUpdate: boolean
+	canRollback: boolean
 }
 
 export interface AppLauncherCategory {
@@ -51,6 +54,7 @@ export interface AppOperation {
 	backupId?: string | null
 	safetyBackupId?: string | null
 	previousImages: string[]
+	rollbackAvailable: boolean
 }
 
 export interface UpdateAppRequest {
@@ -60,4 +64,29 @@ export interface UpdateAppRequest {
 export interface RollbackAppRequest {
 	backupId?: string | null
 	confirmation: string
+}
+
+export interface AdminAppCatalogItem {
+	id: string
+	name: string
+	category: string
+	description?: string | null
+	iconUrl?: string | null
+	openUrl?: string | null
+	favorite: boolean
+	enabled: boolean
+	monitoringEnabled: boolean
+	canUpdate: boolean
+	canRollback: boolean
+	updatedAt: string
+}
+
+export interface UpdateAppCatalogItemRequest {
+	name: string
+	category: string
+	description?: string | null
+	iconUrl?: string | null
+	openUrl?: string | null
+	favorite: boolean
+	enabled: boolean
 }

@@ -1,5 +1,5 @@
-import { useEffect, useState, type ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { BrandMark, ExternalProviderLink, FallbackImage, HorizontalScroller, Icon, ModuleHeader, TodayTaskActionRow } from '@/components/Shared'
 import { useTodayModule } from '@/hooks'
 import { useUserPreferences } from '@/contexts/useUserPreferences'
@@ -71,6 +71,7 @@ const DashboardWidgetSlot = ({ widget, children }: { widget: DashboardWidgetPref
 }
 
 export const DashboardPage = () => {
+	const navigate = useNavigate()
 	const { preferences, ready } = useUserPreferences()
 	const today = useTodayModule(dateValueInTimeZone(preferences.timezone), preferences.timezone)
 	const [games, setGames] = useState<WidgetState<GameModuleItem[]>>(pendingState)
@@ -84,6 +85,7 @@ export const DashboardPage = () => {
 	const [refreshKey, setRefreshKey] = useState(0)
 	const [pendingWarcraft, setPendingWarcraft] = useState<Set<number | string>>(() => new Set())
 	const [warcraftErrors, setWarcraftErrors] = useState<Record<string, string>>({})
+	const [mediaRequestQuery, setMediaRequestQuery] = useState('')
 	const orderedWidgets = [...preferences.widgets].filter((widget) => widget.visible).sort((left, right) => left.order - right.order)
 
 	useEffect(() => {
@@ -134,9 +136,15 @@ export const DashboardPage = () => {
 	const workflowSummary = [...failedRuns, ...runningRuns, ...(latestSuccess ? [latestSuccess] : [])].filter((run, index, list) => list.findIndex((item) => item.repository === run.repository) === index).slice(0, 5)
 	const widgetSize = (id: DashboardWidgetId) => orderedWidgets.find((widget) => widget.id === id)?.size ?? 'medium'
 	const jellyfinItems = jellyfin.data?.continueWatching.length ? jellyfin.data.continueWatching : jellyfin.data?.nextUp ?? []
-	const appStatusItems = (apps.data ?? []).filter((app) => app.favorite || app.frontStatus !== 'healthy' || app.apiStatus !== 'healthy')
+	const appStatusItems = (apps.data ?? []).filter((app) => app.favorite || (app.monitoringEnabled && app.healthStatus !== 'Healthy'))
+	const submitMediaRequestSearch = (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault()
+		const query = mediaRequestQuery.trim().slice(0, 256)
+		if (!query) return
+		navigate(`/media/requests?${new URLSearchParams({ q: query }).toString()}`)
+	}
 	const content: Record<DashboardWidgetId, ReactNode> = {
-		'app-status': <section className='app-status-strip'><header><div><span>Catalog health</span><h2>Applications</h2></div><Link to='/apps' aria-label='Open the application catalog in Household'>Open catalog</Link></header>{apps.loading ? <div className='status-skeleton' /> : apps.error ? <div className='widget-state is-error'>Application health is unavailable.</div> : appStatusItems.length ? <div>{appStatusItems.map((app) => { const status = app.frontStatus === 'healthy' && app.apiStatus === 'healthy' ? 'ready' : app.frontStatus === 'offline' || app.apiStatus === 'offline' ? 'offline' : 'degraded'; const text = `${app.name}: front ${app.frontStatus}, API ${app.apiStatus}${app.userConnectionStatus !== 'not_applicable' ? `, account ${app.userConnectionStatus}` : ''}`; const url = safeExternalUrl(app.openUrl); const name = <span>{app.name}<small>{status === 'ready' ? 'Healthy' : status === 'offline' ? 'Offline' : 'Needs attention'}</small></span>; return <div key={app.id} aria-label={text} title={text}><BrandMark provider={app.id} name={app.name} iconUrl={app.iconUrl} size='small' /><i className={`status-led is-${status}`} aria-hidden='true' />{url ? <a className='app-status-link' href={url} target='_blank' rel='noopener noreferrer'>{name}</a> : name}</div> })}</div> : <p className='widget-empty'>No app catalog entries are configured.</p>}</section>,
+		'app-status': <section className='app-status-strip'><header><div><span>Catalog health</span><h2>Applications</h2></div><Link to='/apps' aria-label='Open the application catalog in Household'>Open catalog</Link></header>{apps.loading ? <div className='status-skeleton' /> : apps.error ? <div className='widget-state is-error'>Application health is unavailable.</div> : appStatusItems.length ? <div>{appStatusItems.map((app) => { const health = app.healthStatus.toLowerCase(); const status = !app.monitoringEnabled || health === 'unknown' || health === 'notconfigured' ? 'degraded' : health === 'healthy' ? 'ready' : health === 'offline' ? 'offline' : 'degraded'; const healthLabel = !app.monitoringEnabled ? 'Link only' : health === 'healthy' ? 'Healthy' : health === 'offline' ? 'Offline' : health === 'unknown' ? 'Status unknown' : 'Needs attention'; const text = `${app.name}: ${healthLabel}${app.monitoringEnabled ? `, container ${app.containerStatus}` : ''}${app.userConnectionStatus !== 'not_applicable' ? `, account ${app.userConnectionStatus}` : ''}`; const url = safeExternalUrl(app.openUrl); const name = <span>{app.name}<small>{healthLabel}</small></span>; return <div key={app.id} aria-label={text} title={text}><BrandMark provider={app.id} name={app.name} iconUrl={app.iconUrl} size='small' /><i className={`status-led is-${status}`} aria-hidden='true' />{url ? <a className='app-status-link' href={url} target='_blank' rel='noopener noreferrer'>{name}</a> : name}</div> })}</div> : <p className='widget-empty'>No app catalog entries are configured.</p>}</section>,
 		games: <WidgetShell id='games' provider='Games Database' providerId='games-database' link='/games' state={games} size={widgetSize('games')}>{games.data?.length ? <HorizontalScroller label='Dashboard games'><div className='dashboard-carousel dashboard-carousel--games'>{games.data.map((game) => <article key={game.id} className='dashboard-game-card games-cover-card'><div className='games-cover-card__art'><FallbackImage src={game.cover} alt={`${game.name} cover`} fallbackLabel={game.name} width={240} height={360} /></div><div className='games-cover-card__meta'><strong title={game.name}>{game.name}</strong><span>{game.platformName ?? 'Platform not set'}</span></div></article>)}</div></HorizontalScroller> : <p className='widget-empty'>{preferences.gameStatusIds.length ? 'No games match the selected statuses.' : 'Choose game statuses in Dashboard Settings.'}</p>}</WidgetShell>,
 		today: <WidgetShell id='today' accessibleLabel="Today's tasks" provider='DoIt' providerId='doit' link='/today' state={{ loading: today.loading && !today.data, data: today.data, error: today.providerError }} size={widgetSize('today')}>{today.data && <><div className='dashboard-progress'><strong>{today.data.progress.done}/{today.data.progress.total}</strong><span>resolved today</span><i><b style={{ width: `${today.data.progress.total ? (today.data.progress.done / today.data.progress.total) * 100 : 0}%` }} /></i></div><div className='dashboard-task-list'>{today.data.tasks.map((task) => <TodayTaskActionRow key={task.occurrenceId} compact task={task} displayTimeZone={preferences.timezone} pending={today.pendingOccurrences.has(task.occurrenceId)} onAction={today.runAction} />)}</div></>}</WidgetShell>,
 		calendar: <WidgetShell id='calendar' title='Upcoming events' provider='DoIt' providerId='doit' link='/calendar' state={calendar} size={widgetSize('calendar')}>{calendar.data?.length ? <div className='dashboard-calendar-list'>{calendar.data.map((event) => <article key={event.id}><time>{calendarEventTime(event, preferences.timezone)}</time><strong>{event.title}</strong>{event.zoneName && <span>{event.zoneName}</span>}</article>)}</div> : <p className='widget-empty'>No upcoming events in the next 31 days.</p>}</WidgetShell>,
@@ -150,6 +158,10 @@ export const DashboardPage = () => {
 	if (!ready) return <div className='dashboard-page page-stack'><div className='preference-loading' role='status'>Loading dashboard preferences…</div></div>
 	return <div className='dashboard-page page-stack'>
 		<ModuleHeader title='Home' actions={<button className='icon-button-with-label' type='button' onClick={() => { setRefreshKey((value) => value + 1); void today.refetch(true) }}><Icon name='refresh' />Refresh</button>} />
+		<form className='dashboard-media-search' role='search' aria-label='Quick media request search' onSubmit={submitMediaRequestSearch}>
+			<label htmlFor='dashboard-media-request-query'>Find a movie or TV show</label>
+			<div><input id='dashboard-media-request-query' name='mediaRequestQuery' type='search' value={mediaRequestQuery} maxLength={256} autoComplete='off' placeholder='Search Seerr from Household…' onChange={(event) => setMediaRequestQuery(event.target.value)} /><button type='submit' disabled={!mediaRequestQuery.trim()}>Search requests</button></div>
+		</form>
 		<div className='dashboard-operational-grid'>{orderedWidgets.map((widget) => <DashboardWidgetSlot key={widget.id} widget={widget}>{content[widget.id]}</DashboardWidgetSlot>)}</div>
 	</div>
 }

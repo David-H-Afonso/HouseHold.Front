@@ -9,6 +9,7 @@ export const Icon = ({ name, ...props }: SVGProps<SVGSVGElement> & { name: strin
 		apps: <><rect x='4' y='4' width='6' height='6' rx='1.5' /><rect x='14' y='4' width='6' height='6' rx='1.5' /><rect x='4' y='14' width='6' height='6' rx='1.5' /><rect x='14' y='14' width='6' height='6' rx='1.5' /></>,
 		games: <><path d='M8 8h8a5 5 0 0 1 4.7 6.7l-1 2.8a2 2 0 0 1-3.3.8L14.8 17H9.2l-1.6 1.3a2 2 0 0 1-3.3-.8l-1-2.8A5 5 0 0 1 8 8Z' /><path d='M7 11v4m-2-2h4m7-1h.01m2 2h.01' /></>,
 		media: <><rect x='3' y='4' width='18' height='16' rx='2' /><path d='m10 9 5 3-5 3Z' /><path d='M7 4v2m10-2v2M7 18v2m10-2v2' /></>,
+		requests: <><path d='M7 3.5h10a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2Z' /><path d='M9 8h6m-6 4h6m-6 4h3' /></>,
 		pokemon: <><path d='m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z' /><path d='m4 7.5 8 4.5 8-4.5M12 12v9' /></>,
 		warcraft: <><path d='M7 4h10l2 4-2 10H7L5 8l2-4Z' /><path d='M9 8h6m-3 0v7m-3 0h6' /></>,
 		jellyfin: <><rect x='4' y='4' width='16' height='16' rx='2' /><path d='M8 4v16m8-16v16M4 8h4m8 0h4M4 16h4m8 0h4' /></>,

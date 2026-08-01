@@ -1,0 +1,65 @@
+.seerr-admin-config,
+.seerr-mappings-section { scroll-margin-top: 80px; }
+
+.seerr-admin-config form > .button-primary { width: 100%; min-height: 44px; }
+.seerr-settings-error { margin: 0; border-left: 3px solid var(--status-offline); background: var(--color-error-bg); color: var(--color-error-text); padding: 10px 12px; }
+.seerr-settings-error p { margin: 0 0 10px; color: inherit; }
+.seerr-settings-error button { min-height: 44px; }
+
+.seerr-mapping-list { display: grid; gap: 12px; }
+.seerr-mapping-card {
+	display: grid;
+	gap: 14px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: var(--color-bg-alt);
+	padding: 15px;
+}
+
+.seerr-mapping-card > header { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+.seerr-mapping-card > header > div { display: grid; min-width: 0; gap: 2px; }
+.seerr-mapping-card > header strong { overflow-wrap: anywhere; font-size: .9rem; }
+.seerr-mapping-card > header span { color: var(--color-text-muted); font-size: .7rem; }
+.seerr-mapping-card > header .seerr-mapping-card__status { border: 1px solid color-mix(in srgb, var(--status-ready) 45%, var(--color-border)); border-radius: 999px; background: color-mix(in srgb, var(--status-ready) 12%, var(--color-control)); color: var(--color-success-text); padding: 4px 8px; font-size: .64rem; font-weight: 800; }
+
+.seerr-mapping-card form { display: grid; gap: 12px; }
+.seerr-mapping-card fieldset { min-width: 0; margin: 0; border: 0; padding: 0; }
+.seerr-mapping-card legend { margin-bottom: 7px; padding: 0; color: var(--color-text-muted); font-size: .7rem; font-weight: 800; }
+.seerr-mapping-source { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.seerr-mapping-source > label {
+	display: grid;
+	grid-template-columns: 20px minmax(0, 1fr);
+	min-height: 64px;
+	align-items: center;
+	gap: 9px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: var(--color-control);
+	padding: 9px 11px;
+	cursor: pointer;
+}
+.seerr-mapping-source > label:has(input:checked) { border-color: var(--color-accent); background: color-mix(in srgb, var(--color-accent) 12%, var(--color-control)); }
+.seerr-mapping-source input { width: 18px; height: 18px; accent-color: var(--color-accent); }
+.seerr-mapping-source label > span { display: grid; gap: 2px; }
+.seerr-mapping-source strong { font-size: .76rem; }
+.seerr-mapping-source small { color: var(--color-text-muted); font-size: .66rem; line-height: 1.35; }
+.seerr-mapping-card__error { margin: 0; border-left: 3px solid var(--status-offline); background: var(--color-error-bg); color: var(--color-error-text); padding: 9px 10px; font-size: .75rem; }
+.seerr-mapping-card__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.seerr-mapping-card__actions button { min-height: 44px; flex: 1 1 150px; }
+
+@media (max-width: 600px) {
+	.seerr-mapping-source { grid-template-columns: 1fr; }
+	.seerr-mapping-card { padding: 12px; }
+}
+
+@media (max-width: 820px) {
+	.settings-shell__body { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+	.settings-shell__content { width: 100%; }
+	.settings-nav { flex-direction: row; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+	.settings-nav a { flex: 0 0 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.seerr-admin-config,
+	.seerr-mappings-section { scroll-behavior: auto; }
+}

@@ -1,9 +1,15 @@
 import { render, screen, waitFor } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import userEvent from '@testing-library/user-event'
+import { MemoryRouter, useLocation } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ProviderLinksContext } from '@/contexts/useProviderLinks'
 import { createDefaultPreferences } from '@/models/api/Preferences'
 import { DashboardPage } from './DashboardPage'
+
+const LocationProbe = () => {
+	const location = useLocation()
+	return <output aria-label='Current route'>{location.pathname}{location.search}</output>
+}
 
 const mocks = vi.hoisted(() => ({
 	usePreferences: vi.fn(),
@@ -59,5 +65,22 @@ describe('Dashboard navigation', () => {
 		expect(screen.getByRole('region', { name: "Today's tasks" })).toBeInTheDocument()
 		expect(screen.queryByRole('heading', { name: "Today's tasks" })).not.toBeInTheDocument()
 		await waitFor(() => expect(mocks.games).toHaveBeenCalled())
+	})
+
+	it('submits a trimmed quick search to the native requests page in the same tab', async () => {
+		const user = userEvent.setup()
+		render(<MemoryRouter>
+			<ProviderLinksContext.Provider value={{ links: {} }}>
+				<DashboardPage />
+				<LocationProbe />
+			</ProviderLinksContext.Provider>
+		</MemoryRouter>)
+
+		const input = screen.getByRole('searchbox', { name: 'Find a movie or TV show' })
+		expect(input).toHaveAttribute('maxlength', '256')
+		await user.type(input, '  Dune: Part Two  ')
+		await user.click(screen.getByRole('button', { name: 'Search requests' }))
+
+		expect(screen.getByLabelText('Current route')).toHaveTextContent('/media/requests?q=Dune%3A+Part+Two')
 	})
 })

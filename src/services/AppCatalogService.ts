@@ -3,7 +3,9 @@ import type {
 	AppLauncherCategory,
 	AppLauncherItem,
 	AppOperation,
+	AdminAppCatalogItem,
 	RollbackAppRequest,
+	UpdateAppCatalogItemRequest,
 	UpdateAppRequest,
 } from '@/models/api/Apps'
 import { customFetch } from '@/utils/customFetch'
@@ -40,6 +42,17 @@ class AppCatalogService {
 
 	operations(id: string): Promise<AppOperation[]> {
 		return customFetch<AppOperation[]>(apps.operations(id))
+	}
+
+	adminCatalog(): Promise<AdminAppCatalogItem[]> {
+		return customFetch<AdminAppCatalogItem[]>(apps.adminCatalog)
+	}
+
+	updateCatalogItem(id: string, request: UpdateAppCatalogItemRequest): Promise<AdminAppCatalogItem> {
+		return customFetch<AdminAppCatalogItem>(apps.adminCatalogItem(id), {
+			method: 'PATCH',
+			body: request,
+		})
 	}
 }
 

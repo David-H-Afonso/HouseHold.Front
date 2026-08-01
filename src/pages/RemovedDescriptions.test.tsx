@@ -14,7 +14,7 @@ describe('removed module descriptions', () => {
 	it('does not render the Apps intro description', async () => {
 		vi.spyOn(appCatalogService, 'list').mockResolvedValue([])
 		render(<TestProviders><AppsPage /></TestProviders>)
-		await waitFor(() => expect(screen.getByRole('heading', { name: 'No app launcher config found' })).toBeInTheDocument())
+		await waitFor(() => expect(screen.getByRole('heading', { name: 'No apps are visible' })).toBeInTheDocument())
 		expect(screen.queryByText('Open every available service safely and compare service health, deployed image, and last check at a glance.')).not.toBeInTheDocument()
 	})
 

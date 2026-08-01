@@ -28,7 +28,8 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 	const openUrl = safeExternalUrl(app.openUrl)
 	const { preferences } = useUserPreferences()
 	const dateTime = (value: string) => new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short', timeZone: preferences.timezone }).format(new Date(value))
-	const canAdminister = isAdmin && app.adminActionsAvailable
+	const canUpdate = isAdmin && app.canUpdate
+	const canViewOperations = isAdmin && (app.canUpdate || app.canRollback)
 	const isHousehold = app.id.toLowerCase().includes('household') || app.name.toLowerCase() === 'household'
 	const [operations, setOperations] = useState<AppOperation[]>([])
 	const [historyOpen, setHistoryOpen] = useState(false)
@@ -39,13 +40,13 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 	const historyId = useId()
 
 	useEffect(() => {
-		if (!canAdminister) return
+		if (!canViewOperations) return
 		let active = true
 		void appCatalogService.operations(app.id)
 			.then((items) => { if (active && Array.isArray(items)) setOperations(items) })
 			.catch(() => { /* History is optional until the endpoint is available. */ })
 		return () => { active = false }
-	}, [app.id, canAdminister])
+	}, [app.id, canViewOperations])
 
 	const executeAction = async (actionToRun: AppAction) => {
 		setSubmitting(true)
@@ -103,18 +104,20 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 			{app.description && <p className='app-launcher-card__description'>{app.description}</p>}
 
 			<div className='app-launcher-card__meta'>
-				<IntegrationStatusBadge status={app.healthStatus} />
-				<span>Front: {app.frontStatus.replaceAll('_', ' ')}</span>
-				<span>API: {app.apiStatus.replaceAll('_', ' ')}</span>
-				{app.userConnectionStatus !== 'not_applicable' && <span>Account: {app.userConnectionStatus.replaceAll('_', ' ')}</span>}
-				<span>Container: {app.containerStatus}</span>
-				{app.image && <span>Image: {app.image}</span>}
-				{app.lastUpdated && <span>Checked: {dateTime(app.lastUpdated)}</span>}
+				{app.monitoringEnabled ? <>
+					<IntegrationStatusBadge status={app.healthStatus} />
+					{app.frontStatus !== 'not_configured' && <span>Front: {app.frontStatus.replaceAll('_', ' ')}</span>}
+					{app.apiStatus !== 'not_configured' && <span>API: {app.apiStatus.replaceAll('_', ' ')}</span>}
+					{app.userConnectionStatus !== 'not_applicable' && <span>Account: {app.userConnectionStatus.replaceAll('_', ' ')}</span>}
+					<span>Container: {app.containerStatus}</span>
+					{app.image && <span>Image: {app.image}</span>}
+					{app.lastUpdated && <span>Started: {dateTime(app.lastUpdated)}</span>}
+				</> : <span>Link only · monitoring disabled</span>}
 			</div>
 
 			<div className='app-launcher-card__actions'>
-				{canAdminister && (
-					<button type='button' className='app-admin-button' disabled={submitting} onClick={() => { setActionError(null); void executeAction({ type: 'update' }) }}>
+				{canUpdate && (
+					<button type='button' className='app-admin-button' disabled={submitting} onClick={() => { setActionError(null); setDialogAction({ type: 'update' }) }}>
 						{app.updateAvailable === true ? 'Update' : 'Check/update'}
 					</button>
 				)}
@@ -130,7 +133,7 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 			{actionError && !dialogAction && <p className='error-banner' role='alert'>{actionError}</p>}
 			{notice && <p className='app-operation-notice' role='status'>{notice}</p>}
 
-			{canAdminister && operations.length > 0 && <div className='app-operation-history'>
+			{canViewOperations && operations.length > 0 && <div className='app-operation-history'>
 				<button type='button' className='app-history-toggle' aria-expanded={historyOpen} aria-controls={historyId} onClick={() => setHistoryOpen((current) => !current)}>
 					<span>Operations</span><span className='app-history-toggle__count'>{operations.length}</span><Icon name={historyOpen ? 'arrowUp' : 'arrowDown'} />
 				</button>
@@ -143,7 +146,7 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 						<time dateTime={operation.startedAt}>{dateTime(operation.startedAt)}</time>
 						{operation.finishedAt && <small>Finished {dateTime(operation.finishedAt)}</small>}
 						{operation.errorCode && <small className='error-text'>Operation failed. Check the server logs.</small>}
-						{operation.backupId && <button type='button' className='app-rollback-button' onClick={() => { setActionError(null); setDialogAction({ type: 'rollback', backupId: operation.backupId! }) }}>Rollback this backup</button>}
+						{app.canRollback && operation.rollbackAvailable && operation.backupId && <button type='button' className='app-rollback-button' onClick={() => { setActionError(null); setDialogAction({ type: 'rollback', backupId: operation.backupId! }) }}>Rollback this backup</button>}
 					</li>)}
 				</ul>}
 			</div>}

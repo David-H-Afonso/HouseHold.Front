@@ -100,6 +100,8 @@ export const apiRoutes = {
 		update: (id: string) => `/v1/admin/casaos/apps/${encodeURIComponent(id)}/update`,
 		rollback: (id: string) => `/v1/admin/casaos/apps/${encodeURIComponent(id)}/rollback`,
 		operations: (id: string) => `/v1/admin/casaos/apps/${encodeURIComponent(id)}/actions`,
+		adminCatalog: '/v1/admin/apps/catalog',
+		adminCatalogItem: (id: string) => `/v1/admin/apps/catalog/${encodeURIComponent(id)}`,
 	},
 
 	casaos: {
@@ -152,6 +154,20 @@ export const apiRoutes = {
 	workflows: {
 		base: '/v1/github-actions',
 		config: '/v1/github-actions/config',
+	},
+
+	seerr: {
+		session: '/v1/seerr/session',
+		search: '/v1/seerr/search',
+		discover: '/v1/seerr/discover',
+		movie: (tmdbId: number) => `/v1/seerr/movie/${tmdbId}`,
+		tv: (tmdbId: number) => `/v1/seerr/tv/${tmdbId}`,
+		requests: '/v1/seerr/requests',
+		requestAction: (id: number, action: string) => `/v1/seerr/requests/${id}/${action}`,
+		request: (id: number) => `/v1/seerr/requests/${id}`,
+		config: '/v1/seerr/config',
+		mappings: '/v1/seerr/users/mappings',
+		mapping: (householdUserId: string) => `/v1/seerr/users/${encodeURIComponent(householdUserId)}/mapping`,
 	},
 
 	// legacy placeholder kept for TS compatibility

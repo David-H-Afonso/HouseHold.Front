@@ -83,8 +83,8 @@ export const AppsPage = () => {
 			{error && <p className='error-text'>{error}</p>}
 			{!loading && !error && apps.length === 0 && (
 				<section className='empty-panel'>
-					<h2>No app launcher config found</h2>
-					<p>Mount an app launcher JSON file and set APP_LAUNCHER_CONFIG_PATH in Household.Api.</p>
+					<h2>No apps are visible</h2>
+					<p>An administrator can enable catalog entries in Settings → Apps & providers.</p>
 				</section>
 			)}
 			{!loading && apps.length > 0 && visibleApps.length === 0 && (

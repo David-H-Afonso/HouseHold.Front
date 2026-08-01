@@ -21,12 +21,15 @@ const app: AppLauncherItem = {
 	containerStatus: 'running',
 	ports: [],
 	adminActionsAvailable: true,
+	monitoringEnabled: true,
+	canUpdate: true,
+	canRollback: false,
 }
 
 describe('App operation disclosure', () => {
 	afterEach(() => vi.restoreAllMocks())
 
-	it('exposes count, state, controlled panel, and a usable rollback action', async () => {
+	it('shows operation history without inferring rollback safety from a backup ID', async () => {
 		vi.spyOn(appCatalogService, 'operations').mockResolvedValue([{
 			actionLogId: 'operation-1',
 			appId: app.id,
@@ -39,6 +42,7 @@ describe('App operation disclosure', () => {
 			errorCode: null,
 			safetyBackupId: null,
 			previousImages: [],
+			rollbackAvailable: false,
 		}])
 		const user = userEvent.setup()
 		render(<TestProviders><AppLauncherCard app={app} isAdmin onToggleFavorite={vi.fn()} /></TestProviders>)
@@ -54,10 +58,10 @@ describe('App operation disclosure', () => {
 		expect(toggle).toHaveAttribute('aria-expanded', 'true')
 		await waitFor(() => expect(document.getElementById(controls)).toBeInTheDocument())
 		expect(screen.getByRole('list', { name: 'Household operation history' })).toHaveAttribute('id', controls)
-		expect(screen.getByRole('button', { name: 'Rollback this backup' })).toBeEnabled()
+		expect(screen.queryByRole('button', { name: 'Rollback this backup' })).not.toBeInTheDocument()
 	})
 
-	it('queues an update immediately without opening a dialog', async () => {
+	it('requires explicit confirmation before queuing an update', async () => {
 		vi.spyOn(appCatalogService, 'operations').mockResolvedValue([])
 		const update = vi.spyOn(appCatalogService, 'update').mockResolvedValue()
 		const user = userEvent.setup()
@@ -65,7 +69,12 @@ describe('App operation disclosure', () => {
 
 		await user.click(screen.getByRole('button', { name: 'Check/update' }))
 
+		const dialog = screen.getByRole('dialog', { name: 'Update Household' })
+		expect(dialog).toBeInTheDocument()
+		expect(update).not.toHaveBeenCalled()
+		await user.type(screen.getByLabelText('Enter UPDATE household to continue'), 'UPDATE household')
+		await user.click(screen.getByRole('button', { name: 'Queue update' }))
 		await waitFor(() => expect(update).toHaveBeenCalledWith('household', { confirmation: 'UPDATE household' }))
-		expect(screen.queryByRole('dialog', { name: 'Update Household' })).not.toBeInTheDocument()
+		await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Update Household' })).not.toBeInTheDocument())
 	})
 })

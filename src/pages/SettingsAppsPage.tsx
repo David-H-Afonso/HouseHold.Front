@@ -7,6 +7,9 @@ import { casaOsService, operationsService } from '@/services'
 import type { GitHubActionsConfig, JellyfinConfig } from '@/models/api/Operations'
 import type { CasaOsConfig } from '@/models/api/Apps'
 import { isApiError } from '@/utils/customFetch'
+import { SeerrAdminSettings } from '@/components/Seerr'
+import { AppCatalogSettingsSection } from '@/components/Apps'
+import './SettingsAppsPage.scss'
 
 const spriteSources: Array<{ value: PokemonSpriteSource; label: string }> = [
 	{ value: 'home', label: 'Pokémon HOME' },
@@ -97,7 +100,7 @@ export const SettingsAppsPage = () => {
 			<label className='settings-field'><span>Sprite source</span><select value={preferences.pokemonSpriteSource} onChange={(event) => updatePreferences({ pokemonSpriteSource: event.target.value as PokemonSpriteSource })}>{spriteSources.map((source) => <option key={source.value} value={source.value}>{source.label}</option>)}</select></label>
 		</section>
 		<section className='settings-section'>
-			<div><h3>Jellyfin profile mapping</h3><p>Household stores the mapping only. Your Jellyfin API key must remain server-side and is never entered here.</p></div>
+			<div><h3>Jellyfin profile mapping</h3><p>Household stores the mapping only. Changes require administrator approval before Seerr can use this identity.</p></div>
 			<form onSubmit={(event) => { event.preventDefault(); void updatePreferences({ jellyfinUserId: jellyfinId.trim() }) }}>
 				<label className='settings-field'><span>Jellyfin User ID</span><input name='jellyfinUserId' value={jellyfinId} onChange={(event) => setJellyfinId(event.target.value)} placeholder='Not mapped' autoComplete='off' /></label>
 				<button className='button-primary' type='submit' disabled={saving}>Save mapping</button>
@@ -108,10 +111,12 @@ export const SettingsAppsPage = () => {
 			<div className='repository-settings'>{monitoredRepositories.map((repository) => <label className='switch-field' key={repository}><input type='checkbox' checked={preferences.repositoryVisibility[repository] !== false} onChange={(event) => void updatePreferences({ repositoryVisibility: { ...preferences.repositoryVisibility, [repository]: event.target.checked } })} /><span aria-hidden='true' /><div><strong>{repository.split('/')[1]}</strong><small>{repository}</small></div></label>)}</div>
 		</section>
 		{isAdmin && <>
+			<SeerrAdminSettings onNotice={(message) => { setError(null); setNotice(message) }} />
+			<AppCatalogSettingsSection onNotice={(message) => { setError(null); setNotice(message) }} />
 			<section className='settings-section'>
 				<div>
 					<h3>CasaOS app management</h3>
-					<p>Status: <strong>{casaOsConfig?.configured ? 'Configured' : 'Not configured'}</strong>. Household uses this server-side connection to check, update, and roll back apps from the Apps page.</p>
+					<p>Status: <strong>{casaOsConfig?.configured ? 'Configured' : 'Not configured'}</strong>. Household uses this server-side connection to check and queue individual app updates. Automatic rollback stays disabled unless safety can be proven.</p>
 					<p>Sign in to CasaOS, open browser DevTools → Application → Local Storage, and copy <code>access_token</code> and <code>refresh_token</code> from the same session. Household validates and rotates them when saved, then renews them automatically every hour.</p>
 					<p>Tokens are write-only: Household never returns or displays them. You only need to repeat this after CasaOS UserService restarts and invalidates every existing CasaOS session.</p>
 				</div>

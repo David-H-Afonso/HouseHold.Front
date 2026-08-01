@@ -12,6 +12,7 @@ const GamesPage = lazy(() => import('@/pages/GamesPage').then((module) => ({ def
 const JellyfinPage = lazy(() => import('@/pages/JellyfinPage').then((module) => ({ default: module.JellyfinPage })))
 const InviteAcceptPage = lazy(() => import('@/pages/InviteAcceptPage').then((module) => ({ default: module.InviteAcceptPage })))
 const MediaPage = lazy(() => import('@/pages/MediaPage').then((module) => ({ default: module.MediaPage })))
+const SeerrRequestsPage = lazy(() => import('@/pages/SeerrRequestsPage').then((module) => ({ default: module.SeerrRequestsPage })))
 const PokemonPage = lazy(() => import('@/pages/PokemonPage').then((module) => ({ default: module.PokemonPage })))
 const SettingsAppsPage = lazy(() => import('@/pages/SettingsAppsPage').then((module) => ({ default: module.SettingsAppsPage })))
 const SettingsDashboardPage = lazy(() => import('@/pages/SettingsDashboardPage').then((module) => ({ default: module.SettingsDashboardPage })))
@@ -39,6 +40,7 @@ export const router = createBrowserRouter([
 	{ path: '/apps', element: protectedPage(<AppsPage />), errorElement: <RouteError /> },
 	{ path: '/games', element: protectedPage(<GamesPage />), errorElement: <RouteError /> },
 	{ path: '/media', element: protectedPage(<MediaPage />), errorElement: <RouteError /> },
+	{ path: '/media/requests', element: protectedPage(<SeerrRequestsPage />), errorElement: <RouteError /> },
 	{ path: '/media/jellyfin', element: <Navigate to='/jellyfin' replace /> },
 	{ path: '/jellyfin', element: protectedPage(<JellyfinPage />), errorElement: <RouteError /> },
 	{ path: '/pokemon', element: protectedPage(<PokemonPage />), errorElement: <RouteError /> },

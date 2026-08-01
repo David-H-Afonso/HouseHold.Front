@@ -7,13 +7,14 @@ import { authService } from '@/services'
 import { BrandMark, Icon } from '@/components/Shared'
 import { useUserPreferences } from '@/contexts/useUserPreferences'
 
-const primaryLinks = [
+const primaryLinks: Array<{ to: string; label: string; icon: string; end?: boolean }> = [
 	{ to: '/dashboard', label: 'Home', icon: 'home' },
 	{ to: '/today', label: 'Today', icon: 'today' },
 	{ to: '/calendar', label: 'Calendar', icon: 'calendar' },
 	{ to: '/apps', label: 'Apps', icon: 'apps' },
 	{ to: '/games', label: 'Games', icon: 'games' },
-	{ to: '/media', label: 'Jellywatch', icon: 'media' },
+	{ to: '/media', label: 'Jellywatch', icon: 'media', end: true },
+	{ to: '/media/requests', label: 'Requests', icon: 'requests' },
 	{ to: '/jellyfin', label: 'Jellyfin', icon: 'jellyfin' },
 	{ to: '/pokemon', label: 'Pokémon', icon: 'pokemon' },
 	{ to: '/warcraft', label: 'Warcraft', icon: 'warcraft' },
@@ -78,7 +79,7 @@ export const SidebarNav = forwardRef<HTMLElement, { open: boolean; onClose: () =
 
 			<nav className='sidebar-nav__section' aria-label='Main navigation'>
 				{primaryLinks.map((link) => (
-					<NavLink key={link.to} to={link.to} className='sidebar-nav__link'>
+					<NavLink key={link.to} to={link.to} end={link.end} className='sidebar-nav__link'>
 						<Icon name={link.icon} /><span>{link.label}</span>
 					</NavLink>
 				))}
