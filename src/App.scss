@@ -1651,6 +1651,28 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 	gap: 8px;
 }
 
+.app-admin-button {
+	min-height: 44px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	background: var(--color-control);
+	color: var(--color-text);
+	padding: 8px 12px;
+	font-weight: 750;
+	cursor: pointer;
+}
+
+.app-admin-button {
+	border-color: var(--color-border);
+	background: var(--color-bg-alt);
+}
+
+.app-update-current {
+	color: #166534;
+	font-size: .76rem;
+	font-weight: 750;
+}
+
 .app-open-button {
 	display: inline-flex;
 	min-height: 44px;
@@ -1827,7 +1849,7 @@ html{overscroll-behavior:none}body{overscroll-behavior-y:none}button,a{touch-act
 .invitation-page,.auth-gate-page{display:grid;min-height:100dvh;place-items:center;background:var(--color-bg);padding:max(20px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left))}.invitation-card,.auth-gate-card{display:grid;width:min(460px,100%);gap:14px;border:1px solid var(--color-border);border-radius:16px;background:var(--color-surface);padding:28px;box-shadow:var(--shadow-subtle)}.auth-gate-card>span{color:var(--color-text-muted);font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.auth-gate-card h1,.auth-gate-card p{margin:0}.auth-gate-card form{display:grid;gap:12px}.invitation-token-loaded{border-left:3px solid var(--status-ready);background:var(--color-success-bg);color:var(--color-success-text);padding:10px 12px}.preference-loading{display:grid;min-height:100dvh;place-items:center;background:var(--color-bg);color:var(--color-text-muted)}
 .one-use-secret{display:grid;gap:12px;border:2px solid var(--status-degraded);border-radius:var(--radius-lg);background:var(--color-surface);padding:16px}.one-use-secret p{margin:4px 0 0;color:var(--color-text-muted)}.one-use-secret code{max-height:140px;overflow:auto;overflow-wrap:anywhere;border-radius:8px;background:var(--color-bg-alt);padding:12px;user-select:all}.one-use-secret__actions{display:flex;gap:8px}.one-use-secret__actions button{min-height:44px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-control);color:var(--color-text);padding:0 14px;cursor:pointer}
 .dashboard-content-settings{align-content:start}.dashboard-status-options{display:grid;gap:7px}.dashboard-status-options>div{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;border:1px solid var(--color-border);border-radius:9px;padding:8px}.dashboard-status-options label{display:flex;min-height:44px;align-items:center;gap:10px;cursor:pointer}.dashboard-status-options label>span{width:10px;height:10px;border-radius:50%;background:var(--status-color)}.dashboard-status-options>div>div{display:flex;gap:4px}.dashboard-status-options button{width:44px;height:44px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-control);color:var(--color-text)}
-.connection-card,.connection-card__actions,.app-launcher-card,.game-card,.steam-search-panel{background:var(--color-surface)}.connection-card__actions button,.connection-card__actions a,.app-favorite,.filter-tabs__tab{background:var(--color-control);color:var(--color-text)}.app-open-button{border-color:var(--color-accent);background:var(--color-accent)}
+.connection-card,.connection-card__actions,.app-launcher-card,.game-card,.steam-search-panel{background:var(--color-surface)}.connection-card__actions button,.connection-card__actions a,.app-favorite,.app-admin-button,.filter-tabs__tab{background:var(--color-control);color:var(--color-text)}.app-open-button{border-color:var(--color-accent);background:var(--color-accent)}
 .user-editor__identity input,.user-editor__select select,.users-list article button{border-color:var(--color-border);background:var(--color-control);color:var(--color-text)}
 @media(max-width:820px){.mobile-header{padding-top:env(safe-area-inset-top);background:color-mix(in srgb,var(--color-surface) 96%,transparent)}.sidebar-nav{padding-top:max(14px,env(safe-area-inset-top));padding-bottom:max(14px,env(safe-area-inset-bottom));overscroll-behavior:contain}.page-stack,.settings-shell{padding:max(20px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}}
 
@@ -1917,6 +1939,7 @@ body { background: var(--color-bg); }
 .button-primary,
 .button-secondary,
 .icon-button-with-label,
+.app-admin-button,
 .app-open-button,
 .connection-card__actions button,
 .connection-card__actions a {
@@ -1983,7 +2006,10 @@ body { background: var(--color-bg); }
 .app-launcher-card__description { min-height: 38px; font-size: .82rem; }
 .app-launcher-card__meta { gap: 6px 9px; font-size: .74rem; }
 .app-launcher-card__actions { gap: 7px; }
+.app-admin-button,
 .app-open-button { padding: 7px 11px; }
+.app-admin-button { border-color: var(--color-border); background: var(--color-control); color: var(--color-text); }
+.app-admin-button:hover:not(:disabled) { background: var(--color-control-hover); }
 .app-open-button { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-accent-foreground); }
 .app-open-button:hover { background: var(--color-accent-hover); }
 .filter-tabs { gap: 6px; }
@@ -1996,5 +2022,6 @@ body { background: var(--color-bg); }
 	.settings-shell { padding: 24px 16px; }
 	.connection-card__actions button,
 	.connection-card__actions a,
+	.app-admin-button,
 	.app-open-button { min-height: 42px; }
 }

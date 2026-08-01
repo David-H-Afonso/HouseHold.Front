@@ -97,8 +97,15 @@ export const apiRoutes = {
 		byId: (id: string) => `/modules/apps/${id}`,
 		categories: '/modules/apps/categories',
 		favorite: (id: string) => `/modules/apps/${id}/favorite`,
+		update: (id: string) => `/v1/admin/casaos/apps/${encodeURIComponent(id)}/update`,
+		rollback: (id: string) => `/v1/admin/casaos/apps/${encodeURIComponent(id)}/rollback`,
+		operations: (id: string) => `/v1/admin/casaos/apps/${encodeURIComponent(id)}/actions`,
 		adminCatalog: '/v1/admin/apps/catalog',
 		adminCatalogItem: (id: string) => `/v1/admin/apps/catalog/${encodeURIComponent(id)}`,
+	},
+
+	casaos: {
+		config: '/v1/admin/casaos/config',
 	},
 
 	/** Games Database gateway */

@@ -2,8 +2,11 @@ import { environment } from '@/environments'
 import type {
 	AppLauncherCategory,
 	AppLauncherItem,
+	AppOperation,
 	AdminAppCatalogItem,
+	RollbackAppRequest,
 	UpdateAppCatalogItemRequest,
+	UpdateAppRequest,
 } from '@/models/api/Apps'
 import { customFetch } from '@/utils/customFetch'
 
@@ -27,6 +30,18 @@ class AppCatalogService {
 			method: 'PUT',
 			body: { favorite },
 		})
+	}
+
+	update(id: string, request: UpdateAppRequest): Promise<void> {
+		return customFetch<void>(apps.update(id), { method: 'POST', body: request })
+	}
+
+	rollback(id: string, request: RollbackAppRequest): Promise<void> {
+		return customFetch<void>(apps.rollback(id), { method: 'POST', body: request })
+	}
+
+	operations(id: string): Promise<AppOperation[]> {
+		return customFetch<AppOperation[]>(apps.operations(id))
 	}
 
 	adminCatalog(): Promise<AdminAppCatalogItem[]> {

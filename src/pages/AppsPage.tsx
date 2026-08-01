@@ -3,8 +3,11 @@ import { AppCategoryTabs, AppLauncherCard } from '@/components/Apps'
 import { ModuleHeader, SearchBar } from '@/components/Shared'
 import type { AppLauncherCategory, AppLauncherItem } from '@/models/api/Apps'
 import { appCatalogService } from '@/services/AppCatalogService'
+import { useAppSelector } from '@/store/hooks'
+import { selectIsAdmin } from '@/store/features/auth/selector'
 
 export const AppsPage = () => {
+	const isAdmin = useAppSelector(selectIsAdmin)
 	const [apps, setApps] = useState<AppLauncherItem[]>([])
 	const [categories, setCategories] = useState<AppLauncherCategory[]>([])
 	const [activeCategory, setActiveCategory] = useState('All')
@@ -93,7 +96,7 @@ export const AppsPage = () => {
 
 			<div className='apps-grid'>
 				{visibleApps.map((app) => (
-					<AppLauncherCard key={app.id} app={app} onToggleFavorite={toggleFavorite} />
+					<AppLauncherCard key={app.id} app={app} isAdmin={isAdmin} onToggleFavorite={toggleFavorite} />
 				))}
 			</div>
 		</div>

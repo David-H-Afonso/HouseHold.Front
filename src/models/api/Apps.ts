@@ -16,12 +16,54 @@ export interface AppLauncherItem {
 	image?: string | null
 	ports: string[]
 	lastUpdated?: string | null
+	updateAvailable?: boolean | null
+	adminActionsAvailable: boolean
 	monitoringEnabled: boolean
+	canUpdate: boolean
+	canRollback: boolean
 }
 
 export interface AppLauncherCategory {
 	name: string
 	count: number
+}
+
+export interface CasaOsConfig {
+	configured: boolean
+	hasToken: boolean
+	hasRefreshToken: boolean
+}
+
+export interface UpdateCasaOsConfigRequest {
+	internalBaseUrl: string
+	rawToken?: string
+	rawRefreshToken?: string
+}
+
+export type AppOperationAction = 'update' | 'rollback' | string
+
+export interface AppOperation {
+	actionLogId: string
+	appId: string
+	action: AppOperationAction
+	status: string
+	message: string
+	startedAt: string
+	finishedAt?: string | null
+	errorCode?: string | null
+	backupId?: string | null
+	safetyBackupId?: string | null
+	previousImages: string[]
+	rollbackAvailable: boolean
+}
+
+export interface UpdateAppRequest {
+	confirmation: string
+}
+
+export interface RollbackAppRequest {
+	backupId?: string | null
+	confirmation: string
 }
 
 export interface AdminAppCatalogItem {
@@ -34,6 +76,8 @@ export interface AdminAppCatalogItem {
 	favorite: boolean
 	enabled: boolean
 	monitoringEnabled: boolean
+	canUpdate: boolean
+	canRollback: boolean
 	updatedAt: string
 }
 

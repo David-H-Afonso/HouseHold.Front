@@ -22,6 +22,8 @@ const casaos = {
 	favorite: true,
 	enabled: true,
 	monitoringEnabled: false,
+	canUpdate: false,
+	canRollback: false,
 	updatedAt: '2026-08-01T12:00:00Z',
 }
 
@@ -31,11 +33,13 @@ describe('AppCatalogSettingsSection', () => {
 		mocks.updateCatalogItem.mockResolvedValue(casaos)
 	})
 
-	it('shows monitoring capability and persists browser metadata only', async () => {
+	it('shows server-controlled capabilities and persists browser metadata only', async () => {
 		const user = userEvent.setup()
 		render(<AppCatalogSettingsSection onNotice={vi.fn()} />)
 
 		expect(await screen.findByText('Link only')).toBeInTheDocument()
+		expect(screen.getByText('No updates')).toBeInTheDocument()
+		expect(screen.getByText('No automatic rollback')).toBeInTheDocument()
 		const openUrl = screen.getByLabelText('Preferred open URL')
 		await user.clear(openUrl)
 		await user.type(openUrl, 'http://casaos.lan')

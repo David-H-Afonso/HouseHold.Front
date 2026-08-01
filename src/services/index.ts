@@ -1,5 +1,6 @@
 export { appCatalogService } from './AppCatalogService'
 export { authService } from './AuthService'
+export { casaOsService } from './CasaOsService'
 export { dashboardService } from './DashboardService'
 export { foodService } from './FoodService'
 export { gamesService } from './GamesService'
