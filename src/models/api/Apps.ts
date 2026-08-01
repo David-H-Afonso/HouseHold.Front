@@ -57,10 +57,6 @@ export interface AppOperation {
 	rollbackAvailable: boolean
 }
 
-export interface UpdateAppRequest {
-	confirmation: string
-}
-
 export interface RollbackAppRequest {
 	backupId?: string | null
 	confirmation: string

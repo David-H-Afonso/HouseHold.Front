@@ -6,7 +6,6 @@ import type {
 	AdminAppCatalogItem,
 	RollbackAppRequest,
 	UpdateAppCatalogItemRequest,
-	UpdateAppRequest,
 } from '@/models/api/Apps'
 import { customFetch } from '@/utils/customFetch'
 
@@ -32,8 +31,8 @@ class AppCatalogService {
 		})
 	}
 
-	update(id: string, request: UpdateAppRequest): Promise<void> {
-		return customFetch<void>(apps.update(id), { method: 'POST', body: request })
+	update(id: string): Promise<void> {
+		return customFetch<void>(apps.update(id), { method: 'POST' })
 	}
 
 	rollback(id: string, request: RollbackAppRequest): Promise<void> {

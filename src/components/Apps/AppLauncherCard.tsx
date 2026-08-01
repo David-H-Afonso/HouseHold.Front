@@ -53,7 +53,7 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 		setActionError(null)
 		try {
 			if (actionToRun.type === 'update') {
-				await appCatalogService.update(app.id, { confirmation: `UPDATE ${app.id}` })
+				await appCatalogService.update(app.id)
 			} else {
 				await appCatalogService.rollback(app.id, {
 					backupId: actionToRun.backupId,
@@ -81,7 +81,7 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 		if (dialogAction) await executeAction(dialogAction)
 	}
 
-	const requiredPhrase = dialogAction?.type === 'rollback' ? `ROLLBACK ${app.id}` : `UPDATE ${app.id}`
+	const requiredPhrase = dialogAction?.type === 'rollback' ? `ROLLBACK ${app.id}` : ''
 
 	return (
 		<article className='app-launcher-card'>
@@ -117,7 +117,7 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 
 			<div className='app-launcher-card__actions'>
 				{canUpdate && (
-					<button type='button' className='app-admin-button' disabled={submitting} onClick={() => { setActionError(null); setDialogAction({ type: 'update' }) }}>
+					<button type='button' className='app-admin-button' disabled={submitting} onClick={() => { setActionError(null); void executeAction({ type: 'update' }) }}>
 						{app.updateAvailable === true ? 'Update' : 'Check/update'}
 					</button>
 				)}
@@ -155,7 +155,7 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 				open={dialogAction !== null}
 				title={`${dialogAction?.type === 'rollback' ? 'Rollback' : 'Update'} ${app.name}`}
 				description={`${app.name} may restart while this operation runs.${isHousehold ? ' Updating Household may disconnect this page.' : ''}`}
-				confirmLabel={dialogAction?.type === 'rollback' ? 'Queue rollback' : 'Queue update'}
+				confirmLabel='Queue rollback'
 				requiredPhrase={requiredPhrase}
 				busy={submitting}
 				error={actionError}
