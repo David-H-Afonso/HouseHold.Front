@@ -9,7 +9,6 @@ const mocks = vi.hoisted(() => ({
 	useSelector: vi.fn(),
 	jellyfinConfig: vi.fn(),
 	githubConfig: vi.fn(),
-	casaOsConfig: vi.fn(),
 	seerrConfig: vi.fn(),
 	updateSeerrConfig: vi.fn(),
 	mappings: vi.fn(),
@@ -34,7 +33,6 @@ vi.mock('@/services', () => ({
 		updateJellyfinConfig: vi.fn(),
 		updateGitHubConfig: vi.fn(),
 	},
-	casaOsService: { config: mocks.casaOsConfig, updateConfig: vi.fn() },
 	seerrService: {
 		config: mocks.seerrConfig,
 		updateConfig: mocks.updateSeerrConfig,
@@ -58,7 +56,6 @@ describe('SettingsAppsPage Seerr administration', () => {
 		mocks.usePreferences.mockReturnValue({ preferences: createDefaultPreferences(), updatePreferences: vi.fn(), saving: false, persistence: 'server', ready: true })
 		mocks.jellyfinConfig.mockResolvedValue({ configured: true, publicUrl: 'https://jellyfin.example.test', hasApiKey: true })
 		mocks.githubConfig.mockResolvedValue({ configured: true, hasToken: true })
-		mocks.casaOsConfig.mockResolvedValue({ configured: true, hasToken: true, hasRefreshToken: true })
 		mocks.seerrConfig.mockResolvedValue({ configured: true, internalUrl: 'http://seerr:5055', publicUrl: 'https://seerr.example.test', hasApiKey: true, version: '2.7.0', reachable: true })
 		mocks.mappings.mockResolvedValue([mapping])
 		mocks.updateSeerrConfig.mockResolvedValue({ configured: true, internalUrl: 'http://seerr:5055', publicUrl: 'https://seerr.example.test', hasApiKey: true, version: '2.7.0', reachable: true })

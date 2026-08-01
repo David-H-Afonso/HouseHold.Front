@@ -36,7 +36,7 @@ export const AppCatalogSettingsSection = ({ onNotice }: Props) => {
 	return <section className='settings-section app-catalog-settings'>
 		<div>
 			<h3>App catalog</h3>
-			<p>Edit browser-facing metadata and preferred open URLs. Container names, Compose projects, monitoring, and update permissions remain server-controlled.</p>
+			<p>Edit browser-facing metadata and preferred open URLs. Container names and monitoring targets remain server-controlled.</p>
 		</div>
 		<label className='settings-field app-catalog-settings__search'>
 			<span>Find an app</span>
@@ -85,8 +85,6 @@ const CatalogEditor = ({ item, onSaved }: { item: AdminAppCatalogItem; onSaved: 
 			<div><strong>{item.name}</strong><code>{item.id}</code></div>
 			<div className='app-catalog-editor__capabilities' aria-label={`${item.name} capabilities`}>
 				<span>{item.monitoringEnabled ? 'Monitored' : 'Link only'}</span>
-				<span>{item.canUpdate ? 'Individual updates' : 'No updates'}</span>
-				<span>{item.canRollback ? 'Safe rollback' : 'No automatic rollback'}</span>
 			</div>
 		</header>
 		<form onSubmit={submit}>
