@@ -109,7 +109,7 @@ export const AppLauncherCard = ({ app, isAdmin, onToggleFavorite }: AppLauncherC
 					{app.frontStatus !== 'not_configured' && <span>Front: {app.frontStatus.replaceAll('_', ' ')}</span>}
 					{app.apiStatus !== 'not_configured' && <span>API: {app.apiStatus.replaceAll('_', ' ')}</span>}
 					{app.userConnectionStatus !== 'not_applicable' && <span>Account: {app.userConnectionStatus.replaceAll('_', ' ')}</span>}
-					<span>Container: {app.containerStatus}</span>
+					{app.containerStatus.toLowerCase() !== 'unknown' && <span>Container: {app.containerStatus}</span>}
 					{app.image && <span>Image: {app.image}</span>}
 					{app.lastUpdated && <span>Started: {dateTime(app.lastUpdated)}</span>}
 				</> : <span>Link only · monitoring disabled</span>}

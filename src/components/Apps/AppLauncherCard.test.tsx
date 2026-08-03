@@ -72,4 +72,11 @@ describe('App operation disclosure', () => {
 		await waitFor(() => expect(update).toHaveBeenCalledWith('household'))
 		await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Update Household' })).not.toBeInTheDocument())
 	})
+
+	it('does not show an unknown container status', async () => {
+		vi.spyOn(appCatalogService, 'operations').mockResolvedValue([])
+		render(<TestProviders><AppLauncherCard app={{ ...app, containerStatus: 'unknown' }} isAdmin onToggleFavorite={vi.fn()} /></TestProviders>)
+
+		await waitFor(() => expect(screen.queryByText('Container: unknown')).not.toBeInTheDocument())
+	})
 })
